@@ -950,7 +950,7 @@ async function doExport(){
 function resizeImage(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const s=160,c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');const m=Math.min(img.width,img.height);x.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,s,s);res(c.toDataURL('image/jpeg',.82));};img.onerror=rej;img.src=r.result;};r.onerror=rej;r.readAsDataURL(file);});}
 
 // ================= Anleitung =================
-const STORAGE_HELP=()=>IS_PWA?tr(`Zuerst nur in diesem Browser. Unter <b>Einstellungen → Synchronisierung</b> (dein Profilbild oben rechts) kannst du deine eigene <b>Dropbox</b> oder einen <b>WebDAV</b>-Speicher verbinden, z. B. deine NAS oder Nextcloud. Dann liegt alles in einer Datei <b>motus.json</b>, über die sich deine Geräte abgleichen: beim Öffnen, nach jeder Änderung und alle zwei Minuten. Bei gleichzeitigen Änderungen gewinnt die neuere Version. Eine fremde Datenbank gibt es nicht.`,`At first only in this browser. Under <b>Settings → Sync</b> (your profile picture top right) you can connect your own <b>Dropbox</b> or a <b>WebDAV</b> storage, e.g. your NAS or Nextcloud. Everything then lives in a single file <b>motus.json</b> that your devices sync through: on opening, after every change and every two minutes. If two devices change things at the same time, the newer version wins. There is no third-party database.`):'';
+const STORAGE_HELP=()=>IS_PWA?tr(`Zuerst nur in diesem Browser. Unter <b>Einstellungen → Synchronisierung</b> (dein Profilbild oben rechts) kannst du deinen eigenen Cloud-Speicher verbinden: <b>Dropbox, Google Drive, OneDrive oder pCloud</b>. Motus legt dort nur eine Datei <b>motus.json</b> in einem eigenen App-Ordner an und sieht deine anderen Dateien nicht. Darüber gleichen sich deine Geräte ab: beim Öffnen, nach jeder Änderung und alle zwei Minuten. Bei gleichzeitigen Änderungen gewinnt die neuere Version. Einen Motus-Server gibt es nicht.`,`At first only in this browser. Under <b>Settings → Sync</b> (your profile picture top right) you can connect your own cloud storage: <b>Dropbox, Google Drive, OneDrive or pCloud</b>. Motus only creates a single file <b>motus.json</b> in its own app folder and cannot see your other files. Your devices sync through it: on opening, after every change and every two minutes. If two devices change things at the same time, the newer version wins. There is no Motus server.`):'';
 function viewHelp(){
   const sec=(id,title,body)=>`<div class="card wiki" id="${id}" style="scroll-margin-top:80px"><h3>${title}</h3>${body}<button class="totop" data-a="top">↑ ${tr('nach oben','back to top')}</button></div>`;
   const pr=(n,title,body,where)=>`<div class="pr" style="margin:14px 0"><div class="num">${n}</div><div><b>${title}</b><p style="margin:4px 0">${body}</p><div class="where">→ ${where}</div></div></div>`;
@@ -1170,98 +1170,150 @@ function tick(){
 setInterval(tick,1000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){touchSeen();softRender();}});
 
-// ================= Sync über Dropbox oder WebDAV (ohne eigene Datenbank) =================
-const SYNC_KEY='motus_sync',SAVED_KEY='motus_savedAt',FILE='/motus.json';
-const SY={cfg:{type:'none'},timer:null,busy:false,last:null,err:null};
+// ================= Sync über eigene Cloud (Dropbox, Google Drive, OneDrive, pCloud) =================
+// Client-IDs der bei den Anbietern registrierten App. Leer = Nutzer trägt eigene ID in der Einrichtungshilfe ein.
+const CLOUD_IDS={dropbox:'',google:'',onedrive:'',pcloud:''};
+const SYNC_KEY='motus_sync',SAVED_KEY='motus_savedAt',IDS_KEY='motus_ids',OAUTH_KEY='motus_oauth',FILE='motus.json';
+const SY={cfg:{type:'none'},timer:null,busy:false,last:null,err:null,needsAuth:false};
 try{SY.cfg=JSON.parse(localStorage.getItem(SYNC_KEY)||'{"type":"none"}');}catch(e){}
+if(SY.cfg.type==='webdav')SY.cfg={type:'none'};
 const saveCfg=()=>{try{localStorage.setItem(SYNC_KEY,JSON.stringify(SY.cfg));}catch(e){}};
 const localStamp=()=>{try{return +localStorage.getItem(SAVED_KEY)||0;}catch(e){return 0;}};
 const setStamp=v=>{try{localStorage.setItem(SAVED_KEY,String(v));}catch(e){}};
 const redirectUri=()=>location.origin+location.pathname;
-const provName=()=>SY.cfg.type==='dropbox'?'Dropbox':SY.cfg.type==='webdav'?'WebDAV':'';
-syncStateFn=()=>SY.cfg.type==='none'?'local':SY.err?'err':SY.busy?'busy':SY.last?'ok':'busy';
+const PROV={
+  dropbox:{name:'Dropbox',sub:()=>tr('Ordner „Apps“ in deiner Dropbox','“Apps” folder in your Dropbox')},
+  google:{name:'Google Drive',sub:()=>tr('Versteckter App-Ordner','Hidden app folder')},
+  onedrive:{name:'OneDrive',sub:()=>tr('Ordner „Apps“ in deinem OneDrive','“Apps” folder in your OneDrive')},
+  pcloud:{name:'pCloud',sub:()=>tr('Schweizer Anbieter, eigener App-Ordner','Swiss provider, own app folder')}
+};
+const provName=t=>(PROV[t||SY.cfg.type]||{}).name||'';
+function clientId(p){if(CLOUD_IDS[p])return CLOUD_IDS[p];try{return (JSON.parse(localStorage.getItem(IDS_KEY)||'{}'))[p]||'';}catch(e){return '';}}
+function setClientId(p,v){let o={};try{o=JSON.parse(localStorage.getItem(IDS_KEY)||'{}');}catch(e){}o[p]=v;try{localStorage.setItem(IDS_KEY,JSON.stringify(o));}catch(e){}}
+syncStateFn=()=>SY.cfg.type==='none'?'local':(SY.err||SY.needsAuth)?'err':SY.busy?'busy':SY.last?'ok':'busy';
 function showSync(){
   let t;
   if(SY.cfg.type==='none')t=tr('Nur auf diesem Gerät','This device only');
+  else if(SY.needsAuth)t=provName()+' · '+tr('bitte neu anmelden','please sign in again');
   else if(SY.err)t=provName()+' · '+tr('Problem','Problem');
   else if(SY.busy)t=provName()+' · '+tr('gleicht ab…','syncing…');
   else t=provName()+(SY.last?' · '+tr('synchronisiert ','synced ')+fmtTime(SY.last):'');
   setSync(t);
 }
+class AuthError extends Error{}
 
-// ---- Dropbox (OAuth mit PKCE, nur App-Ordner) ----
+// ---- Anmeldung (Weiterleitung) ----
 const b64url=buf=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-async function dbxStartAuth(appKey){
-  const v=b64url(crypto.getRandomValues(new Uint8Array(48)));
-  const ch=b64url(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)));
-  localStorage.setItem('motus_pkce',JSON.stringify({v,appKey}));
-  const u=new URL('https://www.dropbox.com/oauth2/authorize');
-  Object.entries({client_id:appKey,response_type:'code',code_challenge:ch,code_challenge_method:'S256',redirect_uri:redirectUri(),token_access_type:'offline'}).forEach(([k,x])=>u.searchParams.set(k,x));
+const rnd=n=>b64url(crypto.getRandomValues(new Uint8Array(n)));
+async function pkce(){const v=rnd(48);const ch=b64url(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)));return {v,ch};}
+async function startAuth(p,silent){
+  const cid=clientId(p);if(!cid)return wizardOpen(p);
+  const state=rnd(16);const st={p,state,silent:!!silent,at:Date.now(),tab};
+  let u;
+  if(p==='dropbox'){const k=await pkce();st.v=k.v;u=new URL('https://www.dropbox.com/oauth2/authorize');Object.entries({client_id:cid,response_type:'code',code_challenge:k.ch,code_challenge_method:'S256',redirect_uri:redirectUri(),token_access_type:'offline',state}).forEach(([a,b])=>u.searchParams.set(a,b));}
+  else if(p==='onedrive'){const k=await pkce();st.v=k.v;u=new URL('https://login.microsoftonline.com/common/oauth2/v2.0/authorize');Object.entries({client_id:cid,response_type:'code',redirect_uri:redirectUri(),scope:'Files.ReadWrite.AppFolder offline_access',code_challenge:k.ch,code_challenge_method:'S256',state}).forEach(([a,b])=>u.searchParams.set(a,b));if(silent)u.searchParams.set('prompt','none');}
+  else if(p==='google'){u=new URL('https://accounts.google.com/o/oauth2/v2/auth');Object.entries({client_id:cid,redirect_uri:redirectUri(),response_type:'token',scope:'https://www.googleapis.com/auth/drive.appdata',include_granted_scopes:'true',state}).forEach(([a,b])=>u.searchParams.set(a,b));if(silent)u.searchParams.set('prompt','none');}
+  else if(p==='pcloud'){u=new URL('https://my.pcloud.com/oauth2/authorize');Object.entries({client_id:cid,response_type:'token',redirect_uri:redirectUri(),state}).forEach(([a,b])=>u.searchParams.set(a,b));}
+  localStorage.setItem(OAUTH_KEY,JSON.stringify(st));
+  localSave();
   location.href=u.toString();
 }
-async function dbxToken(params){
-  const r=await fetch('https://api.dropboxapi.com/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});
-  if(!r.ok){let d='';try{d=(await r.json()).error_description||'';}catch(e){}throw new Error(tr('Anmeldung bei Dropbox fehlgeschlagen','Dropbox sign-in failed')+' ('+r.status+(d?': '+d:'')+')');}
-  return r.json();
+async function formPost(url,params){
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});
+  let d={};try{d=await r.json();}catch(e){}
+  if(!r.ok)throw new AuthError((d.error_description||d.error||'')+' ('+r.status+')');
+  return d;
 }
-async function dbxFinishAuth(){
-  const q=new URLSearchParams(location.search);
-  if(!q.has('code')&&!q.has('error'))return false;
-  history.replaceState(null,'',location.pathname+location.hash);
-  if(q.has('error')){SY.err=tr('Dropbox-Anmeldung abgebrochen','Dropbox sign-in cancelled');return true;}
-  let p;try{p=JSON.parse(localStorage.getItem('motus_pkce')||'null');}catch(e){}
-  if(!p)return true;
-  localStorage.removeItem('motus_pkce');
-  const t=await dbxToken({grant_type:'authorization_code',code:q.get('code'),client_id:p.appKey,code_verifier:p.v,redirect_uri:redirectUri()});
-  SY.cfg={type:'dropbox',appKey:p.appKey,refresh:t.refresh_token,access:t.access_token,exp:Date.now()+(t.expires_in-60)*1000};
-  saveCfg();setTimeout(()=>toast(tr('Dropbox verbunden ✓','Dropbox connected ✓')),400);return true;
-}
-async function dbxAccess(){
-  const c=SY.cfg;
-  if(c.access&&c.exp>Date.now())return c.access;
-  const t=await dbxToken({grant_type:'refresh_token',refresh_token:c.refresh,client_id:c.appKey});
-  c.access=t.access_token;c.exp=Date.now()+(t.expires_in-60)*1000;saveCfg();return c.access;
-}
-const DROPBOX={
-  async get(){
-    const r=await fetch('https://content.dropboxapi.com/2/files/download',{method:'POST',headers:{Authorization:'Bearer '+await dbxAccess(),'Dropbox-API-Arg':JSON.stringify({path:FILE})}});
-    if(r.status===409)return null;
-    if(!r.ok)throw new Error('Dropbox ('+r.status+')');
-    return JSON.parse(await r.text());
-  },
-  async put(text){
-    const r=await fetch('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{Authorization:'Bearer '+await dbxAccess(),'Dropbox-API-Arg':JSON.stringify({path:FILE,mode:'overwrite',mute:true}),'Content-Type':'application/octet-stream'},body:text});
-    if(!r.ok)throw new Error('Dropbox ('+r.status+')');
+async function finishAuth(){
+  const q=new URLSearchParams(location.search),h=new URLSearchParams(location.hash.replace(/^#/,''));
+  const src=q.has('code')||q.has('error')?q:(h.has('access_token')||h.has('error'))?h:null;
+  if(!src)return false;
+  let st=null;try{st=JSON.parse(localStorage.getItem(OAUTH_KEY)||'null');}catch(e){}
+  localStorage.removeItem(OAUTH_KEY);
+  history.replaceState(null,'',location.pathname+(st&&st.tab?'#'+st.tab:''));
+  if(st&&st.tab&&TABS.includes(st.tab))tab=st.tab;
+  if(!st||src.get('state')!==st.state){SY.err=tr('Anmeldung konnte nicht zugeordnet werden. Bitte nochmal versuchen.','Sign-in could not be matched. Please try again.');return true;}
+  if(src.has('error')){
+    if(st.silent){SY.needsAuth=true;return true;}
+    SY.err=tr('Anmeldung abgebrochen','Sign-in cancelled');return true;
   }
-};
+  const p=st.p,cid=clientId(p),prev=SY.cfg.type===p?SY.cfg:{};
+  if(p==='dropbox'){const t=await formPost('https://api.dropboxapi.com/oauth2/token',{grant_type:'authorization_code',code:src.get('code'),client_id:cid,code_verifier:st.v,redirect_uri:redirectUri()});SY.cfg={type:p,refresh:t.refresh_token,access:t.access_token,exp:Date.now()+(t.expires_in-60)*1000};}
+  else if(p==='onedrive'){const t=await formPost('https://login.microsoftonline.com/common/oauth2/v2.0/token',{client_id:cid,grant_type:'authorization_code',code:src.get('code'),redirect_uri:redirectUri(),code_verifier:st.v,scope:'Files.ReadWrite.AppFolder offline_access'});SY.cfg={type:p,refresh:t.refresh_token,access:t.access_token,exp:Date.now()+(t.expires_in-60)*1000};}
+  else if(p==='google'){SY.cfg={type:p,access:src.get('access_token'),exp:Date.now()+((+src.get('expires_in')||3600)-60)*1000,fileId:prev.fileId};}
+  else if(p==='pcloud'){SY.cfg={type:p,access:src.get('access_token'),host:src.get('hostname')||'api.pcloud.com'};}
+  if(prev.synced)SY.cfg.synced=true;
+  SY.needsAuth=false;SY.err=null;saveCfg();
+  if(!st.silent)setTimeout(()=>toast(tr(`${provName(p)} verbunden ✓`,`${provName(p)} connected ✓`)),400);
+  return true;
+}
+async function accessToken(){
+  const c=SY.cfg,cid=clientId(c.type);
+  if(c.type==='pcloud')return c.access;
+  if(c.access&&(!c.exp||c.exp>Date.now()))return c.access;
+  if(c.type==='google')throw new AuthError('expired');
+  try{
+    const url=c.type==='dropbox'?'https://api.dropboxapi.com/oauth2/token':'https://login.microsoftonline.com/common/oauth2/v2.0/token';
+    const params=c.type==='dropbox'?{grant_type:'refresh_token',refresh_token:c.refresh,client_id:cid}:{grant_type:'refresh_token',refresh_token:c.refresh,client_id:cid,scope:'Files.ReadWrite.AppFolder offline_access'};
+    const t=await formPost(url,params);
+    c.access=t.access_token;c.exp=Date.now()+(t.expires_in-60)*1000;if(t.refresh_token)c.refresh=t.refresh_token;saveCfg();return c.access;
+  }catch(e){if(e instanceof AuthError)throw e;throw e;}
+}
+async function api(url,opt){
+  opt=opt||{};const tok=await accessToken();
+  const r=await fetch(url,Object.assign({},opt,{headers:Object.assign({},opt.headers||{},{Authorization:'Bearer '+tok})}));
+  if(r.status===401){if(SY.cfg.type!=='pcloud'){SY.cfg.access=null;SY.cfg.exp=0;saveCfg();}throw new AuthError('401');}
+  return r;
+}
 
-// ---- WebDAV ----
-const davHeaders=c=>{c=c||SY.cfg;const h={};if(c.user)h.Authorization='Basic '+btoa(unescape(encodeURIComponent(c.user+':'+(c.pass||''))));return h;};
-const davUrl=c=>{c=c||SY.cfg;const u=(c.url||'').trim();return /\.json$/i.test(u)?u:u.replace(/\/?$/,'/')+'motus.json';};
-const davDir=c=>davUrl(c).replace(/[^/]*$/,'');
-const WEBDAV={
-  async get(c){
-    const u=davUrl(c);
-    const r=await fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{headers:davHeaders(c),cache:'no-store'});
-    if(r.status===404)return null;
-    if(!r.ok)throw new Error('WebDAV ('+r.status+')');
-    const tx=await r.text();return tx.trim()?JSON.parse(tx):null;
-  },
-  async put(text,c){
-    const r=await fetch(davUrl(c),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},davHeaders(c)),body:text});
-    if(!r.ok)throw new Error('WebDAV ('+r.status+')');
+// ---- Anbieter ----
+const P_DROPBOX={
+  async get(){const r=await api('https://content.dropboxapi.com/2/files/download',{method:'POST',headers:{'Dropbox-API-Arg':JSON.stringify({path:'/'+FILE})}});if(r.status===409)return null;if(!r.ok)throw new Error('Dropbox ('+r.status+')');return JSON.parse(await r.text());},
+  async put(text){const r=await api('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{'Dropbox-API-Arg':JSON.stringify({path:'/'+FILE,mode:'overwrite',mute:true}),'Content-Type':'application/octet-stream'},body:text});if(!r.ok)throw new Error('Dropbox ('+r.status+')');}
+};
+const P_GOOGLE={
+  async findId(){if(SY.cfg.fileId)return SY.cfg.fileId;const r=await api('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id,name)&q='+encodeURIComponent(`name='${FILE}'`));if(!r.ok)throw new Error('Google Drive ('+r.status+')');const d=await r.json();const f=(d.files||[])[0];if(f){SY.cfg.fileId=f.id;saveCfg();}return f?f.id:null;},
+  async get(){const id=await this.findId();if(!id)return null;const r=await api('https://www.googleapis.com/drive/v3/files/'+id+'?alt=media');if(r.status===404){SY.cfg.fileId=null;saveCfg();return null;}if(!r.ok)throw new Error('Google Drive ('+r.status+')');return JSON.parse(await r.text());},
+  async put(text){
+    let id=await this.findId();
+    if(id){const r=await api('https://www.googleapis.com/upload/drive/v3/files/'+id+'?uploadType=media',{method:'PATCH',headers:{'Content-Type':'application/json'},body:text});if(r.status===404){SY.cfg.fileId=null;saveCfg();return this.put(text);}if(!r.ok)throw new Error('Google Drive ('+r.status+')');return;}
+    const b='motus'+rnd(8);
+    const body=`--${b}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({name:FILE,parents:['appDataFolder']})}\r\n--${b}\r\nContent-Type: application/json\r\n\r\n${text}\r\n--${b}--`;
+    const r=await api('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{method:'POST',headers:{'Content-Type':'multipart/related; boundary='+b},body});
+    if(!r.ok)throw new Error('Google Drive ('+r.status+')');const d=await r.json();SY.cfg.fileId=d.id;saveCfg();
   }
 };
-const provider=()=>SY.cfg.type==='dropbox'?DROPBOX:SY.cfg.type==='webdav'?WEBDAV:null;
+const P_ONEDRIVE={
+  base:'https://graph.microsoft.com/v1.0/me/drive/special/approot:/'+FILE,
+  async get(){const r=await api(this.base+'?select=id,@microsoft.graph.downloadUrl');if(r.status===404)return null;if(!r.ok)throw new Error('OneDrive ('+r.status+')');const d=await r.json();const u=d['@microsoft.graph.downloadUrl'];if(!u)return null;const f=await fetch(u,{cache:'no-store'});if(!f.ok)throw new Error('OneDrive ('+f.status+')');const tx=await f.text();return tx.trim()?JSON.parse(tx):null;},
+  async put(text){const r=await api(this.base+':/content',{method:'PUT',headers:{'Content-Type':'text/plain'},body:text});if(!r.ok)throw new Error('OneDrive ('+r.status+')');}
+};
+const P_PCLOUD={
+  url(m,params){const u=new URL('https://'+(SY.cfg.host||'api.pcloud.com')+'/'+m);Object.entries(Object.assign({access_token:SY.cfg.access},params)).forEach(([a,b])=>u.searchParams.set(a,b));return u.toString();},
+  async call(m,params,opt){const r=await fetch(this.url(m,params),opt||{});if(!r.ok)throw new Error('pCloud ('+r.status+')');const d=await r.json();if(d.result===1000||d.result===2094||d.result===2000){throw new AuthError('pcloud '+d.result);}return d;},
+  async get(){const d=await this.call('getfilelink',{path:'/'+FILE});if(d.result===2009||d.result===2002||d.result===2055)return null;if(d.result!==0)throw new Error('pCloud ('+d.result+')');const f=await fetch('https://'+d.hosts[0]+d.path,{cache:'no-store'});if(!f.ok)throw new Error('pCloud ('+f.status+')');const tx=await f.text();return tx.trim()?JSON.parse(tx):null;},
+  async put(text){const fd=new FormData();fd.append('file',new Blob([text],{type:'application/json'}),FILE);const d=await this.call('uploadfile',{path:'/',filename:FILE,nopartial:1},{method:'POST',body:fd});if(d.result!==0)throw new Error('pCloud ('+d.result+')');}
+};
+const provider=()=>({dropbox:P_DROPBOX,google:P_GOOGLE,onedrive:P_ONEDRIVE,pcloud:P_PCLOUD})[SY.cfg.type]||null;
 function errText(e){const m=String(e&&e.message||e);
-  if(/\((401|403)/.test(m))return tr('Zugriff verweigert. Benutzer oder Passwort stimmen nicht.','Access denied. Username or password is wrong.');
-  if(/\(409/.test(m)&&SY.cfg.type!=='dropbox')return tr('Der Ordner existiert nicht. Lege ihn zuerst auf dem Server an.','The folder does not exist. Create it on the server first.');
-  if(/Failed to fetch|NetworkError|Load failed|TypeError/i.test(m))return SY.cfg.type==='webdav'||WZ.type==='webdav'?tr('Keine Verbindung. Entweder ist der Server nicht erreichbar, oder er blockiert Zugriffe aus dem Browser (CORS).','No connection. Either the server is unreachable or it blocks browser access (CORS).'):tr('Keine Verbindung zum Internet.','No internet connection.');
+  if(/Failed to fetch|NetworkError|Load failed|TypeError/i.test(m))return navigator.onLine===false?tr('Keine Internetverbindung. Motus gleicht ab, sobald du wieder online bist.','No internet connection. Motus will sync once you are back online.'):tr('Keine Verbindung zum Anbieter.','Could not reach the provider.');
   return m;}
+function handleErr(e){
+  if(e instanceof AuthError){SY.needsAuth=true;SY.err=null;maybeSilentAuth();return;}
+  SY.err=errText(e);
+}
+// Stille Neuanmeldung: höchstens alle 10 Minuten, nur wenn nichts getippt wird
+function maybeSilentAuth(){
+  const p=SY.cfg.type;if(p==='none'||p==='pcloud'||p==='dropbox')return;
+  let last=0;try{last=+localStorage.getItem('motus_silent')||0;}catch(e){}
+  if(Date.now()-last<10*60*1000||typing()||$('#modal-root').innerHTML)return;
+  try{localStorage.setItem('motus_silent',String(Date.now()));}catch(e){}
+  startAuth(p,true);
+}
 
 // ---- Abgleich: die neuere Version gewinnt ----
 async function syncPull(){
-  const p=provider();if(!p||SY.busy)return;
+  const p=provider();if(!p||SY.busy||SY.needsAuth)return;
   SY.busy=true;SY.err=null;showSync();
   try{
     const remote=await p.get();
@@ -1279,23 +1331,26 @@ async function syncPull(){
       if(!mine)setStamp(Date.now());
     }
     SY.last=Date.now();if(!SY.cfg.synced){SY.cfg.synced=true;saveCfg();}
-  }catch(e){SY.err=errText(e);}
+  }catch(e){handleErr(e);}
   SY.busy=false;showSync();if(tab==='einstellungen'&&!typing())render();
 }
 async function syncPush(){
-  const p=provider();if(!p)return;
+  const p=provider();if(!p||SY.needsAuth)return;
   if(SY.busy){schedulePush();return;}
   SY.busy=true;SY.err=null;showSync();
   try{await p.put(JSON.stringify({app:'motus',v:3,savedAt:localStamp(),state:S}));SY.last=Date.now();}
-  catch(e){SY.err=errText(e);}
+  catch(e){handleErr(e);}
   SY.busy=false;showSync();
 }
 function schedulePush(){if(SY.cfg.type==='none')return;clearTimeout(SY.timer);SY.timer=setTimeout(()=>{SY.timer=null;syncPush();},2000);}
 function markDirty(){setStamp(Date.now());schedulePush();}
 async function syncInit(){
-  try{await dbxFinishAuth();}catch(e){SY.err=errText(e);}
-  showSync();
-  if(SY.cfg.type!=='none')syncPull();
+  try{await finishAuth();}catch(e){SY.err=errText(e);}
+  showSync();render();
+  if(SY.cfg.type!=='none'){
+    if(SY.cfg.type==='google'&&!(SY.cfg.access&&SY.cfg.exp>Date.now())){SY.needsAuth=true;showSync();maybeSilentAuth();}
+    else syncPull();
+  }
   document.addEventListener('visibilitychange',()=>{if(document.hidden){if(SY.timer){clearTimeout(SY.timer);SY.timer=null;syncPush();}}else syncPull();});
   window.addEventListener('online',syncPull);
   setInterval(()=>{if(!document.hidden&&!SY.timer)syncPull();},120000);
@@ -1304,118 +1359,74 @@ async function syncInit(){
 // ---- Einstellungen: Sync-Bereich ----
 SYNC_SETTINGS=()=>{
   const c=SY.cfg;
-  if(c.type==='none')return `<div class="small" style="line-height:1.55;margin-bottom:12px">${tr('Deine Daten liegen gerade nur in diesem Browser. Verbinde einen Speicher, der dir gehört. Dann landet alles in einer einzigen Datei <b>motus.json</b>, und all deine Geräte gleichen sich darüber ab. Eine fremde Datenbank gibt es dabei nicht.','Your data currently lives only in this browser. Connect storage you own. Everything then goes into a single file <b>motus.json</b>, and all your devices sync through it. No third-party database involved.')}</div>
-    <div class="tiles"><button data-a="wz-start" data-v="dropbox"><b>Dropbox</b><span>${tr('Einfach und zuverlässig. Einmalig ca. 3 Minuten Einrichtung.','Simple and reliable. About 3 minutes of one-time setup.')}</span></button><button data-a="wz-start" data-v="webdav"><b>WebDAV</b><span>${tr('Eigene NAS oder Nextcloud. Für Fortgeschrittene.','Your own NAS or Nextcloud. For advanced users.')}</span></button></div>`;
-  return `<div class="row2"><div class="l"><b>${provName()} ${tr('verbunden','connected')}</b><span>${c.type==='dropbox'?'Dropbox/Apps/&lt;'+tr('App-Name','app name')+'&gt;/motus.json':esc(davUrl())}</span></div><div class="row" style="flex-wrap:wrap"><button class="btn ghost sm" data-a="sync-now">${tr('Jetzt abgleichen','Sync now')}</button><button class="btn ghost sm" data-a="sync-off">${tr('Trennen','Disconnect')}</button></div></div>
-    <div class="small" style="margin-top:6px">${SY.err?`<span style="color:var(--danger)">${esc(SY.err)}</span>${c.type==='webdav'?` · <a href="#" data-a="wz-start" data-v="webdav" style="color:var(--gold)">${tr('Einrichtung prüfen','Check setup')}</a>`:''}`:SY.last?tr('Zuletzt abgeglichen um ','Last synced at ')+fmtTime(SY.last)+'.':tr('Noch nicht abgeglichen.','Not synced yet.')}</div>`;
+  if(c.type==='none')return `<div class="small" style="line-height:1.55;margin-bottom:12px">${tr('Deine Daten liegen gerade nur in diesem Browser. Verbinde deinen eigenen Cloud-Speicher. Motus legt dort nur eine einzige Datei <b>motus.json</b> in einem eigenen App-Ordner an und sieht deine anderen Dateien nicht. Darüber gleichen sich all deine Geräte ab.','Your data currently lives only in this browser. Connect your own cloud storage. Motus only creates a single file <b>motus.json</b> in its own app folder and cannot see your other files. All your devices sync through it.')}</div>
+    <div class="tiles">${Object.entries(PROV).map(([k,p])=>`<button data-a="wz-start" data-v="${k}"><b>${p.name}</b><span>${p.sub()}</span></button>`).join('')}</div>`;
+  return `<div class="row2"><div class="l"><b>${provName()} ${tr('verbunden','connected')}</b><span>${PROV[c.type].sub()} · motus.json</span></div><div class="row" style="flex-wrap:wrap"><button class="btn ghost sm" data-a="sync-now">${tr('Jetzt abgleichen','Sync now')}</button><button class="btn ghost sm" data-a="sync-off">${tr('Trennen','Disconnect')}</button></div></div>
+    <div class="small" style="margin-top:6px">${SY.needsAuth?`<span style="color:var(--danger)">${tr('Die Anmeldung ist abgelaufen.','Your sign-in has expired.')}</span> <button class="btn gold sm" data-a="sync-reauth" style="margin-left:6px">${tr('Neu anmelden','Sign in again')}</button>`:SY.err?`<span style="color:var(--danger)">${esc(SY.err)}</span>`:SY.last?tr('Zuletzt abgeglichen um ','Last synced at ')+fmtTime(SY.last)+'.':tr('Noch nicht abgeglichen.','Not synced yet.')}</div>`;
 };
 
 // ---- Einrichtungshilfe ----
-const WZ={type:null,step:0,prov:null,draft:{}};
-const PROVIDERS={
-  nextcloud:{name:'Nextcloud',url:'https://cloud.example.de/remote.php/dav/files/BENUTZER/Motus/',
-    de:'Adresse: <code>https://DEINE-CLOUD/remote.php/dav/files/BENUTZERNAME/Motus/</code>. Lege den Ordner <b>Motus</b> vorher in Nextcloud an. Statt deines Passworts nimmst du am besten ein <b>App-Passwort</b> (Einstellungen → Sicherheit → Neues App-Passwort).',
-    en:'Address: <code>https://YOUR-CLOUD/remote.php/dav/files/USERNAME/Motus/</code>. Create the folder <b>Motus</b> in Nextcloud first. Instead of your password, ideally use an <b>app password</b> (Settings → Security → Create new app password).',
-    cde:'Nextcloud erlaubt Zugriffe von fremden Webseiten normalerweise nicht. Es gibt Nextcloud-Apps, die das für bestimmte Adressen freischalten (z. B. „WebAppPassword“). Dort trägst du die Adresse von Motus ein.',
-    cen:'Nextcloud usually does not allow access from other websites. There are Nextcloud apps that allow it for specific addresses (e.g. “WebAppPassword”). Enter Motus’ address there.'},
-  synology:{name:'Synology',url:'https://nas.example.de:5006/home/Motus/',
-    de:'Im Paket-Zentrum das Paket <b>WebDAV Server</b> installieren und HTTPS aktivieren (Standard-Port 5006). Adresse z. B.: <code>https://DEINE-NAS:5006/home/Motus/</code>. Den Ordner vorher anlegen.',
-    en:'Install the <b>WebDAV Server</b> package in Package Center and enable HTTPS (default port 5006). Address e.g.: <code>https://YOUR-NAS:5006/home/Motus/</code>. Create the folder first.',
-    cde:'Der WebDAV-Server der Synology erlaubt Zugriffe aus dem Browser meist nicht von sich aus. Möglich ist ein Reverse Proxy (Systemsteuerung → Anmeldeportal → Erweitert) mit eigenen Kopfzeilen für CORS. Das ist etwas Bastelei.',
-    cen:'Synology’s WebDAV server usually does not allow browser access by itself. A reverse proxy (Control Panel → Login Portal → Advanced) with custom CORS headers can work. It takes some tinkering.'},
-  qnap:{name:'QNAP',url:'https://nas.example.de:8081/Motus/',
-    de:'WebDAV in der Systemsteuerung unter Netzwerk- & Dateidienste aktivieren (HTTPS, z. B. Port 8081) und für den freigegebenen Ordner die WebDAV-Rechte setzen. Adresse z. B.: <code>https://DEINE-NAS:8081/FREIGABE/Motus/</code>.',
-    en:'Enable WebDAV in Control Panel under Network & File Services (HTTPS, e.g. port 8081) and set WebDAV permissions for the shared folder. Address e.g.: <code>https://YOUR-NAS:8081/SHARE/Motus/</code>.',
-    cde:'Auch hier blockiert der Browser oft ohne passende CORS-Kopfzeilen. Ein vorgeschalteter Reverse Proxy kann das lösen.',
-    cen:'Here too the browser often blocks access without suitable CORS headers. A reverse proxy in front can solve this.'},
-  other:{name:tr('Anderer','Other'),url:'https://server.example.de/webdav/Motus/',
-    de:'Gib die Adresse eines Ordners auf deinem WebDAV-Server an. Der Ordner sollte schon existieren.',
-    en:'Enter the address of a folder on your WebDAV server. The folder should already exist.',
-    cde:'Der Server muss Zugriffe von der Adresse von Motus erlauben (CORS) und über https erreichbar sein.',
-    cen:'The server must allow access from Motus’ address (CORS) and be reachable via https.'}
-};
+const WZ={p:null,step:0};
 const steps=(n,cur)=>`<div class="wz-steps">${Array.from({length:n},(_,i)=>`<i class="${i<=cur?'on':''}"></i>`).join('')}</div>`;
 const copyRow=v=>`<div class="copyrow"><code>${esc(v)}</code><button class="btn ghost sm" data-a="wz-copy" data-v="${esc(v)}">${tr('Kopieren','Copy')}</button></div>`;
-function wizard(){
-  const secure=location.protocol==='https:'||location.hostname==='localhost';
-  if(WZ.type==='dropbox'){
-    if(WZ.step===0)return modal(`${steps(3,0)}<h3>${tr('Mit Dropbox verbinden','Connect Dropbox')}</h3><div class="small" style="line-height:1.55">${tr('Motus bekommt nur Zugriff auf einen eigenen Ordner in deiner Dropbox (Apps → dein App-Name) und sieht sonst nichts. Dafür meldest du Motus einmalig bei Dropbox an. Das ist kostenlos und dauert etwa 3 Minuten. Am besten am Computer.','Motus only gets access to its own folder in your Dropbox (Apps → your app name) and sees nothing else. For that you register Motus with Dropbox once. It’s free and takes about 3 minutes. Best done on a computer.')}</div>${secure?'':`<div class="hint" style="margin-top:10px;color:var(--danger)">${tr('Das funktioniert nur, wenn Motus über https:// läuft.','This only works when Motus runs over https://.')}</div>`}<div class="actions"><button class="btn ghost" data-a="wz-goto" data-v="2">${tr('Ich habe schon einen App key','I already have an app key')}</button><span class="sp"></span><button class="btn" data-a="wz-goto" data-v="1" ${secure?'':'disabled'}>${tr('Los geht’s','Let’s go')}</button></div>`);
-    if(WZ.step===1)return modal(`${steps(3,1)}<h3>${tr('App bei Dropbox anlegen','Create app at Dropbox')}</h3><ol class="small">
-      <li>${tr('Öffne <b>dropbox.com/developers/apps</b> und melde dich an.','Open <b>dropbox.com/developers/apps</b> and sign in.')} <a href="https://www.dropbox.com/developers/apps/create" target="_blank" rel="noopener" style="color:var(--gold)">${tr('Direkt öffnen','Open directly')} ↗</a></li>
-      <li>${tr('<b>Create app</b> → <b>Scoped access</b> → <b>App folder</b>, Name z. B. „Motus-Sync“ → <b>Create app</b>.','<b>Create app</b> → <b>Scoped access</b> → <b>App folder</b>, name e.g. “Motus-Sync” → <b>Create app</b>.')}</li>
-      <li>${tr('Reiter <b>Permissions</b>: Haken bei <b>files.content.write</b> und <b>files.content.read</b>, dann unten <b>Submit</b>.','Tab <b>Permissions</b>: tick <b>files.content.write</b> and <b>files.content.read</b>, then <b>Submit</b> at the bottom.')}</li>
-      <li>${tr('Reiter <b>Settings</b> → <b>OAuth 2 → Redirect URIs</b>: diese Adresse einfügen und <b>Add</b>:','Tab <b>Settings</b> → <b>OAuth 2 → Redirect URIs</b>: paste this address and click <b>Add</b>:')}${copyRow(redirectUri())}</li>
-      <li>${tr('Ebenfalls unter Settings: den <b>App key</b> kopieren.','Also under Settings: copy the <b>App key</b>.')}</li></ol>
-      <div class="actions"><button class="btn ghost" data-a="wz-goto" data-v="0">${tr('Zurück','Back')}</button><span class="sp"></span><button class="btn" data-a="wz-goto" data-v="2">${tr('Weiter','Next')}</button></div>`);
-    return modal(`${steps(3,2)}<h3>${tr('App key eintragen','Enter app key')}</h3><form id="dbx-form"><label>App key</label><input name="key" required placeholder="a1b2c3d4e5f6g7h" autocomplete="off" value="${esc(SY.cfg.appKey||WZ.draft.key||'')}">
-      <div class="small" style="margin-top:8px">${tr('Danach leitet dich Motus zu Dropbox weiter. Dort bestätigst du den Zugriff und landest wieder hier.','Motus then takes you to Dropbox. Confirm access there and you’ll come right back.')}</div>
-      <div class="actions"><button type="button" class="btn ghost" data-a="wz-goto" data-v="1">${tr('Zurück','Back')}</button><span class="sp"></span><button class="btn gold" type="submit">${tr('Mit Dropbox verbinden','Connect Dropbox')}</button></div></form>`);
-  }
-  if(WZ.type==='webdav'){
-    if(WZ.step===0)return modal(`${steps(3,0)}<h3>${tr('WebDAV einrichten','Set up WebDAV')}</h3><div class="small">${tr('Wo liegt dein Speicher?','Where is your storage?')}</div><div class="tiles">${Object.entries(PROVIDERS).map(([k,p])=>`<button data-a="wz-prov" data-v="${k}"><b>${k==='other'?tr('Anderer','Other'):p.name}</b><span>${k==='nextcloud'?tr('Eigene oder gemietete Cloud','Own or hosted cloud'):k==='synology'?'DiskStation':k==='qnap'?'QNAP NAS':tr('Beliebiger WebDAV-Server','Any WebDAV server')}</span></button>`).join('')}</div>
-      <div class="hint" style="margin-top:12px">${tr('Wichtig vorab: Dein Server muss über <b>https://</b> erreichbar sein und Zugriffe aus dem Browser von dieser Adresse erlauben (CORS):','Important first: your server must be reachable via <b>https://</b> and allow browser access from this address (CORS):')}${copyRow(location.origin)}</div>
-      <div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button></div>`);
-    if(WZ.step===1){const p=PROVIDERS[WZ.prov]||PROVIDERS.other,d=WZ.draft;
-      return modal(`${steps(3,1)}<h3>${p.name==='Anderer'||p.name==='Other'?'WebDAV':p.name}</h3><div class="small" style="line-height:1.55">${tr(p.de,p.en)}</div>
-      <form id="dav-form"><label>${tr('Adresse des Ordners','Folder address')}</label><input name="url" required type="url" placeholder="${esc(p.url)}" value="${esc(d.url||(SY.cfg.type==='webdav'?SY.cfg.url:'')||'')}">
-      <label>${tr('Benutzer','Username')}</label><input name="user" autocomplete="username" value="${esc(d.user||(SY.cfg.type==='webdav'?SY.cfg.user:'')||'')}">
-      <label>${tr('Passwort','Password')}${WZ.prov==='nextcloud'?tr(' (App-Passwort)',' (app password)'):''}</label><input name="pass" type="password" autocomplete="current-password">
-      <div class="small" style="margin-top:8px">${tr('Zugangsdaten bleiben nur in diesem Browser. Am besten einen eigenen Benutzer anlegen, der nur diesen Ordner sehen darf.','Credentials stay only in this browser. Ideally create a separate user that can only see this folder.')}</div>
-      <details style="margin-top:10px"><summary class="small" style="cursor:pointer;color:var(--gold)">${tr('Hinweis zu CORS','About CORS')}</summary><div class="small" style="margin-top:6px;line-height:1.5">${tr(p.cde,p.cen)}</div></details>
-      <div class="actions"><button type="button" class="btn ghost" data-a="wz-goto" data-v="0">${tr('Zurück','Back')}</button><span class="sp"></span><button class="btn" type="submit">${tr('Verbindung testen','Test connection')}</button></div></form>`);}
-    const r=WZ.result||{};
-    const line=(ok,txt)=>`<div><span class="ic">${ok===true?'✅':ok===false?'❌':'⏳'}</span><span>${txt}</span></div>`;
-    return modal(`${steps(3,2)}<h3>${tr('Verbindungstest','Connection test')}</h3><div class="checks">
-      ${line(r.https,tr('Adresse nutzt https','Address uses https'))}
-      ${line(r.reach,tr('Server erreichbar und Browser-Zugriff erlaubt (CORS)','Server reachable and browser access allowed (CORS)'))}
-      ${line(r.auth,tr('Anmeldung erfolgreich','Sign-in successful'))}
-      ${line(r.read,r.exists?tr('Vorhandene Motus-Daten gefunden','Existing Motus data found'):tr('Ordner lesbar','Folder readable'))}
-      ${line(r.write,tr('Schreiben möglich','Writing possible'))}</div>
-      ${r.msg?`<div class="hint" style="margin-top:12px;${r.ok?'':'color:var(--danger)'}">${r.msg}</div>`:''}
-      <div class="actions"><button class="btn ghost" data-a="wz-goto" data-v="1">${tr('Zurück','Back')}</button><span class="sp"></span>${r.ok?`<button class="btn gold" data-a="wz-dav-connect">${tr('Verbinden','Connect')}</button>`:r.running?'':`<button class="btn" data-a="wz-dav-test">${tr('Nochmal testen','Test again')}</button>`}</div>`);
-  }
+const ext=(url,label)=>`<a href="${url}" target="_blank" rel="noopener" style="color:var(--gold)">${label} ↗</a>`;
+function devGuide(p){
+  const R=copyRow(redirectUri()),O=copyRow(location.origin);
+  if(p==='dropbox')return `<ol class="small">
+    <li>${tr('Öffne','Open')} ${ext('https://www.dropbox.com/developers/apps/create','dropbox.com/developers/apps')}.</li>
+    <li>${tr('<b>Scoped access</b> → <b>App folder</b>, Name z. B. „Motus-Sync“ → <b>Create app</b>.','<b>Scoped access</b> → <b>App folder</b>, name e.g. “Motus-Sync” → <b>Create app</b>.')}</li>
+    <li>${tr('Reiter <b>Permissions</b>: <b>files.content.write</b> und <b>files.content.read</b> anhaken → <b>Submit</b>.','Tab <b>Permissions</b>: tick <b>files.content.write</b> and <b>files.content.read</b> → <b>Submit</b>.')}</li>
+    <li>${tr('Reiter <b>Settings</b> → <b>Redirect URIs</b>: einfügen und <b>Add</b>:','Tab <b>Settings</b> → <b>Redirect URIs</b>: paste and <b>Add</b>:')}${R}</li>
+    <li>${tr('Den <b>App key</b> kopieren.','Copy the <b>App key</b>.')}</li></ol>`;
+  if(p==='google')return `<ol class="small">
+    <li>${tr('Öffne die','Open the')} ${ext('https://console.cloud.google.com/projectcreate','Google Cloud Console')} ${tr('und lege ein Projekt an, z. B. „Motus“.','and create a project, e.g. “Motus”.')}</li>
+    <li>${tr('Unter <b>APIs & Dienste → Bibliothek</b> die <b>Google Drive API</b> aktivieren.','Under <b>APIs & Services → Library</b>, enable the <b>Google Drive API</b>.')}</li>
+    <li>${tr('<b>OAuth-Zustimmungsbildschirm</b> (Google Auth Platform): Typ <b>Extern</b>, App-Name „Motus“, deine E-Mail. Unter <b>Datenzugriff</b> den Bereich <b>…/auth/drive.appdata</b> hinzufügen. Danach die App unter <b>Zielgruppe</b> veröffentlichen, oder dich selbst als Testnutzer eintragen.','<b>OAuth consent screen</b> (Google Auth Platform): type <b>External</b>, app name “Motus”, your email. Under <b>Data access</b>, add the scope <b>…/auth/drive.appdata</b>. Then publish the app under <b>Audience</b>, or add yourself as a test user.')}</li>
+    <li>${tr('<b>Anmeldedaten → OAuth-Client-ID erstellen</b> → Typ <b>Webanwendung</b>.','<b>Credentials → Create OAuth client ID</b> → type <b>Web application</b>.')}<br>${tr('Autorisierte JavaScript-Quellen:','Authorized JavaScript origins:')}${O}${tr('Autorisierte Weiterleitungs-URIs:','Authorized redirect URIs:')}${R}</li>
+    <li>${tr('Die <b>Client-ID</b> kopieren (endet auf .apps.googleusercontent.com).','Copy the <b>Client ID</b> (ends in .apps.googleusercontent.com).')}</li></ol>`;
+  if(p==='onedrive')return `<ol class="small">
+    <li>${tr('Öffne','Open')} ${ext('https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade','Microsoft Entra → App-Registrierungen')} ${tr('(mit deinem Microsoft-Konto anmelden).','(sign in with your Microsoft account).')}</li>
+    <li>${tr('<b>Neue Registrierung</b>, Name „Motus“. Kontotypen: <b>Konten in einem beliebigen Organisationsverzeichnis und persönliche Microsoft-Konten</b>.','<b>New registration</b>, name “Motus”. Account types: <b>Accounts in any organizational directory and personal Microsoft accounts</b>.')}</li>
+    <li>${tr('Umleitungs-URI: Plattform <b>Single-Page-Anwendung (SPA)</b>, Adresse:','Redirect URI: platform <b>Single-page application (SPA)</b>, address:')}${R}</li>
+    <li>${tr('<b>Registrieren</b>, dann die <b>Anwendungs-ID (Client-ID)</b> kopieren.','<b>Register</b>, then copy the <b>Application (client) ID</b>.')}</li></ol>`;
+  if(p==='pcloud')return `<ol class="small">
+    <li>${tr('Öffne','Open')} ${ext('https://docs.pcloud.com/my_apps/','docs.pcloud.com → My applications')} ${tr('und melde dich mit deinem pCloud-Konto an.','and sign in with your pCloud account.')}</li>
+    <li>${tr('<b>New app</b>, Name „Motus“, Zugriff: <b>Private app folder</b> mit Lese- und Schreibrechten.','<b>New app</b>, name “Motus”, access: <b>Private app folder</b> with read and write.')}</li>
+    <li>${tr('Bei <b>Redirect URIs</b> diese Adresse eintragen:','Under <b>Redirect URIs</b>, add this address:')}${R}</li>
+    <li>${tr('Die <b>Client ID</b> kopieren.','Copy the <b>Client ID</b>.')}</li></ol>`;
+  return '';
 }
-async function davTest(){
-  const c=Object.assign({type:'webdav'},WZ.draft);
-  const r={running:true};WZ.result=r;wizard();
-  r.https=/^https:/i.test(c.url)||location.protocol==='http:';
-  if(!r.https){r.running=false;r.msg=tr('Motus läuft über https. Der Browser blockiert deshalb Verbindungen zu http-Adressen. Nutze die https-Adresse deines Servers.','Motus runs on https, so the browser blocks connections to http addresses. Use your server’s https address.');wizard();return;}
-  try{
-    let data;
-    try{data=await WEBDAV.get(c);r.reach=true;r.auth=true;r.read=true;r.exists=!!data;}
-    catch(e){const m=String(e.message||e);r.reach=!/Failed to fetch|NetworkError|Load failed|TypeError/i.test(m);if(!r.reach)throw new Error(tr('Keine Antwort. Häufigste Ursache: Der Server erlaubt keine Zugriffe aus dem Browser (CORS), oder die Adresse ist von hier aus nicht erreichbar (z. B. nur im Heimnetz).','No response. Most common cause: the server doesn’t allow browser access (CORS), or the address isn’t reachable from here (e.g. home network only).'));
-      r.auth=!/\((401|403)/.test(m);if(!r.auth)throw new Error(tr('Benutzer oder Passwort stimmen nicht, oder der Benutzer darf nicht auf den Ordner zugreifen.','Username or password is wrong, or the user may not access the folder.'));
-      throw new Error(tr('Lesen fehlgeschlagen: ','Reading failed: ')+m);}
-    if(!data){
-      const testUrl=davDir(c)+'.motus-test.txt';
-      const w=await fetch(testUrl,{method:'PUT',headers:Object.assign({'Content-Type':'text/plain'},davHeaders(c)),body:'motus'}).catch(()=>null);
-      r.write=!!(w&&w.ok);
-      if(w&&w.ok)fetch(testUrl,{method:'DELETE',headers:davHeaders(c)}).catch(()=>{});
-      if(!r.write)throw new Error(w&&w.status===409?tr('Der Ordner existiert nicht. Lege ihn zuerst auf dem Server an.','The folder doesn’t exist. Create it on the server first.'):w&&(w.status===401||w.status===403)?tr('Keine Schreibrechte für diesen Ordner.','No write permission for this folder.'):tr('Schreiben fehlgeschlagen. Prüfe Rechte und CORS (die Methoden PUT und DELETE müssen erlaubt sein).','Writing failed. Check permissions and CORS (PUT and DELETE methods must be allowed).'));
-    }else r.write=true;
-    r.ok=true;r.msg=r.exists?tr('Alles bereit. Auf dem Server liegen schon Motus-Daten, du kannst gleich wählen, welche gelten sollen.','All set. There is already Motus data on the server, you can choose which data to keep next.'):tr('Alles bereit. Beim Verbinden wird motus.json in diesem Ordner angelegt.','All set. Connecting will create motus.json in this folder.');
-  }catch(e){r.ok=false;r.msg=esc(String(e.message||e));}
-  r.running=false;wizard();
+function wizardOpen(p){WZ.p=p;WZ.step=clientId(p)?0:1;wizard();}
+function wizard(){
+  const p=WZ.p,name=provName(p);
+  const secure=location.protocol==='https:'||location.hostname==='localhost';
+  const where={dropbox:tr('in einen eigenen Ordner unter „Apps“ in deiner Dropbox','into its own folder under “Apps” in your Dropbox'),google:tr('in einen versteckten App-Ordner deines Google Drive','into a hidden app folder in your Google Drive'),onedrive:tr('in einen eigenen Ordner unter „Apps“ in deinem OneDrive','into its own folder under “Apps” in your OneDrive'),pcloud:tr('in einen eigenen App-Ordner in deiner pCloud','into its own app folder in your pCloud')}[p];
+  if(WZ.step===0)return modal(`<h3>${tr('Mit','Connect')} ${name}${tr(' verbinden','')}</h3><div class="small" style="line-height:1.55">${tr(`Motus speichert eine einzige Datei <b>motus.json</b> ${where}. Auf deine anderen Dateien hat Motus keinen Zugriff. Du wirst gleich zu ${name} weitergeleitet, meldest dich an, bestätigst und landest wieder hier.`,`Motus saves a single file <b>motus.json</b> ${where}. Motus has no access to your other files. You’ll be taken to ${name}, sign in, confirm and land back here.`)}${p==='google'?'<br><br>'+tr('Hinweis: Google erlaubt Web-Apps nur kurze Anmeldungen. Motus meldet sich deshalb ab und zu im Hintergrund neu an.','Note: Google only allows short sign-ins for web apps, so Motus re-signs in in the background now and then.'):''}${p==='onedrive'?'<br><br>'+tr('Hinweis: Microsoft erneuert die Anmeldung einmal am Tag. Meist merkst du davon nur ein kurzes Neuladen.','Note: Microsoft renews the sign-in once a day. Usually you just notice a quick reload.'):''}</div>${secure?'':`<div class="hint" style="margin-top:10px;color:var(--danger)">${tr('Das funktioniert nur, wenn Motus über https:// läuft.','This only works when Motus runs over https://.')}</div>`}
+    <div class="actions">${CLOUD_IDS[p]?'':`<button class="btn ghost" data-a="wz-goto" data-v="1">${tr('Client-ID ändern','Change client ID')}</button>`}<span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn gold" data-a="wz-auth" ${secure?'':'disabled'}>${tr('Weiter zu','Continue to')} ${name}</button></div>`);
+  return modal(`${steps(2,0)}<h3>${tr('Einmalige Einrichtung','One-time setup')}: ${name}</h3><div class="small" style="line-height:1.55">${tr(`Motus muss einmalig bei ${name} angemeldet werden. Das ist kostenlos und dauert ein paar Minuten, am besten am Computer. Danach kannst du dich auf allen Geräten einfach mit ${name} anmelden.`,`Motus needs to be registered with ${name} once. It’s free and takes a few minutes, best done on a computer. After that you can simply sign in with ${name} on all devices.`)}</div>
+    ${devGuide(p)}
+    <form id="cid-form"><label>${p==='dropbox'?'App key':'Client ID'}</label><input name="cid" required autocomplete="off" value="${esc(clientId(p))}">
+    <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn gold" type="submit">${tr('Speichern & anmelden','Save & sign in')}</button></div></form>`);
 }
 Object.assign(EXTRA_ACTIONS,{
-  'wz-start'(el){WZ.type=el.dataset.v;WZ.step=0;WZ.prov=null;WZ.draft={};WZ.result=null;wizard();},
+  'wz-start'(el){wizardOpen(el.dataset.v);},
   'wz-goto'(el){WZ.step=+el.dataset.v;wizard();},
-  'wz-prov'(el){WZ.prov=el.dataset.v;WZ.step=1;wizard();},
+  'wz-auth'(){startAuth(WZ.p,false);},
   async 'wz-copy'(el){try{await navigator.clipboard.writeText(el.dataset.v);toast(tr('Kopiert','Copied'));}catch(e){toast(tr('Bitte von Hand kopieren','Please copy manually'));}},
-  'wz-dav-test'(){davTest();},
-  'wz-dav-connect'(){SY.cfg=Object.assign({type:'webdav'},WZ.draft);SY.err=null;saveCfg();closeModal();toast(tr('WebDAV verbunden ✓','WebDAV connected ✓'));syncPull();render();},
-  'sync-now'(){syncPull();},
+  'sync-now'(){SY.err=null;syncPull();},
+  'sync-reauth'(){startAuth(SY.cfg.type,false);},
   'sync-off'(){modal(`<h3>${tr('Synchronisierung trennen?','Disconnect sync?')}</h3><div class="small">${tr(`Deine Daten bleiben auf diesem Gerät und in der Datei bei ${provName()} erhalten. Es wird nur nicht mehr abgeglichen.`,`Your data stays on this device and in the file at ${provName()}. It just won’t be synced anymore.`)}</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn danger" data-a="sync-off-ok">${tr('Trennen','Disconnect')}</button></div>`);},
-  'sync-off-ok'(){SY.cfg={type:'none'};SY.err=null;SY.last=null;saveCfg();closeModal();showSync();render();},
+  'sync-off-ok'(){SY.cfg={type:'none'};SY.err=null;SY.last=null;SY.needsAuth=false;saveCfg();closeModal();showSync();render();},
   'sync-keep-remote'(){const r=SY.pendingRemote;SY.pendingRemote=null;if(r){S.running=null;S=normalize(r.state);localSave();setStamp(r.savedAt||Date.now());}SY.cfg.synced=true;saveCfg();closeModal();SY.last=Date.now();showSync();applyTheme();render();},
   'sync-keep-local'(){SY.pendingRemote=null;SY.cfg.synced=true;saveCfg();setStamp(Date.now());closeModal();syncPush().then(render);}
 });
 document.addEventListener('submit',e=>{
   const f=e.target;
-  if(f.id==='dbx-form'){e.preventDefault();e.stopImmediatePropagation();const k=new FormData(f).get('key').trim();if(k){WZ.draft.key=k;dbxStartAuth(k);}}
-  else if(f.id==='dav-form'){e.preventDefault();e.stopImmediatePropagation();const fd=new FormData(f);WZ.draft={url:fd.get('url').trim(),user:fd.get('user').trim(),pass:fd.get('pass')||(SY.cfg.type==='webdav'?SY.cfg.pass:'')||''};WZ.step=2;davTest();}
+  if(f.id==='cid-form'){e.preventDefault();e.stopImmediatePropagation();const v=new FormData(f).get('cid').trim();if(v){setClientId(WZ.p,v);startAuth(WZ.p,false);}}
 },true);
-document.addEventListener('click',e=>{const a=e.target.closest('a[data-a]');if(a)e.preventDefault();},true);
+// Hinweis bei abgelaufener Anmeldung, einmal pro Sitzung
+let reauthHinted=false;
+setInterval(()=>{if(SY.needsAuth&&!reauthHinted&&!document.hidden&&!$('#modal-root').innerHTML){reauthHinted=true;toast(`${tr(`${provName()}: Anmeldung abgelaufen`,`${provName()}: sign-in expired`)} · <button data-a="sync-reauth" style="text-decoration:underline;color:inherit;font-weight:600">${tr('Neu anmelden','Sign in')}</button>`,8000);}},5000);
 
 initStore();
 syncInit();

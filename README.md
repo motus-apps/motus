@@ -4,7 +4,7 @@ Eine kleine Web-App, um langfristige Ziele mit dem Alltag zu verbinden: Aufgaben
 
 - Läuft komplett im Browser, auch offline, und lässt sich auf Handy und Computer als App installieren.
 - Keine Anmeldung, kein Server, keine Datenbank, keine externen Dienste.
-- Alle Daten bleiben im Browser des jeweiligen Geräts. Optional kann ein eigener Speicher (Dropbox oder WebDAV) zum Abgleich zwischen Geräten verbunden werden.
+- Alle Daten bleiben im Browser des jeweiligen Geräts. Optional kann ein eigener Cloud-Speicher (Dropbox, Google Drive, OneDrive oder pCloud) zum Abgleich zwischen Geräten verbunden werden. Motus nutzt dort nur einen eigenen App-Ordner.
 
 ## Dateien
 
