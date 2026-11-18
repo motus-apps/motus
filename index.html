@@ -424,6 +424,15 @@ button.brand:hover .logo{transform:scale(1.05)}
 .goalhelp{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:6px}
 .goalhelp summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--gold)}
 .toast button{background:none;border:0;cursor:pointer;font-size:inherit}
+#fab{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));width:54px;height:54px;border-radius:50%;background:var(--gold);color:#14200f;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.35);z-index:6;transition:transform .15s}
+#fab:hover{transform:scale(1.06)}#fab:active{transform:scale(.94)}#fab[hidden]{display:none}
+@media(min-width:820px){#fab{bottom:28px;right:28px}}
+.qitem .tt,.tcard .title{cursor:pointer}
+.seg .segdate{background:transparent;border:0;color:var(--muted);font:inherit;font-size:13px;padding:5px 8px;border-radius:7px;width:auto;min-width:0;max-width:150px}
+.seg .segdate.on{background:var(--moss);color:#fff}
+#qc-form textarea[name=t]{min-height:84px;font-size:15px}
+#view{padding-bottom:70px}
+.qchelp{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}.qchelp summary{cursor:pointer;font-weight:600;font-size:14px}.qchelp .small{margin-top:8px;line-height:1.55}.qchelp ol{padding-left:18px;margin:0 0 8px}.qchelp li{margin:4px 0}
 </style>
 </head>
 <body>
@@ -690,6 +699,7 @@ function render(){
   const V={heute:viewToday,woche:viewWeek,fokus:viewFocus,ziele:viewGoals,rueckblick:viewReview,einstellungen:viewSettings,hilfe:viewHelp};
   $('#view').innerHTML=V[tab]();
   updateAvatar();
+  let fab=$('#fab');if(!fab){fab=document.createElement('button');fab.id='fab';fab.dataset.a='qc-open';fab.innerHTML='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';document.body.appendChild(fab);}fab.title=tr('Schnell erfassen (N)','Quick capture (N)');fab.hidden=tab==='einstellungen'||tab==='hilfe';
   postRender();
   tick();
 }
@@ -718,7 +728,7 @@ function qItem(t,i,opts={}){
   if(t.notes)meta.push('<span>📝</span>');
   return `<div class="qitem ${i===0&&opts.first?'first':''}" style="border-left-color:${g.color}" draggable="true" data-drag="${t.id}">
     <button class="chk" data-a="done" data-t="${t.id}" title="${tr('Erledigt','Done')}"></button>
-    <div class="tt"><div class="t1">${esc(t.title)}</div><div class="meta">${meta.join('')}</div></div>
+    <div class="tt" data-a="edit-task" data-t="${t.id}"><div class="t1">${esc(t.title)}</div><div class="meta">${meta.join('')}</div></div>
     <div class="ord"><button data-a="up" data-t="${t.id}" data-list="${opts.list}" title="${tr('Nach oben','Move up')}">${I.up()}</button><button data-a="down" data-t="${t.id}" data-list="${opts.list}" title="${tr('Nach unten','Move down')}">${I.down()}</button></div>
     <button class="icon ${run?'on':'play'}" data-a="${run?'stop':'play'}" data-t="${t.id}">${run?I.pause():I.play()}</button></div>`;
 }
@@ -773,8 +783,8 @@ function weekCard(t,k){
   if(t.done)actions=`<span class="chk done">${I.check(11)}</span><span class="sp"></span><button class="icon xs" data-a="reopen" data-t="${t.id}" title="${tr('Wieder öffnen','Reopen')}">${I.undo()}</button>`;
   else if(!t.date)actions=`<button class="chk" data-a="done" data-t="${t.id}"></button><span class="sp"></span><button class="icon xs" data-a="to-today" data-t="${t.id}" title="${tr('Heute einplanen','Plan for today')}">${I.today()}</button><button class="icon xs" data-a="del-task" data-t="${t.id}" title="${tr('Löschen','Delete')}">${I.x()}</button>`;
   else actions=`<button class="chk" data-a="done" data-t="${t.id}"></button><span class="sp"></span><button class="icon xs" data-a="move" data-t="${t.id}" data-d="-1" title="${tr('Einen Tag früher','One day earlier')}">${I.chev(-1)}</button><button class="icon xs" data-a="move" data-t="${t.id}" data-d="1" title="${tr('Einen Tag später','One day later')}">${I.chev(1)}</button><button class="icon xs" data-a="to-ablage" data-t="${t.id}" title="${tr('In die Ablage','To backlog')}">${I.box()}</button><button class="icon xs" data-a="del-task" data-t="${t.id}" title="${tr('Löschen','Delete')}">${I.x()}</button>`;
-  return `<div class="tcard ${t.done?'done':''} ${run?'running':''}" style="border-left-color:${g.color}" ${t.done?'':`draggable="true" data-drag="${t.id}"`}><div class="title">${esc(t.title)}</div>
-    <div class="foot">${chip(g)}<span class="sp"></span>${s>=60||run?`<span class="tm" ${run?`data-live-task="${t.id}"`:''}>${fmtShort(s)}</span>`:''}</div>
+  return `<div class="tcard ${t.done?'done':''} ${run?'running':''}" style="border-left-color:${g.color}" ${t.done?'':`draggable="true" data-drag="${t.id}"`}><div class="title" data-a="edit-task" data-t="${t.id}">${esc(t.title)}</div>
+    <div class="foot">${chip(g)}${t.notes?'<span class="small">📝</span>':''}<span class="sp"></span>${s>=60||run?`<span class="tm" ${run?`data-live-task="${t.id}"`:''}>${fmtShort(s)}</span>`:''}</div>
     <div class="foot">${actions}</div></div>`;
 }
 
@@ -913,6 +923,7 @@ function viewReview(){
 // ================= Einstellungen =================
 let SYNC_SETTINGS=()=>'';
 function seg(k,opts,cur){return `<div class="seg">${opts.map(([v,l])=>`<button data-a="set" data-k="${k}" data-v="${v}" class="${String(cur)===String(v)?'on':''}">${l}</button>`).join('')}</div>`;}
+const copyBox=v=>`<div class="copyrow"><code>${esc(v)}</code><button class="btn ghost sm" data-a="copy-txt" data-v="${esc(v)}">${tr('Kopieren','Copy')}</button></div>`;
 function viewSettings(){
   const p=P(),pr=S.profile||{};
   const hours=[0,1,2,3,4,5,6].map(h=>`<option value="${h}" ${+p.dayStart===h?'selected':''}>${h===0?tr('Mitternacht (Standard)','Midnight (default)'):pad(h)+':00 '+tr('Uhr','')}</option>`).join('');
@@ -933,6 +944,17 @@ function viewSettings(){
     <div class="row2"><div class="l"><b>${tr('Erinnerung','Reminder')}</b><span>${tr('Ein freundlicher Hinweis unter „Heute“, wenn der Rückblick ansteht. Kein Druck, du kannst ihn wegklicken.','A friendly note under “Today” when the review is due. No pressure, you can dismiss it.')}</span></div>${seg('review',[['true',tr('An','On')],['false',tr('Aus','Off')]],String(p.review))}</div>
     ${p.review?`<div class="row2"><div class="l"><b>${tr('Am','On')}</b></div><select data-pref="reviewDay">${wdays}</select></div>`:''}</div>`;
   h+=`<div class="card set"><h3>${tr('Synchronisierung','Sync')}</h3>${SYNC_SETTINGS()}</div>`;
+  if(IS_PWA){const base=location.origin+location.pathname,bm="javascript:(()=>{const s=(String(getSelection()).trim()||document.title).slice(0,3000);window.open('"+base+"?add='+encodeURIComponent(s),'_blank')})()";
+  h+=`<div class="card set"><h3>${tr('Schnell erfassen','Quick capture')}</h3><div class="small" style="line-height:1.55">${tr('In Motus: der goldene <b>+</b>-Knopf oder die Taste <b>N</b>. Aufgaben aus anderen Apps holst du so herein:','In Motus: the golden <b>+</b> button or the <b>N</b> key. To bring in tasks from other apps:')}</div>
+  <details class="qchelp"><summary>Android &amp; Windows</summary><div class="small">${tr('Motus als App installieren (Chrome bzw. Edge: „App installieren“). Danach steht Motus im <b>Teilen</b>-Menü: Text in Outlook, Teams oder einer anderen App markieren, Teilen, Motus. Unter Android hält ein langer Druck aufs App-Symbol außerdem „Schnell erfassen“ bereit.','Install Motus as an app (Chrome or Edge: “Install app”). Motus then appears in the <b>Share</b> menu: select text in Outlook, Teams or another app, Share, Motus. On Android, long-pressing the app icon also offers “Quick capture”.')}</div></details>
+  <details class="qchelp"><summary>iPhone &amp; Mac (${tr('Kurzbefehl','Shortcut')})</summary><div class="small"><ol>
+  <li>${tr('App <b>Kurzbefehle</b> öffnen, <b>+</b>, Name „Zu Motus“.','Open the <b>Shortcuts</b> app, <b>+</b>, name it “To Motus”.')}</li>
+  <li>${tr('Über das <b>ⓘ</b>-Symbol <b>Im Share-Sheet anzeigen</b> einschalten.','Via the <b>ⓘ</b> icon, turn on <b>Show in Share Sheet</b>.')}</li>
+  <li>${tr('Aktion <b>URL codieren</b> hinzufügen, Eingabe: <i>Kurzbefehleingabe</i>.','Add the action <b>URL Encode</b>, input: <i>Shortcut Input</i>.')}</li>
+  <li>${tr('Aktion <b>URL</b> hinzufügen, diese Adresse eintippen und direkt dahinter die Variable <i>URL-codierter Text</i> setzen:','Add the action <b>URL</b>, type this address and put the variable <i>URL Encoded Text</i> right after it:')}${copyBox(base+'?add=')}</li>
+  <li>${tr('Aktion <b>URLs öffnen</b> hinzufügen. Fertig.','Add the action <b>Open URLs</b>. Done.')}</li></ol>
+  ${tr('Jetzt bei markiertem Text oder einer Mail auf <b>Teilen</b>, dann „Zu Motus“. Hinweis iPhone: Der Kurzbefehl öffnet Motus in Safari. Ist dort dieselbe Synchronisierung verbunden wie in der App auf dem Home-Bildschirm, kommt die Aufgabe überall an.','Now with selected text or an email, tap <b>Share</b>, then “To Motus”. iPhone note: the shortcut opens Motus in Safari. If Safari has the same sync connected as the home-screen app, the task arrives everywhere.')}</div></details>
+  <details class="qchelp"><summary>${tr('Browser (Lesezeichen)','Browser (bookmark)')}</summary><div class="small">${tr('Für Outlook Web, Teams im Browser und andere Seiten: Ziehe diesen Knopf in deine Lesezeichenleiste. Text markieren, Lesezeichen anklicken, Motus öffnet sich mit der Aufgabe. Ohne Markierung wird der Seitentitel übernommen.','For Outlook on the web, Teams in the browser and other sites: drag this button to your bookmarks bar. Select text, click the bookmark, Motus opens with the task. Without a selection, the page title is used.')}<div style="margin:10px 0 2px"><a class="btn gold sm" href="${esc(bm)}" onclick="event.preventDefault();toast(tr('In die Lesezeichenleiste ziehen','Drag it to your bookmarks bar'))">+ ${tr('Zu Motus','To Motus')}</a></div></div></details></div>`;}
   h+=`<div class="card set"><h3>${tr('Daten','Data')}</h3>
     <div class="row2"><div class="l"><b>${tr('Sichern','Back up')}</b><span>${IN_CLAUDE()?tr('Kopiert alle Daten in die Zwischenablage, z. B. zum Einfügen in eine Notiz.','Copies all data to the clipboard, e.g. to paste into a note.'):tr('Speichert alle Daten als Datei.','Saves all data as a file.')}</span></div><button class="btn ghost sm" data-a="export">${IN_CLAUDE()?tr('Kopieren','Copy'):tr('Datei speichern','Save file')}</button></div>
     <div class="row2"><div class="l"><b>${tr('Sicherung laden','Restore backup')}</b><span>${tr('Ersetzt die aktuellen Daten durch eine Sicherungsdatei.','Replaces current data with a backup file.')}</span></div><label class="btn ghost sm" style="cursor:pointer">${tr('Datei wählen','Choose file')}<input type="file" id="import" accept="application/json,.json,.txt" style="display:none"></label></div>
@@ -985,6 +1007,7 @@ function viewHelp(){
       <li>${L('Nicht erledigte Aufgaben wandern auf den nächsten Tag („übernommen“). Warst du 3 Tage oder länger weg, bietet Motus dir einen <b>Neustart</b> an, statt dich mit einem Berg zu begrüßen.','Unfinished tasks move to the next day (“carried over”). If you were away for 3 days or more, Motus offers a <b>fresh start</b> instead of greeting you with a pile.')}</li>
       <li>${L('<b>Aufgaben ohne Ziel</b> stehen eingeklappt unten, damit sie nicht ablenken.','<b>Tasks without a goal</b> are collapsed at the bottom so they don’t distract you.')}</li></ul></details>
     <details><summary>${L('Woche & Ablage','Week & backlog')}</summary><p>${L('Eine Spalte pro Tag, ganz links die <b>Ablage</b> für alles ohne festen Tag. Mit ‹ › verschiebst du um einen Tag, mit dem Kisten-Symbol in die Ablage, mit dem Kalender-Symbol aus der Ablage auf heute. Am Computer ziehst du Karten einfach dorthin, wo sie hin sollen.','One column per day, with the <b>backlog</b> on the far left for everything without a fixed day. ‹ › moves a task by one day, the box icon moves it to the backlog, the calendar icon moves it from the backlog to today. On a computer, just drag cards where you want them.')}</p></details>
+    <details><summary>${L('Schnell erfassen & bearbeiten','Quick capture & editing')}</summary><p>${L('Der goldene <b>+</b>-Knopf (am Computer die Taste <b>N</b>) öffnet ein Feld für neue Aufgaben. Ohne weitere Angabe landen sie in der <b>Ablage</b>, sortiert wird später. Eine Zeile pro Aufgabe, so kannst du ganze Listen einfügen. Schreibst du „heute“, „morgen“ oder einen Wochentag wie „fr“ ans Zeilenende, wird die Aufgabe direkt eingeplant. „#Sport“ ordnet sie dem Ziel Sport zu. Aus anderen Apps kommst du über das Teilen-Menü, einen Kurzbefehl oder ein Lesezeichen herein, siehe Einstellungen → Schnell erfassen. <b>Bearbeiten:</b> Tippe auf den Titel einer Aufgabe. Dann kannst du Text, Tag, Ziel und Notizen ändern oder sie löschen.','The golden <b>+</b> button (on a computer the <b>N</b> key) opens a field for new tasks. Without further info they go to the <b>backlog</b>, to be sorted later. One line per task, so you can paste whole lists. Put “today”, “tomorrow” or a weekday like “fri” at the end of a line to plan it right away. “#Sport” assigns it to the goal Sport. From other apps use the share menu, a shortcut or a bookmark, see Settings → Quick capture. <b>Editing:</b> tap a task’s title to change its text, day, goal and notes, or to delete it.')}</p></details>
     <details><summary>${L('Fokus','Focus')}</summary><p>${L('Nur eine Aufgabe, mit Timer und Notizen. <b>✓ Erledigt</b> hakt sie ab und startet direkt die nächste. <b>Später</b> schiebt sie ans Ende.','Just one task, with timer and notes. <b>✓ Done</b> checks it off and starts the next one right away. <b>Later</b> moves it to the end.')}</p></details>
 
     <details><summary>${L('Ziele & Weg zur Sonne','Goals & path to the sun')}</summary><p>${L('Jedes Ziel hat einen <b>Weg zur Sonne</b>. Jede Stunde bringt dich ein Stück weiter zur nächsten <b>Etappe</b> (5, 10, 25, 50, 100 Stunden …). Erreichst du eine, feiert Motus kurz mit dir. Mit <b>+30 min</b>, <b>+60 min</b> oder <b>Andere…</b> trägst du Zeit ohne Timer nach, auch für vergangene Tage. Archivieren beendet ein Ziel, die Stunden bleiben erhalten.','Each goal has a <b>path to the sun</b>. Every hour moves you closer to the next <b>milestone</b> (5, 10, 25, 50, 100 hours …). When you reach one, Motus briefly celebrates with you. Use <b>+30 min</b>, <b>+60 min</b> or <b>Other…</b> to log time without the timer, also for past days. Archiving ends a goal, the hours are kept.')}</p></details>
@@ -1157,6 +1180,111 @@ document.addEventListener('dragend',()=>{dragId=null;document.querySelectorAll('
 function dropTarget(e){const c=e.target.closest&&e.target.closest('[data-drop]');if(!c)return null;const items=[...c.querySelectorAll('[data-drag]')].filter(x=>x.dataset.drag!==dragId);let before=null;for(const it of items){const r=it.getBoundingClientRect();if(e.clientY<r.top+r.height/2){before=it;break;}}return {c,before};}
 document.addEventListener('dragover',e=>{if(!dragId)return;const d=dropTarget(e);if(!d)return;e.preventDefault();document.querySelectorAll('.dropline').forEach(x=>x.remove());const l=document.createElement('div');l.className='dropline';if(d.before)d.before.before(l);else{const items=d.c.querySelectorAll('[data-drag]');const last=items[items.length-1];if(last)last.after(l);else d.c.appendChild(l);}});
 document.addEventListener('drop',e=>{if(!dragId)return;const d=dropTarget(e);if(!d)return;e.preventDefault();const id=dragId;dragId=null;placeTask(id,d.c.dataset.drop,d.before?d.before.dataset.drag:null);});
+
+// ================= Schnell erfassen & Aufgabe bearbeiten =================
+const WD_NAMES=[['sonntag','sunday','so','sun'],['montag','monday','mo','mon'],['dienstag','tuesday','di','tue'],['mittwoch','wednesday','mi','wed'],['donnerstag','thursday','do','thu'],['freitag','friday','fr','fri'],['samstag','saturday','sa','sat']];
+function dayWord(w){
+  w=w.toLowerCase().replace(/[.,;!]+$/,'');const tk=todayKey();
+  if(w==='heute'||w==='today')return tk;
+  if(w==='morgen'||w==='tomorrow')return shiftKey(tk,1);
+  if(w==='übermorgen'||w==='uebermorgen')return shiftKey(tk,2);
+  if(w==='ablage'||w==='backlog'||w==='später'||w==='later')return null;
+  const i=WD_NAMES.findIndex(n=>n.includes(w));
+  if(i<0)return undefined;
+  const now=parseKey(tk).getDay();return shiftKey(tk,(i-now+7)%7);
+}
+function goalWord(w){const n=w.toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');if(!n)return null;const gs=activeGoals();const key=g=>g.name.toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');return gs.find(g=>key(g)===n)||gs.find(g=>key(g).startsWith(n))||null;}
+// Zeile zerlegen: Aufzählungszeichen weg, #Ziel irgendwo, Tag nur am Zeilenende
+function parseLine(line){
+  let s=line.replace(/^\s*(?:[-*•–]\s*)?(?:\[[ xX]?\]\s*)?/,'').trim();let day,g;
+  s=s.replace(/(^|\s)#([\p{L}\p{N}_-]+)/gu,(m,sp,w)=>{const x=goalWord(w);if(x&&!g){g=x.id;return sp;}return m;}).replace(/\s{2,}/g,' ').trim();
+  for(let k=0;k<2;k++){const m=s.match(/\s(\S+)$/);if(!m)break;const d=dayWord(m[1]);if(d===undefined||day!==undefined)break;day=d;s=s.slice(0,m.index).trim();}
+  return {title:s.slice(0,140),day,g};
+}
+const QC={day:null,g:'_none',notes:''};
+function quickAdd(text,notes){QC.day=null;QC.g='_none';QC.notes=notes||'';renderQC(text||'');}
+function readQC(){const f=$('#qc-form');if(!f)return '';const n=f.querySelector('[name=n]');if(n)QC.notes=n.value;return f.querySelector('[name=t]').value;}
+function dayLabel(k){if(k===null)return tr('Ablage','Backlog');const tk=todayKey();if(k===tk)return tr('heute','today');if(k===shiftKey(tk,1))return tr('morgen','tomorrow');return parseKey(k).toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'numeric'});}
+function goalSeg(cur,act){return `<div class="seg wrapseg">${[...activeGoals(),NONE()].map(g=>`<button type="button" class="${cur===g.id?'on':''}" data-a="${act}" data-v="${g.id}"><i class="dot" style="background:${g.color};display:inline-block;margin-right:6px"></i>${esc(g.name)}</button>`).join('')}</div>`;}
+function daySeg(cur,act){const tk=todayKey();const o=[['',tr('Ablage','Backlog')],[tk,tr('Heute','Today')],[shiftKey(tk,1),tr('Morgen','Tomorrow')]];const known=o.some(x=>x[0]===(cur||''));
+  return `<div class="seg wrapseg">${o.map(([k,l])=>`<button type="button" class="${(cur||'')===k?'on':''}" data-a="${act}" data-v="${k}">${l}</button>`).join('')}<input type="date" class="segdate ${known?'':'on'}" data-a-date="${act}" value="${known?'':cur}" min="${tk}"></div>`;}
+function renderQC(text){
+  const n=text.split('\n').filter(l=>l.trim()).length;
+  modal(`<h3>${tr('Schnell erfassen','Quick capture')}</h3><form id="qc-form">
+  <textarea name="t" rows="3" enterkeyhint="done" placeholder="${tr('Was ist zu tun? Eine Zeile pro Aufgabe.','What needs doing? One line per task.')}">${esc(text)}</textarea>
+  <div class="row" style="margin-top:6px;gap:8px;flex-wrap:wrap"><button type="button" class="btn ghost sm" data-a="qc-paste">${tr('Aus Zwischenablage','From clipboard')}</button>${QC.notes?'':`<button type="button" class="btn ghost sm" data-a="qc-note">+ ${tr('Notiz','Note')}</button>`}</div>
+  ${QC.notes!==''?`<label>${tr('Notiz','Note')}</label><textarea name="n" rows="3">${esc(QC.notes)}</textarea>`:''}
+  <label>${tr('Wann','When')}</label>${daySeg(QC.day,'qc-day')}
+  <label>${tr('Ziel','Goal')}</label>${goalSeg(QC.g,'qc-goal')}
+  <div class="small" style="margin-top:10px;line-height:1.45;color:var(--muted)">${tr('Tipp: „morgen“, „fr“ oder „#Ziel“ in einer Zeile gilt nur für diese Aufgabe.','Tip: “tomorrow”, “fri” or “#goal” in a line applies to that task only.')}</div>
+  <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn gold" type="submit">${tr('Speichern','Save')}</button></div></form>`);
+  const ta=$('#qc-form [name=t]');if(ta){setTimeout(()=>{ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);},60);}
+}
+function saveQC(){
+  const text=readQC();const lines=text.split('\n').map(parseLine).filter(x=>x.title);
+  if(!lines.length){closeModal();return;}
+  const ids=[];
+  for(const x of lines){const k=x.day!==undefined?x.day:QC.day;const t={id:uid(),goalId:x.g||QC.g||'_none',title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(lines.length===1&&QC.notes.trim())t.notes=QC.notes.trim().slice(0,4000);S.tasks.push(t);ids.push(t.id);if(t.goalId==='_none'&&k===todayKey())showOther=true;}
+  closeModal();save();render();
+  const days=[...new Set(lines.map(x=>x.day!==undefined?x.day:QC.day))];
+  const where=days.length===1?(days[0]===null?tr('in der Ablage','in the backlog'):tr('für ','for ')+dayLabel(days[0])):tr('eingeplant','planned');
+  toast(`${ids.length===1?tr('Aufgabe','Task'):ids.length+' '+tr('Aufgaben','tasks')} ${where} · <button data-a="qc-undo" data-v="${ids.join(',')}" style="text-decoration:underline;color:inherit;font-weight:600">${tr('Rückgängig','Undo')}</button>`);
+}
+// --- Bearbeiten ---
+const TE={};
+function taskModal(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;Object.assign(TE,{id,title:t.title,notes:t.notes||'',g:goal(t.goalId)?t.goalId:'_none',date:t.date||null,done:!!t.done});renderTE();}
+function readTE(){const f=$('#te-form');if(!f)return;TE.title=f.querySelector('[name=title]').value;TE.notes=f.querySelector('[name=notes]').value;}
+function renderTE(){
+  const t=S.tasks.find(x=>x.id===TE.id);if(!t)return closeModal();const s=taskSecs(t);
+  modal(`<h3>${tr('Aufgabe bearbeiten','Edit task')}</h3><form id="te-form">
+  <label>${tr('Aufgabe','Task')}</label><input name="title" maxlength="140" required value="${esc(TE.title)}">
+  ${TE.done?'':`<label>${tr('Wann','When')}</label>${daySeg(TE.date&&TE.date<todayKey()?todayKey():TE.date,'te-day')}`}
+  <label>${tr('Ziel','Goal')}</label>${goalSeg(TE.g,'te-goal')}
+  <label>${tr('Notizen','Notes')}</label><textarea name="notes" rows="3" placeholder="${tr('Details, Links, nächste Schritte…','Details, links, next steps…')}">${esc(TE.notes)}</textarea>
+  ${s>=60?`<div class="small" style="margin-top:8px">${tr('Bisher erfasst: ','Tracked so far: ')}${fmtDur(s)}</div>`:''}
+  <div class="actions"><button type="button" class="btn danger" data-a="te-del">${tr('Löschen','Delete')}</button><span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn" type="submit">${tr('Speichern','Save')}</button></div></form>`);
+}
+function saveTE(){
+  readTE();const t=S.tasks.find(x=>x.id===TE.id);if(!t)return closeModal();
+  const title=TE.title.trim();if(!title)return;
+  t.title=title.slice(0,140);t.notes=TE.notes.slice(0,4000);
+  if(t.goalId!==TE.g){t.goalId=TE.g;if(S.running&&S.running.taskId===t.id){stopTimer(true);S.running={goalId:t.goalId,taskId:t.id,start:Date.now()};}}
+  if(!t.done){const nd=TE.date;const cur=t.date&&t.date<todayKey()?todayKey():t.date;if(nd!==cur){if(nd===null&&S.running&&S.running.taskId===t.id)stopTimer(true);t.date=nd;t.order=nextOrder(nd);}}
+  closeModal();save();render();toast(tr('Gespeichert','Saved'));
+}
+Object.assign(EXTRA_ACTIONS,{
+  async 'copy-txt'(el){try{await navigator.clipboard.writeText(el.dataset.v);toast(tr('Kopiert','Copied'));}catch(e){toast(tr('Bitte von Hand kopieren','Please copy manually'));}},
+  'qc-open'(){quickAdd('');},
+  async 'qc-paste'(){const cur=readQC();try{const c=(await navigator.clipboard.readText()||'').trim();if(!c){toast(tr('Zwischenablage ist leer','Clipboard is empty'));return;}renderQC(cur.trim()?cur.trim()+'\n'+c:c);}catch(e){toast(tr('Kein Zugriff auf die Zwischenablage. Füge den Text mit lange drücken oder Strg+V ein.','No clipboard access. Paste with long press or Ctrl+V.'),4000);}},
+  'qc-note'(){const t=readQC();QC.notes=' ';renderQC(t);const n=$('#qc-form [name=n]');if(n){n.value='';QC.notes='';setTimeout(()=>n.focus(),80);}},
+  'qc-day'(el){const t=readQC();QC.day=el.dataset.v||null;renderQC(t);},
+  'qc-goal'(el){const t=readQC();QC.g=el.dataset.v;renderQC(t);},
+  'qc-undo'(el){const ids=el.dataset.v.split(',');if(S.running&&ids.includes(S.running.taskId))S.running=null;S.tasks=S.tasks.filter(x=>!ids.includes(x.id));save();render();$('#toast-root').innerHTML='';},
+  'edit-task'(el){taskModal(el.dataset.t);},
+  'te-day'(el){readTE();TE.date=el.dataset.v||null;renderTE();},
+  'te-goal'(el){readTE();TE.g=el.dataset.v;renderTE();},
+  'te-del'(){const id=TE.id;const t=S.tasks.find(x=>x.id===id);if(!t)return closeModal();if(S.running&&S.running.taskId===id)stopTimer(true);const i=S.tasks.indexOf(t);S.tasks.splice(i,1);closeModal();save();render();toast(`${tr('Aufgabe gelöscht','Task deleted')} · <button data-a="te-restore" style="text-decoration:underline;color:inherit;font-weight:600">${tr('Rückgängig','Undo')}</button>`);TE.deleted={t,i};},
+  'te-restore'(){if(TE.deleted){S.tasks.splice(Math.min(TE.deleted.i,S.tasks.length),0,TE.deleted.t);TE.deleted=null;save();render();}$('#toast-root').innerHTML='';}
+});
+document.addEventListener('change',e=>{const d=e.target.closest&&e.target.closest('[data-a-date]');if(!d||!d.value)return;const act=d.dataset.aDate;if(act==='qc-day'){const t=readQC();QC.day=d.value<todayKey()?todayKey():d.value;renderQC(t);}else if(act==='te-day'){readTE();TE.date=d.value<todayKey()?todayKey():d.value;renderTE();}});
+document.addEventListener('submit',e=>{const f=e.target;if(f.id==='qc-form'){e.preventDefault();e.stopImmediatePropagation();saveQC();}else if(f.id==='te-form'){e.preventDefault();e.stopImmediatePropagation();saveTE();}},true);
+document.addEventListener('keydown',e=>{
+  const qt=e.target.closest&&e.target.closest('#qc-form [name=t]');
+  if(qt&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();saveQC();return;}
+  if((e.key==='n'||e.key==='N')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!typing()&&!$('#modal-root').innerHTML){e.preventDefault();quickAdd('');}
+});
+// Geteilte Inhalte und Links: ?add=… (Lesezeichen, Kurzbefehl) oder Teilen-Menü (title/text/url)
+function takeShared(){
+  const q=new URLSearchParams(location.search);
+  if(!['add','title','text','url'].some(k=>q.has(k)))return;
+  const add=(q.get('add')||'').trim(),title=(q.get('title')||'').trim(),text=(q.get('text')||'').trim(),url=(q.get('url')||'').trim();
+  ['add','title','text','url','share'].forEach(k=>q.delete(k));
+  try{history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash);}catch(e){}
+  let first='',notes=[];
+  if(add){const ls=add.split('\n');first=add;if(ls.length>8){first=ls[0];notes.push(ls.slice(1).join('\n'));}}
+  else{const ls=text.split('\n').map(l=>l.trim()).filter(Boolean);first=title||ls.shift()||url;if(title)notes.push(text);else notes.push(ls.join('\n'));if(url&&url!==first)notes.push(url);}
+  setTimeout(()=>quickAdd(first.trim(),notes.filter(Boolean).join('\n\n')),150);
+}
 
 // ================= Live-Uhr =================
 let lastDay=todayKey();
@@ -1430,6 +1558,7 @@ setInterval(()=>{if(SY.needsAuth&&!reauthHinted&&!document.hidden&&!$('#modal-ro
 
 initStore();
 syncInit();
+takeShared();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
