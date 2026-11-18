@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08150e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Motus">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Motus</title>
+<style>
+:root{
+  --bg:#08150e; --surface:#0f2218; --surface2:#15301f; --line:#22412d;
+  --moss:#1d5a3a; --moss-hi:#247049; --moss-lo:#0c3322; --moss-text:#f2c46e;
+  --gold:#fdbd4a; --gold-hi:#fed775; --sky:#156c83; --sky-deep:#0a3346; --on-gold:#1a2a12;
+  --text:#f1ece0; --muted:#9aa89c; --danger:#c8614f;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{background:linear-gradient(180deg,var(--sky-deep) 0,#0a2a2c 160px,var(--bg) 420px) no-repeat,var(--bg);}
+html,body{color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:15px;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--text);background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;outline:none}
+textarea{resize:vertical;min-height:70px;line-height:1.45}
+input:focus,select:focus,textarea:focus{border-color:var(--moss-hi)}
+.wrap{max-width:720px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 20px calc(16px + env(safe-area-inset-left))}
+.wrap.wide{max-width:1240px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:-.02em}
+.logo{width:34px;height:34px;flex:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+.date{color:var(--muted);font-size:13px}
+.sync{font-size:12px;color:var(--muted)}
+h1{font-size:24px;letter-spacing:-.02em;font-weight:700}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin:22px 0 10px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.timer{background:radial-gradient(90% 120% at 82% 18%,rgba(253,189,74,.38),transparent 55%),linear-gradient(170deg,var(--sky) 0%,#13503f 55%,var(--moss-lo) 100%);border:0;padding:18px;display:flex;align-items:center;gap:14px}
+.timer .t{font-variant-numeric:tabular-nums;font-size:32px;font-weight:700;letter-spacing:-.02em}
+.timer .lbl{font-size:13px;color:#f3e3bf;opacity:.9}
+.timer .grow{flex:1;min-width:0}
+.timer.idle{background:var(--surface);border:1px dashed var(--line)}
+.timer.idle .t{color:var(--muted)}
+.btn{background:var(--moss);color:#f6f1e4;border-radius:10px;padding:10px 14px;font-weight:600;font-size:14px;white-space:nowrap}
+.btn:hover{background:var(--moss-hi)}
+.btn.ghost{background:var(--surface2);color:var(--text)}
+.btn.ghost:hover{background:var(--line)}
+.btn.danger{background:var(--danger)}
+.btn.stop{background:var(--gold);color:var(--on-gold)}
+.btn.stop:hover{background:var(--gold-hi)}
+.btn.sm{padding:7px 11px;font-size:13px}
+.icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--surface2);flex:none}
+.icon:hover{background:var(--line)}
+.icon.play{background:var(--moss);color:#fff}
+.icon.on{background:var(--gold);color:var(--on-gold)}
+.icon.xs{width:26px;height:26px;border-radius:7px}
+.goal-h{display:flex;align-items:center;gap:10px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.goal-h .name{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.goal-h .today{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tasks{margin-top:10px;display:flex;flex-direction:column;gap:2px}
+.task{display:flex;align-items:center;gap:10px;padding:7px 4px;border-radius:8px}
+.task:hover{background:var(--surface2)}
+.chk{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);flex:none;display:grid;place-items:center}
+.chk.done{background:var(--gold);border-color:var(--gold)}
+.task .tt{flex:1;min-width:0}
+.task.done .tt{color:var(--muted);text-decoration:line-through}
+.task .meta{font-size:12px;color:var(--muted)}
+.task .icon{width:30px;height:30px;border-radius:8px}
+.add-task{display:flex;gap:8px;margin-top:8px}
+.add-task input{padding:8px 10px;font-size:14px}
+.row{display:flex;gap:8px;align-items:center}
+.small{font-size:12px;color:var(--muted)}
+.bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-top:8px}
+.bar>i{display:block;height:100%;border-radius:99px}
+.weekchart{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;height:110px;margin-top:12px}
+.weekchart .col{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.weekchart .stack{width:100%;max-width:34px;border-radius:6px;overflow:hidden;display:flex;flex-direction:column-reverse;background:var(--surface2);min-height:3px}
+.weekchart .d{font-size:11px;color:var(--muted)}
+.weekchart .d.now{color:var(--moss-text);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .k{font-size:12px;color:var(--muted);margin-top:2px}
+.empty{text-align:center;color:var(--muted);padding:28px 16px}
+.empty .btn{margin-top:14px}
+.collapse{font-size:13px;color:var(--muted);padding:6px 4px}
+.pagehead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:4px 0 16px}
+.navbtns{display:flex;gap:6px;align-items:center}
+.navbtns .lbl{color:var(--muted);font-size:14px;margin-right:6px}
+
+/* Woche */
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);gap:10px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory}
+.daycol{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px;min-height:340px;scroll-snap-align:start;display:flex;flex-direction:column;gap:8px}
+.daycol.past{opacity:.6}
+.daycol.now{border-color:var(--gold)}
+.dayhead{display:flex;align-items:baseline;gap:6px;padding:2px 4px 8px;border-bottom:1px solid var(--line)}
+.dayhead b{font-size:15px}
+.dayhead span{color:var(--muted);font-size:13px}
+.dayhead .sum{margin-left:auto;font-size:12px}
+.daycol.now .dayhead b,.daycol.now .dayhead span:first-of-type{color:var(--moss-text)}
+.add-day{display:flex;flex-direction:column;gap:6px;border:1px dashed var(--line);border-radius:10px;padding:6px}
+.add-day input,.add-day select{padding:7px 9px;font-size:13px;border-radius:8px;background:transparent;border-color:transparent}
+.add-day select{color:var(--muted)}
+.add-day input:focus{background:var(--surface2)}
+.tcard{background:var(--surface2);border:1px solid var(--line);border-left:3px solid;border-radius:10px;padding:9px 10px;display:flex;flex-direction:column;gap:7px}
+.tcard .title{font-size:14px;line-height:1.35}
+.tcard.done .title{text-decoration:line-through;color:var(--muted)}
+.tcard.done{opacity:.65}
+.tcard .foot{display:flex;align-items:center;gap:4px;min-width:0}
+.daycol{min-width:0}
+.tcard .chk{width:20px;height:20px;border-radius:6px}
+.chip{display:inline-flex;min-width:0;align-items:center;gap:5px;font-size:11px;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.chip i{width:6px;height:6px;border-radius:50%;flex:none}
+.tcard .sp{flex:1}
+.tcard .tm{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tcard.running{border-color:var(--gold)}
+
+/* Kalender */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .wd{font-size:11px;color:var(--muted);text-align:center;padding:4px 0}
+.cell{background:var(--surface);border:1px solid var(--line);border-radius:10px;min-height:64px;padding:6px;display:flex;flex-direction:column;gap:3px;text-align:left}
+.cell:hover{border-color:var(--moss)}
+.cell .n{font-size:13px;font-weight:600}
+.cell .m{font-size:10.5px;color:var(--moss-text);font-variant-numeric:tabular-nums}
+.cell .dots{display:flex;gap:3px;flex-wrap:wrap;margin-top:auto}
+.cell .dots i{width:6px;height:6px;border-radius:50%}
+.cell.today .n{color:var(--moss-text)}
+.cell.sel{border-color:var(--gold);background:var(--surface2)}
+.cell.blank{background:transparent;border:0}
+.cell.future{opacity:.55}
+@media(min-width:700px){.cell{min-height:88px}.cell .m{font-size:12px}}
+.sess{display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+.sess:last-child{border-bottom:0}
+.sess .tm{color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px;min-width:94px}
+
+/* Fokus */
+.focus{display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 0 4px}
+.ring{position:relative;width:260px;height:260px;margin:8px auto 18px}
+.ring svg{transform:rotate(-90deg)}
+.ring .in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .big{font-size:46px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.ring .sub{font-size:13px;color:var(--muted);margin-top:4px;max-width:180px}
+.durs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.durs button{padding:9px 16px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);font-size:14px}
+.durs button.on{background:var(--gold);border-color:var(--gold);color:var(--on-gold)}
+.focus-form{width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px;text-align:left}
+.focus-form label{font-size:13px;color:var(--muted);margin-bottom:-4px}
+
+/* Rückblick */
+.review label{display:block;font-size:14px;font-weight:600;margin:14px 0 6px}
+.review label:first-child{margin-top:0}
+.trend{font-size:12px;margin-top:4px}
+.up{color:var(--moss-text)} .down{color:#d9a07a}
+.donelist{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.donelist div{display:flex;gap:8px;align-items:center;font-size:14px}
+
+/* Navigation */
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(8,21,14,.95);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 6px calc(10px + env(safe-area-inset-bottom));z-index:5}
+nav .in{display:flex;gap:2px;max-width:720px;width:100%}
+nav button{flex:1;padding:7px 2px;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--muted);min-width:0}
+nav button.on{color:var(--moss-text);background:var(--surface)}
+@media(min-width:820px){
+  body{padding-bottom:30px;padding-top:62px}
+  nav{top:0;bottom:auto;border-top:0;border-bottom:1px solid var(--line);padding:10px 16px}
+  nav .in{max-width:1240px;justify-content:center}
+  nav button{flex:none;flex-direction:row;gap:7px;font-size:14px;padding:8px 14px}
+  nav button svg{width:16px;height:16px}
+}
+@media(min-width:1100px){.board{grid-auto-columns:minmax(150px,1fr);overflow-x:visible}}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:10}
+@media(min-width:600px){.modal-bg{align-items:center}}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:18px 18px 0 0;padding:20px;width:100%;max-width:440px}
+@media(min-width:600px){.modal{border-radius:18px}}
+.modal h3{font-size:18px;margin-bottom:14px}
+.modal label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
+.colors{display:flex;gap:8px;flex-wrap:wrap}
+.colors button{width:30px;height:30px;border-radius:50%;border:3px solid transparent}
+.colors button.on{border-color:var(--text)}
+.modal .actions{display:flex;gap:8px;margin-top:20px;justify-content:flex-end;flex-wrap:wrap}
+.modal .actions .sp{flex:1}
+
+/* ---- v2: Prinzipien ---- */
+.qlist{display:flex;flex-direction:column;gap:6px}
+.qitem{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-left:3px solid;border-radius:12px;padding:9px 10px}
+.qitem.first{border-color:var(--gold);box-shadow:0 0 0 1px rgba(253,189,74,.25)}
+.qitem .tt{flex:1;min-width:0}
+.qitem .tt .t1{font-size:15px;line-height:1.35}
+.qitem .tt .meta{font-size:12px;color:var(--muted);margin-top:3px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.qitem .ord{display:flex;flex-direction:column;gap:2px}
+.qitem .ord button{width:24px;height:18px;border-radius:5px;display:grid;place-items:center;color:var(--muted)}
+.qitem .ord button:hover{background:var(--surface2);color:var(--text)}
+.qitem.drag,.tcard.drag{opacity:.4}
+.dropline{height:3px;border-radius:2px;background:var(--gold);margin:-2px 0}
+.addbar{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.addbar input{flex:1 1 180px}
+.addbar select{flex:0 1 170px;width:auto}
+.donelog{display:flex;flex-direction:column;gap:2px}
+.donelog .d{display:flex;align-items:center;gap:10px;padding:7px 4px;font-size:14px}
+.donelog .d .tt{flex:1;min-width:0}
+.donelog .d .tm{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.done-head{display:flex;align-items:baseline;justify-content:space-between}
+.done-head .big{font-size:22px;font-weight:700;color:var(--gold)}
+.qh{display:flex;flex-direction:column;gap:10px}
+.qh .r{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;font-size:14px}
+.qh .r .bar{grid-column:1/3;margin-top:2px;height:6px}
+.qh .r .n{display:flex;align-items:center;gap:8px;min-width:0}
+.qh .r .n span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qh .r .v{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.other-toggle{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;padding:10px 4px}
+
+/* Fokus v2 */
+.fx{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:22px 16px}
+.fx .ftitle{font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.25;margin:10px 0 4px;max-width:520px}
+.fx .fclock{font-size:56px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.03em;margin:8px 0}
+.fx .fclock.paused{color:var(--muted)}
+.fx .fbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.fx .fbtns .btn{padding:13px 20px;font-size:15px}
+.fx textarea{max-width:520px;margin-top:14px;min-height:90px;text-align:left}
+.fx .left{font-size:13px;color:var(--muted);margin-top:10px}
+.btn.gold{background:var(--gold);color:var(--on-gold)}
+.btn.gold:hover{background:var(--gold-hi)}
+
+/* Logbuch */
+.tl-wrap{overflow-x:auto;padding-bottom:8px}
+.tl{display:grid;grid-template-columns:40px repeat(7,minmax(118px,1fr));min-width:880px}
+@media(min-width:1100px){.tl{min-width:0}}
+.tl .hd{padding:6px 6px 8px;border-bottom:1px solid var(--line);font-size:13px}
+.tl .hd b{font-size:14px}
+.tl .hd .s{font-size:11px;color:var(--muted);margin-top:2px}
+.tl .hd.now b{color:var(--gold)}
+.tl .hours{position:relative}
+.tl .hours div{position:absolute;right:6px;font-size:10.5px;color:var(--muted);transform:translateY(-50%)}
+.tl .col{position:relative;border-left:1px solid var(--line)}
+.tl .col.now{background:rgba(253,189,74,.04)}
+.tl .blk{position:absolute;left:3px;right:3px;border-radius:6px;padding:3px 6px;font-size:11px;line-height:1.25;overflow:hidden;color:#0b1a10;font-weight:600}
+.tl .blk.live{box-shadow:0 0 0 2px var(--gold)}
+.tl .blk span{display:block;font-weight:400;opacity:.85}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:10px 0 4px}
+.legend span{display:flex;align-items:center;gap:6px}
+
+/* Kompass */
+.compass label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
+.compass label:first-of-type{margin-top:4px}
+.compass textarea{min-height:46px}
+.hint{font-size:12px;color:var(--muted);background:var(--surface2);border-radius:10px;padding:9px 11px;margin-bottom:12px}
+
+/* Wiki */
+.hbtn{width:34px;height:34px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);font-weight:700;color:var(--gold);flex:none}
+.hbtn:hover{background:var(--line)}
+.hbtn.on{background:var(--gold);color:var(--on-gold);border-color:var(--gold)}
+.wiki{line-height:1.6}
+.wiki .lead{font-size:16px;color:var(--text);margin-bottom:14px}
+.wiki p{margin:8px 0;color:#d9dccf}
+.wiki h3{font-size:17px;margin:2px 0 6px;letter-spacing:-.01em}
+.wiki ul,.wiki ol{margin:6px 0 6px 20px;color:#d9dccf}
+.wiki li{margin:4px 0}
+.wiki b{color:var(--text)}
+.wiki .where{font-size:13px;color:var(--gold);margin-top:6px}
+.toc{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.toc button{font-size:13px;padding:7px 12px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);color:var(--text)}
+.toc button:hover{border-color:var(--gold)}
+.pr{display:flex;gap:12px}
+.pr .num{width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--on-gold);font-weight:700;display:grid;place-items:center;flex:none;margin-top:2px}
+.wiki details{border-bottom:1px solid var(--line);padding:10px 0}
+.wiki details:last-child{border-bottom:0}
+.wiki summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.wiki summary::-webkit-details-marker{display:none}
+.wiki summary::after{content:'+';color:var(--gold);font-weight:700}
+.wiki details[open] summary::after{content:'–'}
+.wiki dl{display:grid;grid-template-columns:minmax(110px,max-content) 1fr;gap:8px 14px;margin:4px 0}
+.wiki dt{font-weight:600;color:var(--text)}
+.wiki dd{color:#d9dccf}
+@media(max-width:480px){.wiki dl{grid-template-columns:1fr}.wiki dd{margin-bottom:6px}}
+.totop{font-size:12px;color:var(--muted);margin-top:8px;display:inline-block}
+</style>
+</head>
+<body>
+<nav><div class="in">
+  <button data-tab="heute"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Heute</button>
+  <button data-tab="woche"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="11" rx="1.5"/><rect x="17" y="4" width="4" height="7" rx="1.5"/></svg>Woche</button>
+  <button data-tab="fokus"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>Fokus</button>
+  <button data-tab="logbuch"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h4"/></svg>Logbuch</button>
+  <button data-tab="ziele"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>Ziele</button>
+  <button data-tab="rueckblick"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Rückblick</button>
+</div></nav>
+<div class="wrap" id="wrap">
+  <header>
+    <div class="brand"><img class="logo" src="data:image/png;base64,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" alt="">Motus</div>
+    <div class="row" style="gap:12px"><div style="text-align:right"><div class="date" id="today-label"></div><div class="sync" id="sync"></div></div><button class="hbtn" data-a="tab" data-tab="hilfe" title="Anleitung">?</button></div>
+  </header>
+  <main id="view"></main>
+</div>
+<div id="modal-root"></div>
+
+<script>
+// ================= Grundlagen =================
+const COLORS=['#fdbd4a','#2f8f5b','#2b8aa6','#8aa65a','#c77d4a','#b85c5c','#8a6bb5','#4aa38f'];
+const NONE={id:'_none',name:'Ohne Ziel',color:'#7f8c84'};
+const TABS=['heute','woche','fokus','logbuch','ziele','rueckblick','hilfe'];
+const CLIENT=Math.random().toString(36).slice(2,9);
+const EMPTY=()=>({goals:[],tasks:[],log:{},running:null,sessions:[],reviews:{},compass:{}});
+let S=EMPTY();
+let tab='heute';
+try{const h=location.hash.slice(1);if(h==='kalender')tab='logbuch';else if(TABS.includes(h))tab=h;}catch(e){}
+let weekOff=0,logOff=0,revOff=0,lastGoal=null,showOther=false,pendingRender=false;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const pad=n=>String(n).padStart(2,'0');
+const dkey=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const todayKey=()=>dkey(new Date());
+const parseKey=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);};
+const shiftKey=(k,n)=>{const d=parseKey(k);d.setDate(d.getDate()+n);return dkey(d);};
+function weekOf(off){const n=new Date();const o=(n.getDay()+6)%7;const out=[];for(let i=0;i<7;i++)out.push(new Date(n.getFullYear(),n.getMonth(),n.getDate()-o+i+off*7));return out;}
+function fmtClock(s){s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600);return (h?h+':'+pad(Math.floor(s%3600/60)):Math.floor(s%3600/60))+':'+pad(s%60);}
+function fmtDur(s){s=Math.round(s/60);if(s<60)return s+' min';const h=Math.floor(s/60),m=s%60;return m?h+' h '+m+' min':h+' h';}
+function fmtShort(s){const m=Math.round(s/60);if(m<60)return m+'m';const h=Math.floor(m/60),r=m%60;return r?h+'h '+r:h+'h';}
+const fmtTime=ms=>{const d=new Date(ms);return pad(d.getHours())+':'+pad(d.getMinutes());};
+const goal=id=>id==='_none'?NONE:S.goals.find(g=>g.id===id);
+const activeGoals=()=>S.goals.filter(g=>!g.archived);
+const isGoalTask=t=>t.goalId!=='_none'&&!!S.goals.find(g=>g.id===t.goalId);
+const rangeLabel=days=>{const a=days[0],b=days[6];return a.getDate()+'.'+(a.getMonth()+1)+'. – '+b.getDate()+'.'+(b.getMonth()+1)+'.'+b.getFullYear();};
+const wdShort=d=>d.toLocaleDateString('de-DE',{weekday:'short'}).replace('.','');
+const byOrder=(a,b)=>(a.order||0)-(b.order||0);
+
+// ================= Zeit =================
+function runningSecs(){return S.running?(Date.now()-S.running.start)/1000:0;}
+function secsOn(goalId,day){let v=(S.log[goalId]||{})[day]||0;if(S.running&&S.running.goalId===goalId){const s0=parseKey(day).getTime(),s1=s0+86400000;const a=Math.max(S.running.start,s0),b=Math.min(Date.now(),s1);if(b>a)v+=(b-a)/1000;}return v;}
+const goalSecs=day=>S.goals.reduce((a,g)=>a+secsOn(g.id,day),0);
+const allSecs=day=>goalSecs(day)+secsOn('_none',day);
+function totalSecs(goalId){let v=Object.values(S.log[goalId]||{}).reduce((a,b)=>a+b,0);if(S.running&&S.running.goalId===goalId)v+=runningSecs();return v;}
+const taskSecs=t=>(t.secs||0)+(S.running&&S.running.taskId===t.id?runningSecs():0);
+function addTime(goalId,startMs,endMs){
+  S.log[goalId]=S.log[goalId]||{};
+  let t=startMs;
+  while(t<endMs){const d=new Date(t);const next=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1).getTime();const e=Math.min(next,endMs);const k=dkey(d);S.log[goalId][k]=Math.round((S.log[goalId][k]||0)+(e-t)/1000);t=e;}
+}
+function startTimer(taskId){
+  const t=S.tasks.find(x=>x.id===taskId);if(!t)return;
+  if(S.running)stopTimer(true);
+  S.running={goalId:t.goalId,taskId:t.id,start:Date.now()};
+  save();render();
+}
+function stopTimer(silent){
+  const r=S.running;if(!r)return;
+  const end=Date.now();
+  if(end-r.start>=1000){
+    addTime(r.goalId,r.start,end);
+    if(r.taskId){const t=S.tasks.find(x=>x.id===r.taskId);if(t)t.secs=Math.round((t.secs||0)+(end-r.start)/1000);}
+    S.sessions.push({g:r.goalId,t:r.taskId,s:r.start,e:end});
+  }
+  S.running=null;
+  if(!silent){save();render();}
+}
+function completeTask(id,autoNext){
+  const t=S.tasks.find(x=>x.id===id);if(!t)return;
+  const wasRunning=S.running&&S.running.taskId===id;
+  if(wasRunning)stopTimer(true);
+  t.done=true;t.doneOn=todayKey();t.doneAt=Date.now();
+  if(autoNext&&wasRunning){const n=focusQueue()[0];if(n){S.running={goalId:n.goalId,taskId:n.id,start:Date.now()};}}
+  save();render();
+}
+function reopenTask(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;t.done=false;t.doneOn=null;t.doneAt=null;if(t.date<todayKey())t.date=todayKey();t.order=nextOrder(t.date);save();render();}
+
+// ================= Reihenfolge =================
+function dayTasks(k){const tk=todayKey();return S.tasks.filter(t=>!t.done&&goal(t.goalId)&&(k===tk?t.date<=tk:t.date===k)).sort(byOrder);}
+function focusQueue(){const q=dayTasks(todayKey());return [...q.filter(isGoalTask),...q.filter(t=>!isGoalTask(t))];}
+function nextOrder(k){const l=S.tasks.filter(t=>t.date===k||(k===todayKey()&&t.date<k&&!t.done));return l.length?Math.max(...l.map(t=>t.order||0))+1:Date.now();}
+function moveInList(id,dir,list){const i=list.findIndex(t=>t.id===id),j=i+dir;if(i<0||j<0||j>=list.length)return;const a=list[i],b=list[j];let oa=a.order||0,ob=b.order||0;if(oa===ob)ob=oa+dir;a.order=ob;b.order=oa;save();render();}
+function placeTask(id,dayKey,beforeId){
+  const t=S.tasks.find(x=>x.id===id);if(!t)return;
+  t.date=dayKey;
+  const list=(dayKey===todayKey()?dayTasks(dayKey):S.tasks.filter(x=>x.date===dayKey&&!x.done).sort(byOrder)).filter(x=>x.id!==id);
+  if(!beforeId){t.order=list.length?(list[list.length-1].order||0)+1:Date.now();}
+  else{const i=list.findIndex(x=>x.id===beforeId);const nxt=list[i],prv=list[i-1];t.order=prv?((prv.order||0)+(nxt.order||0))/2:(nxt.order||0)-1;}
+  save();render();
+}
+
+// ================= Speichern =================
+let ref=null,saveTimer=null,writing=Promise.resolve(),lastRev=null;
+function normalize(o){const s=Object.assign(EMPTY(),o||{});s.tasks.forEach((t,i)=>{if(!t.goalId)t.goalId='_none';if(t.order==null)t.order=i;});return s;}
+function localLoad(){try{const v=localStorage.getItem('motus');if(v)S=normalize(JSON.parse(v));}catch(e){}}
+function localSave(){try{localStorage.setItem('motus',JSON.stringify(S));}catch(e){}}
+function save(){
+  localSave();markDirty();
+  if(!ref)return;
+  clearTimeout(saveTimer);
+  setSync('Speichert…');
+  saveTimer=setTimeout(()=>{
+    saveTimer=null;
+    const rev=Date.now()+'-'+CLIENT;lastRev=rev;
+    const body={rev,state:JSON.parse(JSON.stringify(S))};
+    writing=writing.then(()=>ref.set(body)).then(()=>setSync('Gespeichert')).catch(e=>{setSync(e&&e.code==='quota_exceeded'?'Speicher voll':'Nicht gespeichert');});
+  },700);
+}
+function setSync(t){$('#sync').textContent=t;}
+function prune(){
+  const lim=new Date();lim.setDate(lim.getDate()-90);const lk=dkey(lim);
+  S.tasks=S.tasks.filter(t=>!(t.done&&(t.doneOn||t.date)<lk));
+  const sl=Date.now()-180*86400000;S.sessions=S.sessions.filter(x=>x.e>sl);
+  if(S.running&&S.running.plan)S.running.plan=null;
+}
+const typing=()=>{const a=document.activeElement;return a&&(a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&a.type!=='file'));};
+function softRender(){if(typing())pendingRender=true;else render();}
+document.addEventListener('focusout',()=>setTimeout(()=>{if(pendingRender&&!typing()){pendingRender=false;render();}},150));
+async function initStore(){
+  localLoad();prune();render();setSync(NOSYNC);
+  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
+}
+const NOSYNC='Auf diesem Gerät gespeichert';
+
+// ================= Bausteine =================
+const I={
+  play:()=>`<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>`,
+  pause:()=>`<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1.5"/><rect x="14" y="4" width="5" height="16" rx="1.5"/></svg>`,
+  check:(w=12)=>`<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="#1a2a12" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>`,
+  x:()=>`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
+  chev:d=>`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="${d<0?'M15 5l-7 7 7 7':'M9 5l7 7-7 7'}"/></svg>`,
+  up:()=>`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>`,
+  down:()=>`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`,
+  undo:()=>`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg>`
+};
+const chip=g=>`<span class="chip"><i style="background:${g.color}"></i>${esc(g.name)}</span>`;
+const noGoals=()=>`<div class="card empty"><div style="font-size:17px;color:var(--text);font-weight:600;margin-bottom:6px">Wofür willst du deine Zeit einsetzen?</div>Lege ein bis drei langfristige Ziele an, zum Beispiel ein Projekt, einen Halbmarathon oder eine Abschlussarbeit. Jede Aufgabe gehört dann zu einem Ziel, und du siehst, wie viele Stunden wirklich hineinfließen.<br><button class="btn" data-a="new-goal">Erstes Ziel anlegen</button></div>`;
+function goalSelect(cls,sel){const gs=activeGoals();return `<select class="${cls}">${gs.map(g=>`<option value="${g.id}" ${g.id===sel?'selected':''}>● ${esc(g.name)}</option>`).join('')}<option value="_none" ${sel==='_none'?'selected':''}>○ Ohne Ziel</option></select>`;}
+function pickGoal(){const gs=activeGoals();if(lastGoal&&(lastGoal==='_none'||gs.find(g=>g.id===lastGoal)))return lastGoal;return gs[0]?gs[0].id:'_none';}
+
+function render(){
+  pendingRender=false;
+  $('#today-label').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  $('#wrap').classList.toggle('wide',tab==='woche'||tab==='logbuch');
+  const V={heute:viewToday,woche:viewWeek,fokus:viewFocus,logbuch:viewLog,ziele:viewGoals,rueckblick:viewReview,hilfe:viewHelp};
+  const hb=$('.hbtn');if(hb)hb.classList.toggle('on',tab==='hilfe');
+  $('#view').innerHTML=V[tab]();
+  tick();
+}
+function timerCard(){
+  const r=S.running;
+  if(!r){const n=focusQueue()[0];return `<div class="card timer idle"><div class="grow"><div class="t">0:00</div><div class="lbl" style="color:var(--muted)">${n?'Als Nächstes: '+esc(n.title):'Plane deinen Tag, dann geht’s los.'}</div></div>${n?`<button class="btn gold" data-a="focus-go">Fokus starten</button>`:''}</div>`;}
+  const t=S.tasks.find(x=>x.id===r.taskId),g=goal(r.goalId);
+  return `<div class="card timer"><div class="grow"><div class="t" data-clock>${fmtClock(runningSecs())}</div><div class="lbl">${esc(t?t.title:'')} · ${esc(g?g.name:'')}</div></div><button class="btn ghost" data-a="tab" data-tab="fokus" style="background:rgba(0,0,0,.25)">Fokus</button><button class="btn stop" data-a="stop">Pause</button></div>`;
+}
+
+// ================= Heute =================
+function weekGoalBlock(){
+  const days=weekOf(0).map(dkey),gs=activeGoals();if(!gs.length)return '';
+  return `<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:10px"><b style="font-size:14px">Ziel-Stunden diese Woche</b><span class="small" data-live-week>${fmtShort(days.reduce((a,k)=>a+goalSecs(k),0))}</span></div><div class="qh">${gs.map(g=>{const w=days.reduce((a,k)=>a+secsOn(g.id,k),0),tg=(g.target||0)*3600;return `<div class="r"><div class="n"><span class="dot" style="background:${g.color}"></span><span>${esc(g.name)}</span></div><div class="v">${fmtShort(w)}${tg?' / '+g.target+'h':''}</div><div class="bar"><i style="width:${tg?Math.min(100,w/tg*100):0}%;background:${g.color}"></i></div></div>`;}).join('')}</div></div>`;
+}
+function qItem(t,list,i,opts={}){
+  const g=goal(t.goalId),run=S.running&&S.running.taskId===t.id,tk=todayKey();
+  const meta=[chip(g)];
+  if(t.date<tk)meta.push('<span>übernommen</span>');
+  const s=taskSecs(t);if(s>=30||run)meta.push(`<span ${run?`data-live-task="${t.id}"`:''}>${fmtDur(s)}</span>`);
+  if(t.notes)meta.push('<span>📝</span>');
+  return `<div class="qitem ${i===0&&opts.first?'first':''}" style="border-left-color:${g.color}" draggable="true" data-drag="${t.id}">
+    <button class="chk" data-a="done" data-t="${t.id}" title="Erledigt"></button>
+    <div class="tt"><div class="t1">${esc(t.title)}</div><div class="meta">${meta.join('')}</div></div>
+    <div class="ord"><button data-a="up" data-t="${t.id}" data-list="${opts.list}" title="Nach oben">${I.up()}</button><button data-a="down" data-t="${t.id}" data-list="${opts.list}" title="Nach unten">${I.down()}</button></div>
+    <button class="icon ${run?'on':'play'}" data-a="${run?'stop':'play'}" data-t="${t.id}">${run?I.pause():I.play()}</button></div>`;
+}
+function viewToday(){
+  const tk=todayKey();
+  if(!activeGoals().length&&!S.tasks.length)return noGoals();
+  const all=dayTasks(tk),q=all.filter(isGoalTask),o=all.filter(t=>!isGoalTask(t));
+  const done=S.tasks.filter(t=>t.done&&t.doneOn===tk).sort((a,b)=>(a.doneAt||0)-(b.doneAt||0));
+  let h=timerCard();
+  h+=`<h2>Heute in dieser Reihenfolge</h2><div class="qlist" data-drop="${tk}" data-droplist="q">${q.length?q.map((t,i)=>qItem(t,q,i,{first:true,list:'q'})).join(''):`<div class="card small" style="margin:0">Noch keine Aufgaben für deine Ziele. Was bringt dich heute weiter?</div>`}</div>`;
+  h+=`<form class="addbar" data-add="${tk}"><input placeholder="Neue Aufgabe für heute…" maxlength="140">${goalSelect('add-goal',pickGoal())}<button class="btn" type="submit">+</button></form>`;
+  if(o.length){h+=`<button class="other-toggle" data-a="toggle-other">${showOther?I.down():I.chev(1)} ${o.length} ${o.length===1?'Aufgabe':'Aufgaben'} ohne Ziel</button>`;
+    if(showOther)h+=`<div class="qlist">${o.map((t,i)=>qItem(t,o,i,{list:'o'})).join('')}</div>`;}
+  const ds=done.reduce((a,t)=>a+(t.secs||0),0);
+  h+=`<h2>Erledigt heute</h2><div class="card">`;
+  if(!done.length)h+=`<div class="small">Hier sammelt sich alles, was du heute geschafft hast. Der Berg, den du schon erklommen hast.</div>`;
+  else h+=`<div class="done-head"><span class="big">${done.length} ✓</span><span class="small">${ds>=60?fmtDur(ds)+' erfasst':''}</span></div><div class="donelog" style="margin-top:6px">${done.map(t=>{const g=goal(t.goalId)||NONE;return `<div class="d"><span class="chk done" style="width:20px;height:20px;border-radius:6px">${I.check(11)}</span><div class="tt">${esc(t.title)}</div><span class="dot" style="background:${g.color}"></span><span class="tm">${t.secs>=60?fmtShort(t.secs):''}</span><button class="icon xs" data-a="reopen" data-t="${t.id}" title="Wieder öffnen">${I.undo()}</button></div>`;}).join('')}</div>`;
+  h+='</div>'+weekGoalBlock();
+  return h;
+}
+
+// ================= Woche =================
+function viewWeek(){
+  const days=weekOf(weekOff),tk=todayKey();
+  let h=`<div class="pagehead"><h1>Woche planen</h1><div class="navbtns"><span class="lbl">${rangeLabel(days)}</span><button class="icon" data-a="week" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="week" data-d="0">Heute</button><button class="icon" data-a="week" data-d="1">${I.chev(1)}</button></div></div>`;
+  if(!activeGoals().length&&!S.tasks.length)return h+noGoals();
+  h+=`<div class="hint">Plane nach Tagen, nicht nach Uhrzeiten. Die Reihenfolge in einer Spalte ist deine Reihenfolge für den Tag. Am Computer kannst du Karten ziehen.</div><div class="board" id="board">`;
+  for(const d of days){
+    const k=dkey(d);
+    const open=k<tk?[]:(k===tk?dayTasks(k):S.tasks.filter(t=>t.date===k&&!t.done&&goal(t.goalId)).sort(byOrder));
+    const sorted=[...open.filter(isGoalTask),...open.filter(t=>!isGoalTask(t))];
+    const done=S.tasks.filter(t=>t.done&&(t.doneOn===k));
+    const sum=allSecs(k);
+    h+=`<div class="daycol ${k===tk?'now':''} ${k<tk?'past':''}" ${k===tk?'id="col-today"':''} ${k>=tk?`data-drop="${k}"`:''}><div class="dayhead"><b>${wdShort(d)}</b><span>${d.getDate()}.</span>${sum>=60?`<span class="sum">${fmtShort(sum)}</span>`:''}</div>
+      ${k>=tk?`<form class="add-day" data-add="${k}"><input placeholder="+ Aufgabe" maxlength="140">${goalSelect('add-goal',pickGoal())}</form>`:''}
+      ${sorted.map(t=>weekCard(t,k)).join('')}${done.map(t=>weekCard(t,k)).join('')}</div>`;
+  }
+  return h+'</div>';
+}
+function weekCard(t,k){
+  const g=goal(t.goalId)||NONE,run=S.running&&S.running.taskId===t.id,s=taskSecs(t);
+  return `<div class="tcard ${t.done?'done':''} ${run?'running':''}" style="border-left-color:${g.color}" ${t.done?'':`draggable="true" data-drag="${t.id}"`}><div class="title">${esc(t.title)}</div>
+    <div class="foot">${chip(g)}<span class="sp"></span>${s>=60||run?`<span class="tm" ${run?`data-live-task="${t.id}"`:''}>${fmtShort(s)}</span>`:''}</div>
+    <div class="foot">${t.done?`<span class="chk done">${I.check(11)}</span><span class="sp"></span><button class="icon xs" data-a="reopen" data-t="${t.id}" title="Wieder öffnen">${I.undo()}</button>`:`<button class="chk" data-a="done" data-t="${t.id}"></button><span class="sp"></span><button class="icon xs" data-a="move" data-t="${t.id}" data-d="-1" title="Einen Tag früher">${I.chev(-1)}</button><button class="icon xs" data-a="move" data-t="${t.id}" data-d="1" title="Einen Tag später">${I.chev(1)}</button><button class="icon xs" data-a="del-task" data-t="${t.id}" title="Löschen">${I.x()}</button>`}</div></div>`;
+}
+
+// ================= Fokus =================
+function viewFocus(){
+  const q=focusQueue();
+  const r=S.running;
+  const cur=(r&&r.taskId&&S.tasks.find(t=>t.id===r.taskId&&!t.done))||q[0];
+  let h=`<div class="pagehead"><h1>Fokus</h1><span class="small">Immer nur eine Aufgabe.</span></div>`;
+  if(!cur){
+    const n=S.tasks.filter(t=>t.done&&t.doneOn===todayKey()).length;
+    return h+`<div class="card empty"><div style="font-size:40px">🌄</div><div style="font-size:18px;color:var(--text);font-weight:600;margin:8px 0 6px">${n?'Alles für heute erledigt':'Nichts geplant'}</div>${n?`Du hast heute ${n} ${n===1?'Aufgabe':'Aufgaben'} geschafft. Feierabend verdient.`:'Lege unter „Heute“ fest, woran du arbeiten willst, und in welcher Reihenfolge.'}<br><button class="btn" data-a="tab" data-tab="heute">Zu Heute</button></div>`;
+  }
+  const g=goal(cur.goalId)||NONE,run=r&&r.taskId===cur.id;
+  const left=q.filter(t=>t.id!==cur.id).length;
+  h+=`<div class="card fx" style="border-top:3px solid ${g.color}">${chip(g)}
+    <div class="ftitle">${esc(cur.title)}</div>
+    <div class="fclock ${run?'':'paused'}" data-live-focus="${cur.id}">${fmtClock(taskSecs(cur))}</div>
+    <div class="fbtns">${run?`<button class="btn ghost" data-a="stop">${I.pause()} Pause</button>`:`<button class="btn" data-a="play" data-t="${cur.id}">${I.play()} ${cur.secs?'Weiter':'Start'}</button>`}
+      <button class="btn gold" data-a="focus-done" data-t="${cur.id}">✓ Erledigt</button>
+      <button class="btn ghost" data-a="later" data-t="${cur.id}">Später</button></div>
+    <textarea data-note="${cur.id}" placeholder="Notizen zu dieser Aufgabe…">${esc(cur.notes||'')}</textarea>
+    <div class="left">${left?`Danach warten noch ${left} ${left===1?'Aufgabe':'Aufgaben'}. Die siehst du erst, wenn diese fertig ist.`:'Das ist die letzte Aufgabe für heute.'}</div></div>`;
+  return h;
+}
+
+// ================= Logbuch =================
+function viewLog(){
+  const days=weekOf(logOff),tk=todayKey(),keys=days.map(dkey);
+  const now=Date.now();
+  const ses=[...S.sessions];
+  if(S.running)ses.push({g:S.running.goalId,t:S.running.taskId,s:S.running.start,e:now,live:true});
+  const perDay=keys.map(k=>{const s0=parseKey(k).getTime(),s1=s0+86400000;return ses.filter(x=>x.e>s0&&x.s<s1).map(x=>({...x,a:Math.max(x.s,s0),b:Math.min(x.e,s1),s0}));});
+  let h0=8,h1=20;
+  perDay.flat().forEach(x=>{const a=(x.a-x.s0)/3600000,b=(x.b-x.s0)/3600000;h0=Math.min(h0,Math.floor(a));h1=Math.max(h1,Math.ceil(b));});
+  const PX=42,H=(h1-h0)*PX;
+  let h=`<div class="pagehead"><h1>Logbuch</h1><div class="navbtns"><span class="lbl">${rangeLabel(days)}</span><button class="icon" data-a="log" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="log" data-d="0">Heute</button><button class="icon" data-a="log" data-d="1">${I.chev(1)}</button></div></div>`;
+  h+=`<div class="hint">Kein Plan, sondern ein Protokoll: Hier steht, wann du wirklich woran gearbeitet hast.</div>`;
+  h+=`<div class="card tl-wrap"><div class="tl"><div></div>`;
+  days.forEach((d,i)=>{const k=keys[i];const dn=S.tasks.filter(t=>t.done&&t.doneOn===k).length;const qs=goalSecs(k),al=allSecs(k);
+    h+=`<div class="hd ${k===tk?'now':''}"><b>${wdShort(d)} ${d.getDate()}.</b><div class="s">${al>=60?fmtShort(qs)+' Ziele':'–'}${al-qs>=60?' · '+fmtShort(al-qs)+' sonst.':''}${dn?' · '+dn+' ✓':''}</div></div>`;});
+  h+=`<div class="hours" style="height:${H}px">${Array.from({length:h1-h0+1},(_,i)=>`<div style="top:${i*PX}px">${pad(h0+i)}</div>`).join('')}</div>`;
+  perDay.forEach((list,i)=>{
+    h+=`<div class="col ${keys[i]===tk?'now':''}" style="height:${H}px;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent ${PX-1}px,var(--line) ${PX-1}px,var(--line) ${PX}px)">`;
+    list.forEach(x=>{const g=goal(x.g)||NONE,t=S.tasks.find(y=>y.id===x.t);const top=((x.a-x.s0)/3600000-h0)*PX,ht=Math.max(3,(x.b-x.a)/3600000*PX);
+      h+=`<div class="blk ${x.live?'live':''}" style="top:${top}px;height:${ht}px;background:${g.color}" title="${fmtTime(x.s)}–${x.live?'jetzt':fmtTime(x.e)} · ${esc(t?t.title:g.name)}">${ht>=22?esc(t?t.title:g.name):''}${ht>=40?`<span>${fmtTime(x.s)}–${x.live?'jetzt':fmtTime(x.e)}</span>`:''}</div>`;});
+    h+='</div>';
+  });
+  h+='</div></div>';
+  const used=[...new Set(perDay.flat().map(x=>x.g))].map(goal).filter(Boolean);
+  if(used.length)h+=`<div class="legend">${used.map(g=>`<span><i class="dot" style="background:${g.color}"></i>${esc(g.name)}</span>`).join('')}</div>`;
+  const done=S.tasks.filter(t=>t.done&&keys.includes(t.doneOn)).sort((a,b)=>(a.doneAt||0)-(b.doneAt||0));
+  h+=`<h2>Erledigt diese Woche · ${done.length}</h2><div class="card">${done.length?`<div class="donelog">${done.map(t=>{const g=goal(t.goalId)||NONE;return `<div class="d"><span class="chk done" style="width:20px;height:20px;border-radius:6px">${I.check(11)}</span><div class="tt">${esc(t.title)} <span class="small">· ${wdShort(parseKey(t.doneOn))}</span></div><span class="dot" style="background:${g.color}"></span><span class="tm">${t.secs>=60?fmtShort(t.secs):''}</span></div>`;}).join('')}</div>`:'<div class="small">In dieser Woche noch nichts abgehakt.</div>'}</div>`;
+  return h;
+}
+
+// ================= Ziele + Kompass =================
+function viewGoals(){
+  const act=activeGoals(),arc=S.goals.filter(g=>g.archived),c=S.compass||{};
+  let h=`<div class="pagehead"><h1>Ziele</h1><button class="btn" data-a="new-goal">+ Neues Ziel</button></div>`;
+  h+=`<div class="hint">Vertikale Kohärenz: Von deiner Vision bis zur einzelnen Stunde sollte alles zusammenpassen. Weniger ist mehr, drei aktive Ziele reichen.${act.length>3?' <b style="color:var(--gold)">Du hast gerade '+act.length+' aktive Ziele.</b>':''}</div>`;
+  if(!act.length)h+=`<div class="card empty">Noch keine Ziele. Leg dein erstes an.</div>`;
+  for(const g of act)h+=goalCard(g);
+  h+=`<h2>Kompass</h2><div class="card compass">
+    <label>Was für ein Mensch willst du sein? Was willst du im Leben erreichen?</label><textarea data-compass="vision" placeholder="Deine Vision">${esc(c.vision||'')}</textarea>
+    <label>Ziel in 5 Jahren</label><textarea data-compass="y5">${esc(c.y5||'')}</textarea>
+    <label>Ziel für ${new Date().getFullYear()}</label><textarea data-compass="year">${esc(c.year||'')}</textarea>
+    <label>Fokus diesen Monat</label><textarea data-compass="month">${esc(c.month||'')}</textarea></div>`;
+  if(arc.length){h+='<h2>Archiviert</h2>';for(const g of arc)h+=goalCard(g);}
+  h+=BACKUP_UI();
+  return h;
+}
+function goalCard(g){
+  const wk=weekOf(0).reduce((a,d)=>a+secsOn(g.id,dkey(d)),0),tgt=(g.target||0)*3600;
+  const open=S.tasks.filter(t=>t.goalId===g.id&&!t.done).length;
+  return `<div class="card"><div class="goal-h"><span class="dot" style="background:${g.color}"></span><span class="name">${esc(g.name)}</span><button class="icon" data-a="manual" data-g="${g.id}" title="Zeit nachtragen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg></button><button class="btn ghost sm" data-a="edit-goal" data-g="${g.id}">Bearbeiten</button></div>
+  ${g.why?`<div class="small" style="margin-top:6px">↳ ${esc(g.why)}</div>`:''}
+  <div class="row small" style="margin-top:10px;justify-content:space-between;flex-wrap:wrap"><span>Diese Woche <b style="color:var(--text)">${fmtDur(wk)}</b>${tgt?' von '+g.target+' h':''}</span><span>${open} offen · insgesamt <b style="color:var(--text)">${fmtDur(totalSecs(g.id))}</b></span></div>
+  ${tgt?`<div class="bar"><i style="width:${Math.min(100,wk/tgt*100)}%;background:${g.color}"></i></div>`:''}</div>`;
+}
+
+// ================= Sync über Dropbox oder WebDAV (ohne eigene Datenbank) =================
+const SYNC_KEY='motus_sync',SAVED_KEY='motus_savedAt',FILE='/motus.json';
+const SY={cfg:{type:'none'},timer:null,busy:false,last:null,err:null,pulling:false};
+try{SY.cfg=JSON.parse(localStorage.getItem(SYNC_KEY)||'{"type":"none"}');}catch(e){}
+const saveCfg=()=>{try{localStorage.setItem(SYNC_KEY,JSON.stringify(SY.cfg));}catch(e){}};
+const localStamp=()=>{try{return +localStorage.getItem(SAVED_KEY)||0;}catch(e){return 0;}};
+const setStamp=v=>{try{localStorage.setItem(SAVED_KEY,String(v));}catch(e){}};
+const redirectUri=()=>location.origin+location.pathname;
+const provName=()=>SY.cfg.type==='dropbox'?'Dropbox':SY.cfg.type==='webdav'?'WebDAV':'';
+function syncLabel(){
+  if(SY.cfg.type==='none')return NOSYNC;
+  if(SY.err)return provName()+' · Fehler';
+  if(SY.busy)return provName()+' · synchronisiert…';
+  return provName()+(SY.last?' · '+fmtTime(SY.last):'');
+}
+const showSync=()=>setSync(syncLabel());
+
+// ---- Dropbox (OAuth mit PKCE, nur App-Ordner) ----
+const b64url=buf=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+async function dbxStartAuth(appKey){
+  const v=b64url(crypto.getRandomValues(new Uint8Array(48)));
+  const ch=b64url(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)));
+  localStorage.setItem('motus_pkce',JSON.stringify({v,appKey}));
+  const u=new URL('https://www.dropbox.com/oauth2/authorize');
+  Object.entries({client_id:appKey,response_type:'code',code_challenge:ch,code_challenge_method:'S256',redirect_uri:redirectUri(),token_access_type:'offline'}).forEach(([k,x])=>u.searchParams.set(k,x));
+  location.href=u.toString();
+}
+async function dbxToken(params){
+  const r=await fetch('https://api.dropboxapi.com/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});
+  if(!r.ok)throw new Error('Anmeldung bei Dropbox fehlgeschlagen ('+r.status+')');
+  return r.json();
+}
+async function dbxFinishAuth(){
+  const q=new URLSearchParams(location.search);
+  if(!q.has('code')&&!q.has('error'))return false;
+  history.replaceState(null,'',location.pathname+location.hash);
+  if(q.has('error')){SY.err='Dropbox-Anmeldung abgebrochen';return true;}
+  let p;try{p=JSON.parse(localStorage.getItem('motus_pkce')||'null');}catch(e){}
+  if(!p)return true;
+  localStorage.removeItem('motus_pkce');
+  const t=await dbxToken({grant_type:'authorization_code',code:q.get('code'),client_id:p.appKey,code_verifier:p.v,redirect_uri:redirectUri()});
+  SY.cfg={type:'dropbox',appKey:p.appKey,refresh:t.refresh_token,access:t.access_token,exp:Date.now()+(t.expires_in-60)*1000};
+  saveCfg();return true;
+}
+async function dbxAccess(){
+  const c=SY.cfg;
+  if(c.access&&c.exp>Date.now())return c.access;
+  const t=await dbxToken({grant_type:'refresh_token',refresh_token:c.refresh,client_id:c.appKey});
+  c.access=t.access_token;c.exp=Date.now()+(t.expires_in-60)*1000;saveCfg();return c.access;
+}
+const DROPBOX={
+  async get(){
+    const r=await fetch('https://content.dropboxapi.com/2/files/download',{method:'POST',headers:{Authorization:'Bearer '+await dbxAccess(),'Dropbox-API-Arg':JSON.stringify({path:FILE})}});
+    if(r.status===409)return null;
+    if(!r.ok)throw new Error('Dropbox: Laden fehlgeschlagen ('+r.status+')');
+    return JSON.parse(await r.text());
+  },
+  async put(text){
+    const r=await fetch('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{Authorization:'Bearer '+await dbxAccess(),'Dropbox-API-Arg':JSON.stringify({path:FILE,mode:'overwrite',mute:true}),'Content-Type':'application/octet-stream'},body:text});
+    if(!r.ok)throw new Error('Dropbox: Speichern fehlgeschlagen ('+r.status+')');
+  }
+};
+
+// ---- WebDAV ----
+const davHeaders=()=>{const c=SY.cfg;const h={};if(c.user)h.Authorization='Basic '+btoa(unescape(encodeURIComponent(c.user+':'+(c.pass||''))));return h;};
+const davUrl=()=>{const u=SY.cfg.url.trim();return /\.json$/i.test(u)?u:u.replace(/\/?$/,'/')+'motus.json';};
+const WEBDAV={
+  async get(){
+    const r=await fetch(davUrl()+(davUrl().includes('?')?'&':'?')+'t='+Date.now(),{headers:davHeaders(),cache:'no-store'});
+    if(r.status===404)return null;
+    if(!r.ok)throw new Error('WebDAV: Laden fehlgeschlagen ('+r.status+')');
+    const tx=await r.text();return tx.trim()?JSON.parse(tx):null;
+  },
+  async put(text){
+    const r=await fetch(davUrl(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},davHeaders()),body:text});
+    if(!r.ok)throw new Error('WebDAV: Speichern fehlgeschlagen ('+r.status+')');
+  }
+};
+const provider=()=>SY.cfg.type==='dropbox'?DROPBOX:SY.cfg.type==='webdav'?WEBDAV:null;
+function errText(e){const m=String(e&&e.message||e);if(/\((401|403)\)/.test(m))return 'Zugriff verweigert. Benutzer oder Passwort stimmen nicht.';if(/Failed to fetch|NetworkError|Load failed/i.test(m))return SY.cfg.type==='webdav'?'Keine Verbindung. Entweder ist der Server nicht erreichbar, oder er blockiert Zugriffe aus dem Browser (CORS).':'Keine Verbindung zum Internet.';return m;}
+
+// ---- Abgleich: die neuere Version gewinnt ----
+async function syncPull(){
+  const p=provider();if(!p||SY.busy)return;
+  SY.busy=true;SY.err=null;showSync();
+  try{
+    const remote=await p.get();
+    const mine=localStamp();
+    const hasLocal=S.goals.length||S.tasks.length;
+    if(!SY.cfg.synced&&remote&&remote.state&&hasLocal&&(remote.state.goals||[]).length){
+      SY.busy=false;showSync();
+      SY.pendingRemote=remote;
+      modal(`<h3>Welche Daten behalten?</h3><div class="small">In ${provName()} liegen schon Motus-Daten (${remote.state.goals.length} Ziele, ${(remote.state.tasks||[]).length} Aufgaben), und auf diesem Gerät auch (${S.goals.length} Ziele, ${S.tasks.length} Aufgaben). Welche sollen ab jetzt gelten?</div><div class="actions"><button class="btn ghost" data-a="sync-keep-local">Dieses Gerät</button><span class="sp"></span><button class="btn" data-a="sync-keep-remote">Aus ${provName()}</button></div>`);
+      return;
+    }
+    if(remote&&remote.state&&(remote.savedAt||0)>mine){
+      S=normalize(remote.state);localSave();setStamp(remote.savedAt);softRender();
+    }else if(!remote||(remote.savedAt||0)<mine){
+      await p.put(JSON.stringify({app:'motus',v:2,savedAt:mine||Date.now(),state:S}));
+      if(!mine)setStamp(Date.now());
+    }
+    SY.last=Date.now();if(!SY.cfg.synced){SY.cfg.synced=true;saveCfg();}
+  }catch(e){SY.err=errText(e);}
+  SY.busy=false;showSync();if(tab==='ziele'&&!typing())render();
+}
+async function syncPush(){
+  const p=provider();if(!p)return;
+  if(SY.busy){schedulePush();return;}
+  SY.busy=true;SY.err=null;showSync();
+  try{await p.put(JSON.stringify({app:'motus',v:2,savedAt:localStamp(),state:S}));SY.last=Date.now();}
+  catch(e){SY.err=errText(e);}
+  SY.busy=false;showSync();
+}
+function schedulePush(){if(SY.cfg.type==='none')return;clearTimeout(SY.timer);SY.timer=setTimeout(syncPush,2000);}
+function markDirty(){setStamp(Date.now());schedulePush();}
+async function syncInit(){
+  try{await dbxFinishAuth();}catch(e){SY.err=errText(e);}
+  showSync();
+  if(SY.cfg.type!=='none')syncPull();
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){if(SY.timer){clearTimeout(SY.timer);syncPush();}}else syncPull();});
+  window.addEventListener('online',syncPull);
+  setInterval(()=>{if(!document.hidden&&!SY.timer)syncPull();},120000);
+}
+
+// ---- Oberfläche (unter Ziele) ----
+const BACKUP_UI=()=>{
+  const c=SY.cfg;
+  let h=`<h2>Daten & Synchronisierung</h2><div class="card">`;
+  if(c.type==='none'){
+    h+=`<div class="small" style="margin-bottom:12px">Deine Daten liegen gerade nur in diesem Browser. Verbinde einen Speicher, den du selbst besitzt. Dann landet alles in einer einzigen Datei <b>motus.json</b>, und all deine Geräte gleichen sich darüber ab. Eine fremde Datenbank gibt es dabei nicht.</div>
+      <div class="row" style="flex-wrap:wrap"><button class="btn" data-a="sync-dropbox">Mit Dropbox verbinden</button><button class="btn ghost" data-a="sync-webdav">WebDAV einrichten</button></div>`;
+  }else{
+    h+=`<div class="row" style="justify-content:space-between;flex-wrap:wrap"><div><b>${provName()}</b> verbunden<div class="small">${c.type==='dropbox'?'Datei: Dropbox/Apps/&lt;App-Name&gt;/motus.json':esc(davUrl())}</div></div><div class="row"><button class="btn ghost sm" data-a="sync-now">Jetzt abgleichen</button><button class="btn ghost sm" data-a="sync-off">Trennen</button></div></div>
+      <div class="small" style="margin-top:10px">${SY.err?`<span style="color:var(--danger)">${esc(SY.err)}</span>`:SY.last?'Zuletzt abgeglichen um '+fmtTime(SY.last)+'.':'Noch nicht abgeglichen.'}</div>`;
+  }
+  h+=`<div style="border-top:1px solid var(--line);margin:14px 0 12px"></div><div class="small" style="margin-bottom:10px">Sicherung als Datei, zusätzlich oder ohne Sync:</div><div class="row" style="flex-wrap:wrap"><button class="btn ghost sm" data-a="export">Daten sichern (Datei)</button><label class="btn ghost sm" style="cursor:pointer">Sicherung laden<input type="file" id="import" accept="application/json,.json" style="display:none"></label></div></div>`;
+  return h;
+};
+function dropboxModal(){
+  const secure=location.protocol==='https:'||location.hostname==='localhost';
+  modal(`<h3>Mit Dropbox verbinden</h3>
+  ${secure?'':'<div class="hint" style="color:var(--danger)">Das funktioniert nur, wenn die App über https:// läuft, z. B. auf Codeberg Pages.</div>'}
+  <div class="small" style="line-height:1.55">Einmalig musst du Motus bei Dropbox anmelden. Das ist kostenlos und dauert etwa 3 Minuten:
+  <ol style="margin:8px 0 8px 18px"><li>Öffne <b>dropbox.com/developers/apps</b> und tippe auf <b>Create app</b>.</li>
+  <li>Wähle <b>Scoped access</b> und <b>App folder</b>, und gib einen Namen ein, z. B. „Motus-deinname“.</li>
+  <li>Setze im Reiter <b>Permissions</b> die Haken bei <b>files.content.write</b> und <b>files.content.read</b> und tippe auf <b>Submit</b>.</li>
+  <li>Trage im Reiter <b>Settings</b> unter <b>OAuth 2 → Redirect URIs</b> diese Adresse ein und tippe auf <b>Add</b>:<br><code style="color:var(--gold);word-break:break-all">${esc(redirectUri())}</code></li>
+  <li>Kopiere dort den <b>App key</b> und füge ihn hier ein.</li></ol></div>
+  <form id="dbx-form"><label>App key</label><input name="key" required placeholder="z. B. a1b2c3d4e5f6g7h" autocomplete="off" value="${esc(SY.cfg.appKey||'')}">
+  <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">Abbrechen</button><button class="btn" type="submit" ${secure?'':'disabled'}>Weiter zu Dropbox</button></div></form>`);
+}
+function webdavModal(){
+  modal(`<h3>WebDAV einrichten</h3>
+  <div class="small" style="line-height:1.55">Gib die Adresse eines Ordners oder direkt einer .json-Datei auf deinem WebDAV-Server an, z. B. von deiner NAS oder Nextcloud. <b>Wichtig:</b> Der Server muss Zugriffe aus dem Browser erlauben (CORS). Läuft die App unter derselben Adresse wie der WebDAV-Server, entfällt das. Eine https-Seite kann außerdem keinen http-Server erreichen.</div>
+  <form id="dav-form"><label>Adresse</label><input name="url" required type="url" placeholder="https://nas.example.de/webdav/motus/" value="${esc(SY.cfg.url||'')}">
+  <label>Benutzer</label><input name="user" autocomplete="username" value="${esc(SY.cfg.user||'')}">
+  <label>Passwort</label><input name="pass" type="password" autocomplete="current-password">
+  <div class="small" style="margin-top:8px">Benutzer und Passwort werden nur in diesem Browser gespeichert. Am besten legst du dafür einen eigenen Benutzer an, der nur auf diesen einen Ordner zugreifen darf.</div>
+  <div id="dav-test" class="small" style="margin-top:8px"></div>
+  <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">Abbrechen</button><button class="btn" type="submit">Testen & verbinden</button></div></form>`);
+}
+window.EXTRA_ACTIONS={
+  export(){const b=new Blob([JSON.stringify({app:'motus',v:2,savedAt:localStamp(),exported:new Date().toISOString(),state:S},null,1)],{type:'application/json'});const u=URL.createObjectURL(b);const l=document.createElement('a');l.href=u;l.download='motus-sicherung-'+todayKey()+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);},
+  'do-import'(){if(window._imp){if(S.running)stopTimer(true);S=normalize(window._imp);window._imp=null;save();closeModal();render();}},
+  'sync-dropbox':dropboxModal,
+  'sync-webdav':webdavModal,
+  'sync-now'(){syncPull();},
+  'sync-off'(){modal(`<h3>Synchronisierung trennen?</h3><div class="small">Deine Daten bleiben auf diesem Gerät und in der Datei bei ${provName()} erhalten. Es wird nur nicht mehr abgeglichen.</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">Abbrechen</button><button class="btn danger" data-a="sync-off-ok">Trennen</button></div>`);},
+  'sync-keep-remote'(){const r=SY.pendingRemote;SY.pendingRemote=null;if(r){if(S.running)S.running=null;S=normalize(r.state);localSave();setStamp(r.savedAt||Date.now());}SY.cfg.synced=true;saveCfg();closeModal();SY.last=Date.now();showSync();render();},
+  'sync-keep-local'(){SY.pendingRemote=null;SY.cfg.synced=true;saveCfg();setStamp(Date.now());closeModal();syncPush().then(render);},
+  'sync-off-ok'(){SY.cfg={type:'none'};SY.err=null;SY.last=null;saveCfg();closeModal();showSync();render();}
+};
+window.EXTRA_CHANGE=t=>{if(t.id!=='import'||!t.files||!t.files[0])return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);const st=d.state||d;if(!Array.isArray(st.goals))throw 0;window._imp=st;modal(`<h3>Sicherung laden?</h3><div class="small">Die Sicherung enthält ${st.goals.length} Ziele und ${(st.tasks||[]).length} Aufgaben. Deine aktuellen Daten werden dadurch ersetzt${SY.cfg.type!=='none'?', auch in '+provName():''}.</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">Abbrechen</button><button class="btn" data-a="do-import">Ersetzen</button></div>`);}catch(e){modal(`<h3>Datei nicht lesbar</h3><div class="small">Das ist keine gültige Motus-Sicherung.</div><div class="actions"><span class="sp"></span><button class="btn" data-a="close">OK</button></div>`);}t.value='';};r.readAsText(t.files[0]);};
+document.addEventListener('submit',async e=>{
+  const f=e.target;
+  if(f.id==='dbx-form'){e.preventDefault();e.stopImmediatePropagation();const k=new FormData(f).get('key').trim();if(k)dbxStartAuth(k);}
+  else if(f.id==='dav-form'){
+    e.preventDefault();e.stopImmediatePropagation();
+    const fd=new FormData(f),out=f.querySelector('#dav-test');
+    const prev=SY.cfg;SY.cfg={type:'webdav',url:fd.get('url').trim(),user:fd.get('user').trim(),pass:fd.get('pass')||(prev.type==='webdav'?prev.pass:'')};
+    out.textContent='Teste Verbindung…';
+    try{await WEBDAV.get();saveCfg();closeModal();syncPull();render();}
+    catch(err){out.innerHTML='<span style="color:var(--danger)">'+esc(errText(err))+'</span>';SY.cfg=prev;}
+  }
+},true);
+
+
+// ================= Rückblick =================
+function viewReview(){
+  const days=weekOf(revOff),prev=weekOf(revOff-1),tk=todayKey(),wk=dkey(days[0]),keys=days.map(dkey);
+  const goals=S.goals.filter(g=>!g.archived||keys.some(k=>secsOn(g.id,k)>0));
+  const qW=keys.reduce((a,k)=>a+goalSecs(k),0),qP=prev.map(dkey).reduce((a,k)=>a+goalSecs(k),0);
+  const oW=keys.reduce((a,k)=>a+secsOn('_none',k),0);
+  const doneT=S.tasks.filter(t=>t.done&&keys.includes(t.doneOn));
+  const tgtSum=goals.filter(g=>!g.archived).reduce((a,g)=>a+(g.target||0),0)*3600;
+  const diff=qW-qP;
+  let h=`<div class="pagehead"><h1>Rückblick</h1><div class="navbtns"><span class="lbl">${revOff===0?'Diese Woche':revOff===-1?'Letzte Woche':rangeLabel(days)}</span><button class="icon" data-a="rev" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="rev" data-d="0">Aktuell</button><button class="icon" data-a="rev" data-d="1">${I.chev(1)}</button></div></div>`;
+  h+=`<div class="hint">Dein festes Ritual: Nimm dir jede Woche 20 Minuten. Was lief gut, was nicht, und warum? Gemessen wird nur die Zeit, die in deine Ziele geflossen ist, also dein Input, nicht das Ergebnis.</div>`;
+  h+=`<div class="stats"><div class="card stat"><div class="v" style="color:var(--gold)">${fmtShort(qW)}</div><div class="k">Ziel-Stunden${tgtSum?' von '+fmtShort(tgtSum):''}</div>${qP||qW?`<div class="trend ${diff>=0?'up':'down'}">${diff>=0?'▲':'▼'} ${fmtShort(Math.abs(diff))} zur Vorwoche</div>`:''}</div><div class="card stat"><div class="v">${doneT.length}</div><div class="k">erledigt</div></div><div class="card stat"><div class="v">${fmtShort(oW)}</div><div class="k">Sonstiges</div></div></div>`;
+  const per=days.map(d=>goals.map(g=>({g,s:secsOn(g.id,dkey(d))})));
+  const max=Math.max(3600,...per.map(p=>p.reduce((a,x)=>a+x.s,0)));
+  h+=`<div class="card"><div class="small">Ziel-Stunden pro Tag · ${rangeLabel(days)}</div><div class="weekchart">${days.map((d,i)=>{const tot=per[i].reduce((a,x)=>a+x.s,0);return `<div class="col"><div class="stack" style="height:${Math.max(3,tot/max*80)}px" title="${fmtDur(tot)}">${per[i].filter(x=>x.s>0).map(x=>`<i style="display:block;height:${x.s/tot*100}%;background:${x.g.color}"></i>`).join('')}</div><div class="d ${dkey(d)===tk?'now':''}">${wdShort(d)}</div></div>`;}).join('')}</div></div>`;
+  h+='<h2>Input-Ziele</h2>';
+  if(!goals.length)h+=`<div class="card empty">Noch keine Ziele.</div>`;
+  for(const g of goals){const w=keys.reduce((a,k)=>a+secsOn(g.id,k),0);const tgt=(g.target||0)*3600;const dn=doneT.filter(t=>t.goalId===g.id).length;
+    h+=`<div class="card"><div class="goal-h"><span class="dot" style="background:${g.color}"></span><span class="name">${esc(g.name)}</span><span class="today">${fmtDur(w)}${tgt?' / '+g.target+' h':''}</span></div>
+    <div class="bar"><i style="width:${tgt?Math.min(100,w/tgt*100):(qW?w/qW*100:0)}%;background:${g.color}"></i></div>
+    <div class="small" style="margin-top:8px">${tgt?(w>=tgt?'Input-Ziel erreicht 🎉':'Noch '+fmtDur(tgt-w)+' bis zum Input-Ziel'):'Kein Input-Ziel gesetzt'} · ${dn} erledigt</div></div>`;}
+  const r=S.reviews[wk]||{};
+  h+=`<h2>Reflexion</h2><div class="card review"><label>Was lief gut?</label><textarea data-review="good" data-w="${wk}" placeholder="Worauf bist du stolz?">${esc(r.good||'')}</textarea>
+    <label>Was lief nicht gut, und warum?</label><textarea data-review="hard" data-w="${wk}" placeholder="Was hat dich gebremst?">${esc(r.hard||'')}</textarea>
+    <label>Passt dein Alltag noch zu deinen Zielen?</label><textarea data-review="fit" data-w="${wk}" placeholder="Musst du deine Ziele ändern oder deinen Alltag?">${esc(r.fit||'')}</textarea>
+    <label>Was verbesserst du nächste Woche?</label><textarea data-review="next" data-w="${wk}" placeholder="Ein, zwei konkrete Änderungen">${esc(r.next||'')}</textarea></div>`;
+  return h;
+}
+
+
+// ================= Anleitung =================
+const STORAGE_HELP=`Zuerst in diesem Browser. Unter <b>Ziele → Daten & Synchronisierung</b> kannst du deine eigene <b>Dropbox</b> oder einen <b>WebDAV</b>-Speicher verbinden, z. B. deine NAS. Dann liegt alles in einer Datei <b>motus.json</b>, die all deine Geräte abgleichen, und zwar beim Öffnen, nach jeder Änderung und alle zwei Minuten. Bei gleichzeitigen Änderungen gewinnt die neuere Version. Eine fremde Datenbank gibt es nicht. Zusätzlich kannst du jederzeit eine Sicherung als Datei speichern.`;
+function viewHelp(){
+  const sec=(id,title,body)=>`<div class="card wiki" id="${id}" style="scroll-margin-top:80px"><h3>${title}</h3>${body}<button class="totop" data-a="top">↑ nach oben</button></div>`;
+  const pr=(n,title,body,where)=>`<div class="pr" style="margin:14px 0"><div class="num">${n}</div><div><b>${title}</b><p style="margin:4px 0">${body}</p><div class="where">→ ${where}</div></div></div>`;
+  let h=`<div class="pagehead"><h1>Anleitung</h1></div>
+  <div class="card wiki"><div class="lead">Motus hilft dir, deine Zeit in das zu stecken, was dir wirklich wichtig ist. Du verbindest deine großen Ziele mit dem, was du heute tust, und siehst, wie viele Stunden tatsächlich hineinfließen.</div>
+  <p>Motus ist kein Kalender, in den du jede halbe Stunde verplanst. Du entscheidest morgens, <b>was</b> heute dran ist und in <b>welcher Reihenfolge</b>. Dann arbeitest du eine Aufgabe nach der anderen ab, und es dauert so lange, wie es dauert.</p></div>
+  <div class="toc">${[['w-prinzipien','Die 6 Prinzipien'],['w-start','Erste Schritte'],['w-seiten','Die Seiten'],['w-routine','Tages- und Wochenroutine'],['w-begriffe','Begriffe'],['w-faq','Häufige Fragen']].map(([id,t])=>`<button data-a="jump" data-to="${id}">${t}</button>`).join('')}</div>`;
+
+  h+=sec('w-prinzipien','Die 6 Prinzipien',
+    pr(1,'Nach Tagen planen, nicht nach Stunden','Feste Zeitblöcke im Kalender stressen und brechen bei jeder Unterbrechung zusammen. Verteile Aufgaben stattdessen auf Tage und bring sie in eine Reihenfolge nach Wichtigkeit.','Heute und Woche')+
+    pr(2,'Immer nur eine Aufgabe sehen','Wer ständig sieht, was noch alles ansteht, verliert Energie für das Jetzt. Im Fokus siehst du nur die aktuelle Aufgabe. Ist sie erledigt, kommt die nächste.','Fokus')+
+    pr(3,'Messen, wohin die Zeit fließt','Was man misst, wird besser. Jede Minute läuft auf eine Aufgabe und damit auf ein Ziel.','Timer bei jeder Aufgabe, Logbuch')+
+    pr(4,'Erledigt-Liste statt To-do-Liste','Schau nicht auf den Berg, der noch vor dir liegt, sondern auf den, den du schon erklommen hast. Das motiviert und liefert dir Daten über deine Arbeit.','Erledigt heute, Logbuch')+
+    pr(5,'Input-Ziele statt Ergebnis-Ziele','„Diese Woche werde ich fertig“ scheitert oft an Dingen, die du nicht beeinflusst. „Diese Woche investiere ich 8 Stunden“ hast du selbst in der Hand. Gezählt werden nur Ziel-Stunden, also Zeit, die wirklich in deine Ziele fließt.','Ziele (Input-Ziel) und Rückblick')+
+    pr(6,'Vertikale Kohärenz und feste Reflexion','Vision, Jahresziel, Monat, Woche und die einzelne Stunde sollten zusammenpassen. Prüfe das jede Woche in einem festen Ritual. Passt es nicht, änderst du entweder deine Ziele oder deinen Alltag.','Kompass unter Ziele, Rückblick'));
+
+  h+=sec('w-start','Erste Schritte',`<ol>
+    <li><b>Kompass ausfüllen</b> (unter Ziele): Wer willst du sein? Was ist dein Jahresziel? Ein paar Sätze reichen.</li>
+    <li><b>Ein bis drei Ziele anlegen.</b> Gib jedem eine Farbe und ein <b>Input-Ziel</b>, also wie viele Stunden pro Woche du investieren willst.</li>
+    <li><b>Die Woche grob planen</b> (unter Woche): Verteile Aufgaben auf die Tage.</li>
+    <li><b>Morgens unter Heute die Reihenfolge festlegen.</b> Das Wichtigste kommt nach oben.</li>
+    <li><b>Fokus starten</b> und abarbeiten. Mehr musst du nicht tun.</li></ol>`);
+
+  h+=sec('w-seiten','Die Seiten',`
+    <details open><summary>Heute</summary><p>Deine Aufgaben für heute in der Reihenfolge, in der du sie erledigen willst. Die oberste ist golden umrandet, sie ist als Nächstes dran.</p><ul>
+      <li><b>Neue Aufgabe:</b> Text eingeben, Ziel wählen, „+“.</li>
+      <li><b>Reihenfolge:</b> mit ⌃ ⌄ verschieben, am Computer auch per Ziehen.</li>
+      <li><b>▶</b> startet den Timer für eine Aufgabe, <b>❚❚</b> pausiert ihn.</li>
+      <li><b>Kästchen antippen</b> heißt erledigt. Die Aufgabe wandert nach „Erledigt heute“, mit ↶ holst du sie zurück.</li>
+      <li>Nicht erledigte Aufgaben von gestern tauchen automatisch heute wieder auf und sind als „übernommen“ markiert.</li>
+      <li><b>Aufgaben ohne Ziel</b> (Flug buchen, Steuer …) stehen eingeklappt ganz unten, damit sie dich nicht ablenken. Erledige sie, wenn das Wichtige geschafft ist.</li>
+      <li>Unten siehst du deine <b>Ziel-Stunden diese Woche</b> im Vergleich zu deinen Input-Zielen.</li></ul></details>
+    <details><summary>Woche</summary><p>Eine Spalte pro Tag, Uhrzeiten gibt es keine. Die Reihenfolge in einer Spalte ist die Reihenfolge für diesen Tag. Aufgaben verschiebst du mit ‹ › um einen Tag, am Computer ziehst du sie einfach in eine andere Spalte oder an eine andere Stelle. Mit den Pfeilen oben blätterst du durch die Wochen.</p></details>
+    <details><summary>Fokus</summary><p>Hier siehst du nur eine einzige Aufgabe, mit großem Timer und einem Feld für Notizen.</p><ul>
+      <li><b>Start / Pause</b> für den Timer.</li>
+      <li><b>✓ Erledigt</b>: Die Aufgabe ist abgehakt, die nächste erscheint, und der Timer läuft gleich für sie weiter.</li>
+      <li><b>Später</b> schiebt die Aufgabe ans Ende der Liste.</li>
+      <li>Zuerst kommen die Aufgaben zu deinen Zielen, danach die ohne Ziel.</li></ul></details>
+    <details><summary>Logbuch</summary><p>Ein Protokoll und kein Plan. Für jeden Tag der Woche siehst du als farbige Blöcke, wann du wirklich woran gearbeitet hast. Oben steht pro Tag, wie viele Ziel-Stunden und wie viel Sonstiges zusammengekommen sind und wie viele Aufgaben du erledigt hast. Darunter findest du alles, was du diese Woche geschafft hast.</p><p class="small">Nachgetragene Zeit zählt in den Summen mit, erscheint aber nicht als Block, weil dafür keine Uhrzeit bekannt ist.</p></details>
+    <details><summary>Ziele</summary><ul>
+      <li><b>Ziele</b> mit Name, Farbe, Input-Ziel in Stunden pro Woche und der Frage, wie das Ziel auf dein Jahresziel einzahlt.</li>
+      <li><b>Uhr-Symbol:</b> Zeit nachtragen, wenn du vergessen hast, den Timer zu starten.</li>
+      <li><b>Archivieren</b> beendet ein Ziel, die Stunden bleiben erhalten. <b>Löschen</b> entfernt alles endgültig.</li>
+      <li><b>Kompass:</b> Vision, 5-Jahres-Ziel, Jahresziel und Monatsfokus. Hier prüfst du, ob deine Ziele dazu passen.</li></ul></details>
+    <details><summary>Rückblick</summary><p>Dein wöchentliches Ritual. Er zeigt die Ziel-Stunden der Woche im Vergleich zur Vorwoche und zu deinen Input-Zielen, die Verteilung über die Tage, erledigte Aufgaben und die Zeit für Sonstiges. Dazu kommen vier Fragen, deren Antworten pro Woche gespeichert werden. Mit den Pfeilen blätterst du zurück zu früheren Wochen.</p></details>`);
+
+  h+=sec('w-routine','Tages- und Wochenroutine',`
+    <p><b>Jeden Morgen (2 Minuten)</b></p><ul><li>Heute öffnen. Was ist wirklich wichtig? Bring es in die richtige Reihenfolge.</li><li>Was nicht heute sein muss, schiebst du unter Woche auf einen anderen Tag.</li><li>Dann auf „Fokus starten“ tippen.</li></ul>
+    <p><b>Tagsüber</b></p><ul><li>Im Fokus bleiben: eine Aufgabe, Timer, fertig, die nächste.</li><li>Kommt etwas dazwischen, drückst du auf Pause. Den Plan musst du nicht umbauen, die Reihenfolge bleibt.</li></ul>
+    <p><b>Abends</b></p><ul><li>Kleinkram ohne Ziel erledigen, falls noch Energie da ist.</li><li>Ein Blick auf „Erledigt heute“.</li></ul>
+    <p><b>Einmal pro Woche, z. B. Sonntag (20 Minuten)</b></p><ul><li>Rückblick öffnen: Zahlen anschauen und die vier Fragen beantworten.</li><li>Ziele und Kompass prüfen: Passt der Alltag noch?</li><li>Die neue Woche unter Woche grob verteilen.</li><li>Tipp: Geh den Rückblick mit jemandem durch, mit einem Freund oder einem Coach. Das macht ihn verbindlicher.</li></ul>`);
+
+  h+=sec('w-begriffe','Begriffe',`<dl>
+    <dt>Ziel</dt><dd>Ein langfristiges Vorhaben, das dir wichtig ist, z. B. Halbmarathon laufen, App launchen oder Bachelorarbeit abgeben. Am besten höchstens drei gleichzeitig.</dd>
+    <dt>Aufgabe</dt><dd>Ein konkreter Schritt für einen Tag. Sie gehört zu einem Ziel oder steht unter „Ohne Ziel“.</dd>
+    <dt>Ziel-Stunden</dt><dd>Zeit, die in Aufgaben zu deinen Zielen geflossen ist. Das ist die wichtigste Zahl in Motus.</dd>
+    <dt>Input-Ziel</dt><dd>Wie viele Stunden pro Woche du in ein Ziel investieren willst.</dd>
+    <dt>Sonstiges</dt><dd>Zeit für Aufgaben ohne Ziel. Sie wird erfasst, zählt aber nicht zu den Ziel-Stunden.</dd>
+    <dt>Übernommen</dt><dd>Eine Aufgabe von einem früheren Tag, die noch offen ist und deshalb heute wieder erscheint.</dd>
+    <dt>Logbuch</dt><dd>Das Protokoll deiner tatsächlich gearbeiteten Zeit.</dd>
+    <dt>Kompass</dt><dd>Deine Vision und die Ziele für 5 Jahre, dieses Jahr und diesen Monat, also das „Oben“ der vertikalen Kohärenz.</dd></dl>`);
+
+  h+=sec('w-faq','Häufige Fragen',`
+    <details><summary>Läuft der Timer weiter, wenn ich die App schließe?</summary><p>Ja. Gespeichert wird die Startzeit, nicht ein laufender Zähler. Wenn du die App wieder öffnest, stimmt die Zeit.</p></details>
+    <details><summary>Ich habe vergessen, den Timer zu starten.</summary><p>Unter Ziele beim jeweiligen Ziel auf das Uhr-Symbol tippen und die Minuten für den passenden Tag nachtragen.</p></details>
+    <details><summary>Warum kann nur ein Timer gleichzeitig laufen?</summary><p>Absichtlich. Du arbeitest immer nur an einer Sache. Startest du eine andere Aufgabe, wird die vorherige automatisch pausiert und ihre Zeit gespeichert.</p></details>
+    <details><summary>Warum gibt es keine Uhrzeiten zum Planen?</summary><p>Weil feste Zeitblöcke bei der ersten Unterbrechung zusammenbrechen und ständig neu sortiert werden müssen. Die Reihenfolge reicht. Wann du tatsächlich woran gearbeitet hast, zeigt dir das Logbuch hinterher.</p></details>
+    <details><summary>Was passiert mit Aufgaben, die ich nicht schaffe?</summary><p>Sie wandern automatisch auf heute und sind als „übernommen“ markiert. Häufen sie sich, ist das ein gutes Thema für den Rückblick.</p></details>
+    <details><summary>Ich habe mein Input-Ziel verfehlt, was nun?</summary><p>Nicht schlimm. Schau im Rückblick, warum. War das Ziel zu hoch, oder passt dein Alltag nicht dazu? Dann änderst du das eine oder das andere.</p></details>
+    <details><summary>Wo werden meine Daten gespeichert?</summary><p>${STORAGE_HELP}</p></details>
+    <details><summary>Wie lange bleiben erledigte Aufgaben sichtbar?</summary><p>Erledigte Aufgaben und Sitzungen bleiben einige Monate erhalten (Aufgaben 90 Tage, Sitzungen 180 Tage). Die erfassten Stunden pro Ziel bleiben dauerhaft.</p></details>`);
+  return h;
+}
+
+// ================= Dialoge =================
+function modal(html){$('#modal-root').innerHTML=`<div class="modal-bg" data-a="close-bg"><div class="modal">${html}</div></div>`;const i=$('#modal-root input');if(i)setTimeout(()=>i.focus(),50);}
+function closeModal(){$('#modal-root').innerHTML='';}
+let editColor=COLORS[0];
+function goalModal(g){
+  editColor=g?g.color:COLORS[S.goals.length%COLORS.length];
+  modal(`<h3>${g?'Ziel bearbeiten':'Neues Ziel'}</h3>
+  <form id="goal-form" data-g="${g?g.id:''}">
+  <label>Name</label><input name="name" required maxlength="60" placeholder="z. B. Halbmarathon laufen" value="${g?esc(g.name):''}">
+  <label>Wie zahlt es auf dein Jahresziel ein? (optional)</label><input name="why" maxlength="140" value="${g?esc(g.why||''):''}">
+  <label>Input-Ziel: Stunden pro Woche</label><input name="target" type="number" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 5" value="${g&&g.target?g.target:''}">
+  <label>Farbe</label><div class="colors">${COLORS.map(c=>`<button type="button" data-a="color" data-c="${c}" class="${c===editColor?'on':''}" style="background:${c}"></button>`).join('')}</div>
+  <div class="actions">${g?`<button type="button" class="btn ghost" data-a="archive" data-g="${g.id}">${g.archived?'Reaktivieren':'Archivieren'}</button><button type="button" class="btn danger" data-a="ask-del-goal" data-g="${g.id}">Löschen</button>`:''}<span class="sp"></span><button type="button" class="btn ghost" data-a="close">Abbrechen</button><button class="btn" type="submit">Speichern</button></div></form>`);
+}
+function manualModal(gid){
+  const g=goal(gid);
+  modal(`<h3>Zeit nachtragen</h3><div class="small">${esc(g.name)}</div><form id="manual-form" data-g="${gid}">
+  <label>Minuten</label><input name="min" type="number" min="1" max="1440" inputmode="numeric" required placeholder="z. B. 45">
+  <label>Tag</label><input name="day" type="date" value="${todayKey()}" max="${todayKey()}">
+  <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">Abbrechen</button><button class="btn" type="submit">Hinzufügen</button></div></form>`);
+}
+
+// ================= Ereignisse =================
+function setTab(t){tab=t;try{history.replaceState(null,'','#'+t);}catch(e){}render();window.scrollTo(0,0);if(t==='woche'){const c=$('#col-today');if(c&&window.innerWidth<820)c.scrollIntoView({inline:'start',block:'nearest'});}}
+document.addEventListener('click',e=>{
+  const nb=e.target.closest('nav button');if(nb){setTab(nb.dataset.tab);return;}
+  const el=e.target.closest('[data-a]');if(!el)return;
+  const a=el.dataset.a,gid=el.dataset.g,tid=el.dataset.t;
+  if(a==='close-bg'&&e.target!==el)return;
+  const tk=todayKey();
+  switch(a){
+    case 'tab':setTab(el.dataset.tab);break;
+    case 'play':startTimer(tid);break;
+    case 'stop':stopTimer();break;
+    case 'focus-go':{const n=focusQueue()[0];if(n){S.running={goalId:n.goalId,taskId:n.id,start:Date.now()};save();}setTab('fokus');break;}
+    case 'done':completeTask(tid,false);break;
+    case 'focus-done':completeTask(tid,true);break;
+    case 'reopen':reopenTask(tid);break;
+    case 'later':{const t=S.tasks.find(x=>x.id===tid);if(!t)break;if(S.running&&S.running.taskId===tid)stopTimer(true);t.date=t.date<tk?tk:t.date;t.order=nextOrder(tk);save();render();break;}
+    case 'up':case 'down':{const all=dayTasks(tk);const list=el.dataset.list==='o'?all.filter(t=>!isGoalTask(t)):all.filter(isGoalTask);moveInList(tid,a==='up'?-1:1,list);break;}
+    case 'del-task':if(S.running&&S.running.taskId===tid)stopTimer(true);S.tasks=S.tasks.filter(x=>x.id!==tid);save();render();break;
+    case 'move':{const t=S.tasks.find(x=>x.id===tid);if(!t)break;const nk=shiftKey(t.date<tk?tk:t.date,+el.dataset.d);t.date=nk;t.order=nextOrder(nk);save();render();break;}
+    case 'toggle-other':showOther=!showOther;render();break;
+    case 'week':weekOff=+el.dataset.d===0?0:weekOff+(+el.dataset.d);render();break;
+    case 'log':logOff=+el.dataset.d===0?0:Math.min(0,logOff+(+el.dataset.d));render();break;
+    case 'rev':revOff=+el.dataset.d===0?0:Math.min(0,revOff+(+el.dataset.d));render();break;
+    case 'new-goal':goalModal(null);break;
+    case 'edit-goal':goalModal(goal(gid));break;
+    case 'manual':manualModal(gid);break;
+    case 'color':editColor=el.dataset.c;document.querySelectorAll('.colors button').forEach(b=>b.classList.toggle('on',b.dataset.c===editColor));break;
+    case 'archive':{const g=goal(gid);g.archived=!g.archived;if(g.archived&&S.running&&S.running.goalId===gid)stopTimer(true);save();closeModal();render();break;}
+    case 'ask-del-goal':{const g=goal(gid);modal(`<h3>Ziel löschen?</h3><div class="small">„${esc(g.name)}“ mit allen Aufgaben und erfassten Zeiten wird endgültig gelöscht. Wenn du die Zeiten behalten willst, archiviere das Ziel lieber.</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">Abbrechen</button><button class="btn danger" data-a="del-goal" data-g="${gid}">Löschen</button></div>`);break;}
+    case 'del-goal':if(S.running&&S.running.goalId===gid)S.running=null;S.goals=S.goals.filter(g=>g.id!==gid);S.tasks=S.tasks.filter(t=>t.goalId!==gid);S.sessions=S.sessions.filter(x=>x.g!==gid);delete S.log[gid];save();closeModal();render();break;
+    case 'close':case 'close-bg':closeModal();break;
+    case 'jump':{const t=document.getElementById(el.dataset.to);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});break;}
+    case 'top':window.scrollTo({top:0,behavior:'smooth'});break;
+    default:if(window.EXTRA_ACTIONS&&EXTRA_ACTIONS[a])EXTRA_ACTIONS[a](el);
+  }
+});
+document.addEventListener('change',e=>{const t=e.target;if(t.classList.contains('add-goal'))lastGoal=t.value;if(window.EXTRA_CHANGE)EXTRA_CHANGE(t);});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset.review){const w=t.dataset.w;S.reviews[w]=S.reviews[w]||{};S.reviews[w][t.dataset.review]=t.value.slice(0,4000);save();}
+  else if(t.dataset.compass){S.compass=S.compass||{};S.compass[t.dataset.compass]=t.value.slice(0,2000);save();}
+  else if(t.dataset.note){const x=S.tasks.find(y=>y.id===t.dataset.note);if(x){x.notes=t.value.slice(0,4000);save();}}
+});
+document.addEventListener('submit',e=>{
+  e.preventDefault();
+  const f=e.target;
+  if(f.dataset.add){const v=f.querySelector('input').value.trim();if(!v)return;const g=f.querySelector('select').value||'_none';lastGoal=g;const k=f.dataset.add;const sl=$('#board')?$('#board').scrollLeft:0;
+    S.tasks.push({id:uid(),goalId:g,title:v,date:k,done:false,secs:0,order:nextOrder(k)});if(g==='_none'&&k===todayKey())showOther=true;save();render();
+    if($('#board'))$('#board').scrollLeft=sl;const n=document.querySelector(`[data-add="${k}"] input`);if(n)n.focus();return;}
+  if(f.id==='goal-form'){const fd=new FormData(f);const name=fd.get('name').trim();if(!name)return;const target=parseFloat(fd.get('target'))||0;const why=fd.get('why').trim();
+    if(f.dataset.g){Object.assign(goal(f.dataset.g),{name,target,why,color:editColor});}
+    else{const id=uid();S.goals.push({id,name,target,why,color:editColor,created:todayKey()});lastGoal=id;}
+    save();closeModal();render();return;}
+  if(f.id==='manual-form'){const fd=new FormData(f);const m=parseInt(fd.get('min'),10);if(!m||m<1)return;const day=fd.get('day')||todayKey();const g=f.dataset.g;S.log[g]=S.log[g]||{};S.log[g][day]=(S.log[g][day]||0)+m*60;save();closeModal();render();}
+});
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==tab&&TABS.includes(h)){tab=h;render();}});
+
+// Drag & Drop (Maus)
+let dragId=null;
+document.addEventListener('dragstart',e=>{const it=e.target.closest&&e.target.closest('[data-drag]');if(!it)return;dragId=it.dataset.drag;it.classList.add('drag');try{e.dataTransfer.setData('text/plain',dragId);e.dataTransfer.effectAllowed='move';}catch(_){}});
+document.addEventListener('dragend',()=>{dragId=null;document.querySelectorAll('.drag').forEach(x=>x.classList.remove('drag'));document.querySelectorAll('.dropline').forEach(x=>x.remove());});
+function dropTarget(e){const c=e.target.closest&&e.target.closest('[data-drop]');if(!c)return null;const items=[...c.querySelectorAll('[data-drag]')].filter(x=>x.dataset.drag!==dragId);let before=null;for(const it of items){const r=it.getBoundingClientRect();if(e.clientY<r.top+r.height/2){before=it;break;}}return {c,before};}
+document.addEventListener('dragover',e=>{if(!dragId)return;const d=dropTarget(e);if(!d)return;e.preventDefault();document.querySelectorAll('.dropline').forEach(x=>x.remove());const l=document.createElement('div');l.className='dropline';if(d.before)d.before.before(l);else{const items=d.c.querySelectorAll('[data-drag]');const last=items[items.length-1];if(last)last.after(l);else d.c.appendChild(l);}});
+document.addEventListener('drop',e=>{if(!dragId)return;const d=dropTarget(e);if(!d)return;e.preventDefault();const id=dragId;dragId=null;placeTask(id,d.c.dataset.drop,d.before?d.before.dataset.drag:null);});
+
+// ================= Live-Uhr =================
+let lastDay=todayKey();
+function tick(){
+  if(todayKey()!==lastDay){lastDay=todayKey();softRender();return;}
+  if(!S.running)return;
+  document.querySelectorAll('[data-clock]').forEach(c=>c.textContent=fmtClock(runningSecs()));
+  document.querySelectorAll('[data-live-task]').forEach(tl=>{const t=S.tasks.find(x=>x.id===tl.dataset.liveTask);if(t)tl.textContent=(tl.classList.contains('tm')?fmtShort:fmtDur)(taskSecs(t));});
+  document.querySelectorAll('[data-live-focus]').forEach(tl=>{const t=S.tasks.find(x=>x.id===tl.dataset.liveFocus);if(t)tl.textContent=fmtClock(taskSecs(t));});
+}
+setInterval(tick,1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)softRender();});
+initStore();
+syncInit();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
