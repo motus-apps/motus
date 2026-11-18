@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#08150e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,6 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#08150e">
 <title>Motus</title>
 <style>
 :root{
@@ -276,60 +276,189 @@ nav button.on{color:var(--moss-text);background:var(--surface)}
 .wiki dd{color:#d9dccf}
 @media(max-width:480px){.wiki dl{grid-template-columns:1fr}.wiki dd{margin-bottom:6px}}
 .totop{font-size:12px;color:var(--muted);margin-top:8px;display:inline-block}
+
+/* ---- v3: Themes, Profil, Einstellungen, Ablage, Etappen ---- */
+:root{--text2:#d9dccf;--navbg:rgba(8,21,14,.95);--bggrad:linear-gradient(180deg,var(--sky-deep) 0,#0a2a2c 160px,var(--bg) 420px);--ok:#3fbf6a;--shadow:0 6px 24px rgba(0,0,0,.35)}
+html[data-theme="light"]{
+  --bg:#f3f1ea; --surface:#ffffff; --surface2:#eef0e7; --line:#dde2d4;
+  --moss:#1f6e35; --moss-hi:#278a43; --moss-lo:#134a22; --moss-text:#9a6a0c;
+  --gold:#e3a42b; --gold-hi:#f0b843; --on-gold:#1a2a12;
+  --text:#18261c; --muted:#5e6c62; --text2:#2f3d33; --danger:#b8473a;
+  --navbg:rgba(243,241,234,.95);
+  --bggrad:linear-gradient(180deg,#cfe6ee 0,#e6efe4 170px,var(--bg) 420px);
+  --shadow:0 6px 24px rgba(30,50,35,.12);
+}
+body{background:var(--bggrad) no-repeat,var(--bg)!important}
+nav{background:var(--navbg)!important}
+html[data-theme="light"] .timer.idle{background:var(--surface)}
+html[data-theme="light"] .card{box-shadow:0 1px 2px rgba(30,50,35,.05)}
+html[data-theme="light"] .tl .blk{color:#0b1a10}
+html[data-theme="light"] .btn.ghost{color:var(--text)}
+.wiki p,.wiki ul,.wiki ol,.wiki dd{color:var(--text2)!important}
+
+/* Avatar */
+.avatar{position:relative;width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--moss);color:#f6f1e4;font-weight:700;font-size:15px;overflow:visible;border:2px solid var(--line)}
+.avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.avatar .sd{position:absolute;right:-2px;bottom:-2px;width:12px;height:12px;border-radius:50%;border:2px solid var(--bg);background:var(--muted)}
+.avatar .sd.ok{background:var(--ok)} .avatar .sd.err{background:var(--danger)} .avatar .sd.busy{background:var(--gold)}
+.avatar.big{width:72px;height:72px;font-size:26px}
+.avatar.big .sd{width:16px;height:16px}
+button.avatar:hover{border-color:var(--gold)}
+button.avatar.on{border-color:var(--gold)}
+
+/* Einstellungen */
+.set h3{font-size:15px;margin-bottom:10px}
+.set .row2{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.set .row2:first-of-type{border-top:0}
+.set .row2 .l{flex:1 1 180px;min-width:0}
+.set .row2 .l b{display:block;font-size:14px;font-weight:600}
+.set .row2 .l span{font-size:12px;color:var(--muted)}
+.seg{display:inline-flex;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{padding:7px 12px;border-radius:7px;font-size:13px;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+html[data-theme="dark"] .seg button.on{background:var(--moss);color:#fff}
+.set select{width:auto;min-width:140px;padding:8px 10px}
+.prof{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.prof .f{flex:1 1 200px;display:flex;flex-direction:column;gap:8px}
+.statusline{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.statusline i{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+.statusline i.ok{background:var(--ok)} .statusline i.err{background:var(--danger)} .statusline i.busy{background:var(--gold)}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;box-shadow:var(--shadow);max-width:90vw;text-align:center}
+@media(min-width:820px){.toast{bottom:30px}}
+
+/* Banner */
+.banner{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,rgba(253,189,74,.18),rgba(253,189,74,.06));border:1px solid rgba(253,189,74,.45);border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+.banner .tx{flex:1;min-width:0;font-size:14px}
+.banner .tx b{display:block}
+.banner .tx span{color:var(--muted);font-size:13px}
+
+/* Ablage */
+.daycol.ablage{background:var(--surface2);border-style:dashed}
+.daycol.ablage .dayhead b{color:var(--gold)}
+.ablagelink{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;padding:10px 4px}
+.ablagelink:hover{color:var(--text)}
+
+/* Neustart */
+.rs-list{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto;margin:12px 0}
+.rs-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-left:3px solid;border-radius:10px;background:var(--surface2)}
+.rs-item .tt{flex:1;min-width:0;font-size:14px}
+.rs-item .seg button{padding:5px 8px;font-size:12px}
+
+/* Weg zur Sonne */
+.path{margin-top:10px}
+.path svg{width:100%;height:auto;display:block}
+.path .track{fill:none;stroke:var(--surface2);stroke-width:6;stroke-linecap:round}
+.path .done{fill:none;stroke-width:6;stroke-linecap:round}
+.path .lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px;gap:8px;flex-wrap:wrap}
+.milestones{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.milestones span{font-size:11px;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.milestones span.got{background:rgba(253,189,74,.16);border-color:rgba(253,189,74,.5);color:var(--text)}
+
+/* Feier */
+.celebrate{text-align:center;padding:6px 0}
+.celebrate .sun{width:96px;height:96px;margin:4px auto 12px;border-radius:50%;background:radial-gradient(circle,var(--gold-hi) 0,var(--gold) 55%,rgba(253,189,74,0) 72%);animation:rise 1.1s ease-out}
+@keyframes rise{from{transform:translateY(30px) scale(.7);opacity:0}to{transform:none;opacity:1}}
+.celebrate h3{font-size:20px}
+.celebrate .small{font-size:14px;line-height:1.5}
+
+/* Erledigt-Animation */
+@keyframes pop{0%{transform:scale(.96);background:rgba(253,189,74,.25)}60%{transform:scale(1.01)}100%{transform:none;background:transparent}}
+.pop{animation:pop .7s ease-out}
+
+/* Jahresübersicht */
+.year{overflow-x:auto;padding-bottom:6px}
+.year .grid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,11px);gap:3px;width:max-content}
+.year .grid i{width:11px;height:11px;border-radius:3px;background:var(--surface2);display:block}
+.year .grid i.l1{background:rgba(253,189,74,.28)} .year .grid i.l2{background:rgba(253,189,74,.5)}
+.year .grid i.l3{background:rgba(253,189,74,.75)} .year .grid i.l4{background:var(--gold)}
+.year .grid i.out{background:transparent}
+.year .grid i.today{outline:1.5px solid var(--text);outline-offset:1px}
+.year .lg{display:flex;gap:4px;align-items:center;font-size:11px;color:var(--muted);margin-top:8px}
+.year .lg i{width:11px;height:11px;border-radius:3px;display:inline-block;background:var(--surface2)}
+
+/* Assistent */
+.wz-steps{display:flex;gap:6px;margin-bottom:14px}
+.wz-steps i{flex:1;height:4px;border-radius:2px;background:var(--surface2)}
+.wz-steps i.on{background:var(--gold)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.tiles button{border:1px solid var(--line);background:var(--surface2);border-radius:12px;padding:14px 10px;text-align:left;font-size:14px}
+.tiles button b{display:block;font-size:15px;margin-bottom:2px}
+.tiles button span{font-size:12px;color:var(--muted)}
+.tiles button:hover{border-color:var(--gold)}
+.checks{display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:14px}
+.checks div{display:flex;gap:8px;align-items:flex-start}
+.checks .ic{width:20px;flex:none;text-align:center}
+.copyrow{display:flex;gap:6px;align-items:center;margin-top:6px}
+.copyrow code{flex:1;min-width:0;word-break:break-all;background:var(--surface2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:12px;color:var(--gold)}
+html[data-theme="light"] .copyrow code{color:#8a5c00}
+.modal{max-height:92vh;overflow:auto}
+.modal ol{margin:8px 0 8px 20px;line-height:1.55}
+@media(min-width:1100px){.board{grid-auto-columns:minmax(132px,1fr)!important;overflow-x:auto!important}}
+.tcard .foot{flex-wrap:wrap;gap:2px}
+.tcard .icon.xs{width:22px;height:22px;border-radius:6px}
+.tcard .icon.xs svg{width:12px;height:12px}
+@media (hover:hover) and (pointer:fine) and (min-width:1100px){.tcard [data-a=move]{display:none}}
 </style>
 </head>
 <body>
-<nav><div class="in">
-  <button data-tab="heute"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Heute</button>
-  <button data-tab="woche"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="11" rx="1.5"/><rect x="17" y="4" width="4" height="7" rx="1.5"/></svg>Woche</button>
-  <button data-tab="fokus"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>Fokus</button>
-  <button data-tab="logbuch"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h4"/></svg>Logbuch</button>
-  <button data-tab="ziele"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></svg>Ziele</button>
-  <button data-tab="rueckblick"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>Rückblick</button>
-</div></nav>
+<nav><div class="in" id="navin"></div></nav>
 <div class="wrap" id="wrap">
   <header>
     <div class="brand"><img class="logo" src="data:image/png;base64,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" alt="">Motus</div>
-    <div class="row" style="gap:12px"><div style="text-align:right"><div class="date" id="today-label"></div><div class="sync" id="sync"></div></div><button class="hbtn" data-a="tab" data-tab="hilfe" title="Anleitung">?</button></div>
+    <div class="row" style="gap:12px"><div class="date" id="today-label" style="text-align:right"></div><button class="avatar" id="avatar-btn" data-a="tab" data-tab="einstellungen"></button></div>
   </header>
   <main id="view"></main>
 </div>
 <div id="modal-root"></div>
+<div id="toast-root"></div>
 
 <script>
 // ================= Grundlagen =================
+const IS_PWA=true;
+const VERSION='1.1';
 const COLORS=['#fdbd4a','#2f8f5b','#2b8aa6','#8aa65a','#c77d4a','#b85c5c','#8a6bb5','#4aa38f'];
-const NONE={id:'_none',name:'Ohne Ziel',color:'#7f8c84'};
-const TABS=['heute','woche','fokus','logbuch','ziele','rueckblick','hilfe'];
+const MILESTONES=[5,10,25,50,100,250,500,1000,2500,5000];
+const TABS=['heute','woche','fokus','logbuch','ziele','rueckblick','einstellungen','hilfe'];
 const CLIENT=Math.random().toString(36).slice(2,9);
-const EMPTY=()=>({goals:[],tasks:[],log:{},running:null,sessions:[],reviews:{},compass:{}});
+const EMPTY=()=>({goals:[],tasks:[],log:{},running:null,sessions:[],reviews:{},compass:{},prefs:{},profile:{},meta:{}});
+const DEF_PREFS={lang:null,theme:'system',weekStart:1,dayStart:0,review:true,reviewDay:0,dismissed:{}};
 let S=EMPTY();
 let tab='heute';
 try{const h=location.hash.slice(1);if(h==='kalender')tab='logbuch';else if(TABS.includes(h))tab=h;}catch(e){}
-let weekOff=0,logOff=0,revOff=0,lastGoal=null,showOther=false,pendingRender=false;
+let weekOff=0,logOff=0,revOff=0,lastGoal=null,showOther=false,pendingRender=false,lastDoneId=null,SYNC_TEXT='',CLOUD='local';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const pad=n=>String(n).padStart(2,'0');
+const P=()=>Object.assign({},DEF_PREFS,S.prefs||{});
+const lang=()=>P().lang||((navigator.language||'de').toLowerCase().startsWith('de')?'de':'en');
+const tr=(de,en)=>lang()==='en'?en:de;
+const LOC=()=>lang()==='en'?'en-GB':'de-DE';
 const dkey=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-const todayKey=()=>dkey(new Date());
 const parseKey=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d);};
 const shiftKey=(k,n)=>{const d=parseKey(k);d.setDate(d.getDate()+n);return dkey(d);};
-function weekOf(off){const n=new Date();const o=(n.getDay()+6)%7;const out=[];for(let i=0;i<7;i++)out.push(new Date(n.getFullYear(),n.getMonth(),n.getDate()-o+i+off*7));return out;}
+const DS=()=>(+P().dayStart||0)*3600000;
+const dayOf=ms=>dkey(new Date(ms-DS()));
+const todayKey=()=>dayOf(Date.now());
+const dayStartMs=k=>parseKey(k).getTime()+DS();
+function weekOf(off){const b=parseKey(todayKey());const o=(b.getDay()-P().weekStart+7)%7;const out=[];for(let i=0;i<7;i++)out.push(new Date(b.getFullYear(),b.getMonth(),b.getDate()-o+i+off*7));return out;}
 function fmtClock(s){s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600);return (h?h+':'+pad(Math.floor(s%3600/60)):Math.floor(s%3600/60))+':'+pad(s%60);}
 function fmtDur(s){s=Math.round(s/60);if(s<60)return s+' min';const h=Math.floor(s/60),m=s%60;return m?h+' h '+m+' min':h+' h';}
 function fmtShort(s){const m=Math.round(s/60);if(m<60)return m+'m';const h=Math.floor(m/60),r=m%60;return r?h+'h '+r:h+'h';}
 const fmtTime=ms=>{const d=new Date(ms);return pad(d.getHours())+':'+pad(d.getMinutes());};
-const goal=id=>id==='_none'?NONE:S.goals.find(g=>g.id===id);
+const NONE=()=>({id:'_none',name:tr('Ohne Ziel','No goal'),color:'#7f8c84'});
+const goal=id=>id==='_none'?NONE():S.goals.find(g=>g.id===id);
 const activeGoals=()=>S.goals.filter(g=>!g.archived);
 const isGoalTask=t=>t.goalId!=='_none'&&!!S.goals.find(g=>g.id===t.goalId);
 const rangeLabel=days=>{const a=days[0],b=days[6];return a.getDate()+'.'+(a.getMonth()+1)+'. – '+b.getDate()+'.'+(b.getMonth()+1)+'.'+b.getFullYear();};
-const wdShort=d=>d.toLocaleDateString('de-DE',{weekday:'short'}).replace('.','');
+const wdShort=d=>d.toLocaleDateString(LOC(),{weekday:'short'}).replace('.','');
+const wdName=i=>new Date(2024,0,7+i).toLocaleDateString(LOC(),{weekday:'long'});
 const byOrder=(a,b)=>(a.order||0)-(b.order||0);
+const IN_CLAUDE=()=>false;
 
 // ================= Zeit =================
 function runningSecs(){return S.running?(Date.now()-S.running.start)/1000:0;}
-function secsOn(goalId,day){let v=(S.log[goalId]||{})[day]||0;if(S.running&&S.running.goalId===goalId){const s0=parseKey(day).getTime(),s1=s0+86400000;const a=Math.max(S.running.start,s0),b=Math.min(Date.now(),s1);if(b>a)v+=(b-a)/1000;}return v;}
+function secsOn(goalId,day){let v=(S.log[goalId]||{})[day]||0;if(S.running&&S.running.goalId===goalId){const s0=dayStartMs(day),s1=dayStartMs(shiftKey(day,1));const a=Math.max(S.running.start,s0),b=Math.min(Date.now(),s1);if(b>a)v+=(b-a)/1000;}return v;}
 const goalSecs=day=>S.goals.reduce((a,g)=>a+secsOn(g.id,day),0);
 const allSecs=day=>goalSecs(day)+secsOn('_none',day);
 function totalSecs(goalId){let v=Object.values(S.log[goalId]||{}).reduce((a,b)=>a+b,0);if(S.running&&S.running.goalId===goalId)v+=runningSecs();return v;}
@@ -337,11 +466,12 @@ const taskSecs=t=>(t.secs||0)+(S.running&&S.running.taskId===t.id?runningSecs():
 function addTime(goalId,startMs,endMs){
   S.log[goalId]=S.log[goalId]||{};
   let t=startMs;
-  while(t<endMs){const d=new Date(t);const next=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1).getTime();const e=Math.min(next,endMs);const k=dkey(d);S.log[goalId][k]=Math.round((S.log[goalId][k]||0)+(e-t)/1000);t=e;}
+  while(t<endMs){const k=dayOf(t);const e=Math.min(dayStartMs(shiftKey(k,1)),endMs);S.log[goalId][k]=Math.round((S.log[goalId][k]||0)+(e-t)/1000);t=e;}
 }
 function startTimer(taskId){
   const t=S.tasks.find(x=>x.id===taskId);if(!t)return;
   if(S.running)stopTimer(true);
+  if(!t.date)t.date=todayKey();
   S.running={goalId:t.goalId,taskId:t.id,start:Date.now()};
   save();render();
 }
@@ -354,64 +484,140 @@ function stopTimer(silent){
     S.sessions.push({g:r.goalId,t:r.taskId,s:r.start,e:end});
   }
   S.running=null;
+  checkMilestones();
   if(!silent){save();render();}
 }
 function completeTask(id,autoNext){
   const t=S.tasks.find(x=>x.id===id);if(!t)return;
   const wasRunning=S.running&&S.running.taskId===id;
   if(wasRunning)stopTimer(true);
-  t.done=true;t.doneOn=todayKey();t.doneAt=Date.now();
+  t.done=true;t.doneOn=todayKey();t.doneAt=Date.now();if(!t.date)t.date=todayKey();
+  lastDoneId=id;
   if(autoNext&&wasRunning){const n=focusQueue()[0];if(n){S.running={goalId:n.goalId,taskId:n.id,start:Date.now()};}}
   save();render();
 }
-function reopenTask(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;t.done=false;t.doneOn=null;t.doneAt=null;if(t.date<todayKey())t.date=todayKey();t.order=nextOrder(t.date);save();render();}
+function reopenTask(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;t.done=false;t.doneOn=null;t.doneAt=null;if(t.date&&t.date<todayKey())t.date=todayKey();t.order=nextOrder(t.date);save();render();}
 
-// ================= Reihenfolge =================
-function dayTasks(k){const tk=todayKey();return S.tasks.filter(t=>!t.done&&goal(t.goalId)&&(k===tk?t.date<=tk:t.date===k)).sort(byOrder);}
+// ================= Etappen =================
+function nextMilestone(h){return MILESTONES.find(m=>m>h)||null;}
+function checkMilestones(){
+  for(const g of S.goals){
+    const h=totalSecs(g.id)/3600;
+    const reached=MILESTONES.filter(m=>m<=h).pop()||0;
+    if(g.ms==null){g.ms=reached;continue;}
+    if(reached>g.ms){g.ms=reached;celebrate(g,reached);return;}
+  }
+}
+let celebrateQueue=null;
+function celebrate(g,h){
+  const nx=nextMilestone(h);
+  const html=`<div class="celebrate"><div class="sun"></div><h3>${tr('Etappe erreicht','Milestone reached')}</h3><div class="small" style="margin-top:6px">${tr(`<b>${h} Stunden</b> hast du schon in „${esc(g.name)}“ gesteckt. Das ist ein echtes Stück Weg.`,`You have invested <b>${h} hours</b> in “${esc(g.name)}”. That is real progress.`)}${nx?`<br>${tr('Nächste Etappe','Next milestone')}: ${nx} h`:''}</div><div class="actions" style="justify-content:center"><button class="btn gold" data-a="close">${tr('Weiter geht’s','Keep going')}</button></div></div>`;
+  if($('#modal-root').innerHTML)celebrateQueue=html;else modal(html);
+}
+
+// ================= Reihenfolge & Ablage =================
+function dayTasks(k){const tk=todayKey();return S.tasks.filter(t=>!t.done&&t.date&&goal(t.goalId)&&(k===tk?t.date<=tk:t.date===k)).sort(byOrder);}
+const backlog=()=>S.tasks.filter(t=>!t.done&&!t.date&&goal(t.goalId)).sort(byOrder);
 function focusQueue(){const q=dayTasks(todayKey());return [...q.filter(isGoalTask),...q.filter(t=>!isGoalTask(t))];}
-function nextOrder(k){const l=S.tasks.filter(t=>t.date===k||(k===todayKey()&&t.date<k&&!t.done));return l.length?Math.max(...l.map(t=>t.order||0))+1:Date.now();}
+function nextOrder(k){const l=k?S.tasks.filter(t=>t.date===k||(k===todayKey()&&t.date&&t.date<k&&!t.done)):backlog();return l.length?Math.max(...l.map(t=>t.order||0))+1:Date.now();}
 function moveInList(id,dir,list){const i=list.findIndex(t=>t.id===id),j=i+dir;if(i<0||j<0||j>=list.length)return;const a=list[i],b=list[j];let oa=a.order||0,ob=b.order||0;if(oa===ob)ob=oa+dir;a.order=ob;b.order=oa;save();render();}
-function placeTask(id,dayKey,beforeId){
+function placeTask(id,dropKey,beforeId){
   const t=S.tasks.find(x=>x.id===id);if(!t)return;
-  t.date=dayKey;
-  const list=(dayKey===todayKey()?dayTasks(dayKey):S.tasks.filter(x=>x.date===dayKey&&!x.done).sort(byOrder)).filter(x=>x.id!==id);
+  const k=dropKey==='ablage'?null:dropKey;
+  t.date=k;
+  const list=(k===null?backlog():k===todayKey()?dayTasks(k):S.tasks.filter(x=>x.date===k&&!x.done).sort(byOrder)).filter(x=>x.id!==id);
   if(!beforeId){t.order=list.length?(list[list.length-1].order||0)+1:Date.now();}
   else{const i=list.findIndex(x=>x.id===beforeId);const nxt=list[i],prv=list[i-1];t.order=prv?((prv.order||0)+(nxt.order||0))/2:(nxt.order||0)-1;}
+  if(k===null&&S.running&&S.running.taskId===id)stopTimer(true);
   save();render();
 }
 
 // ================= Speichern =================
 let ref=null,saveTimer=null,writing=Promise.resolve(),lastRev=null;
-function normalize(o){const s=Object.assign(EMPTY(),o||{});s.tasks.forEach((t,i)=>{if(!t.goalId)t.goalId='_none';if(t.order==null)t.order=i;});return s;}
+function normalize(o){const s=Object.assign(EMPTY(),o||{});['prefs','profile','meta','compass','reviews','log'].forEach(k=>{if(!s[k]||typeof s[k]!=='object')s[k]={};});s.tasks.forEach((t,i)=>{if(!t.goalId)t.goalId='_none';if(t.order==null)t.order=i;});return s;}
 function localLoad(){try{const v=localStorage.getItem('motus');if(v)S=normalize(JSON.parse(v));}catch(e){}}
 function localSave(){try{localStorage.setItem('motus',JSON.stringify(S));}catch(e){}}
 function save(){
   localSave();markDirty();
   if(!ref)return;
   clearTimeout(saveTimer);
-  setSync('Speichert…');
+  CLOUD='busy';setSync(tr('Speichert…','Saving…'));
   saveTimer=setTimeout(()=>{
     saveTimer=null;
     const rev=Date.now()+'-'+CLIENT;lastRev=rev;
     const body={rev,state:JSON.parse(JSON.stringify(S))};
-    writing=writing.then(()=>ref.set(body)).then(()=>setSync('Gespeichert')).catch(e=>{setSync(e&&e.code==='quota_exceeded'?'Speicher voll':'Nicht gespeichert');});
+    writing=writing.then(()=>ref.set(body)).then(()=>{CLOUD='ok';setSync(tr('Gespeichert','Saved'));}).catch(e=>{CLOUD='err';setSync(e&&e.code==='quota_exceeded'?tr('Speicher voll','Storage full'):tr('Nicht gespeichert','Not saved'));});
   },700);
 }
-function setSync(t){$('#sync').textContent=t;}
+let syncStateFn=()=>CLOUD;
+function setSync(t){SYNC_TEXT=t;updateAvatar();const sl=$('#statusline');if(sl)sl.innerHTML=statusLine();}
 function prune(){
   const lim=new Date();lim.setDate(lim.getDate()-90);const lk=dkey(lim);
-  S.tasks=S.tasks.filter(t=>!(t.done&&(t.doneOn||t.date)<lk));
+  S.tasks=S.tasks.filter(t=>!(t.done&&(t.doneOn||t.date||'')<lk));
   const sl=Date.now()-180*86400000;S.sessions=S.sessions.filter(x=>x.e>sl);
   if(S.running&&S.running.plan)S.running.plan=null;
 }
 const typing=()=>{const a=document.activeElement;return a&&(a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&a.type!=='file'));};
 function softRender(){if(typing())pendingRender=true;else render();}
 document.addEventListener('focusout',()=>setTimeout(()=>{if(pendingRender&&!typing()){pendingRender=false;render();}},150));
+const NOSYNC=()=>IS_PWA?tr('Nur auf diesem Gerät','This device only'):tr('Nur auf diesem Gerät','This device only');
 async function initStore(){
-  localLoad();prune();render();setSync(NOSYNC);
+  localLoad();prune();applyTheme();render();setTimeout(checkPause,2500);CLOUD='local';setSync(NOSYNC());
   try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){}
 }
-const NOSYNC='Auf diesem Gerät gespeichert';
+
+// ================= Design =================
+let mq=null;
+function applyTheme(){
+  const th=P().theme;
+  const dark=th==='dark'||(th==='system'&&!(window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches));
+  document.documentElement.dataset.theme=dark?'dark':'light';
+  document.documentElement.lang=lang();
+  const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',dark?'#08150e':'#f3f1ea');
+  if(!mq&&window.matchMedia){mq=matchMedia('(prefers-color-scheme: light)');try{mq.addEventListener('change',()=>{if(P().theme==='system'){applyTheme();}});}catch(e){}}
+}
+function toast(msg){const r=$('#toast-root');r.innerHTML=`<div class="toast">${msg}</div>`;clearTimeout(toast.t);toast.t=setTimeout(()=>r.innerHTML='',2600);}
+
+// ================= Pause & Neustart =================
+let pauseChecked=false;
+function checkPause(){
+  if(pauseChecked)return;pauseChecked=true;
+  const tk=todayKey(),last=(S.meta||{}).lastSeen;
+  S.meta=S.meta||{};
+  if(last&&last!==tk){
+    const gap=Math.round((parseKey(tk)-parseKey(last))/86400000);
+    const old=S.tasks.filter(t=>!t.done&&t.date&&t.date<tk&&goal(t.goalId));
+    S.meta.lastSeen=tk;save();
+    if(gap>=3&&old.length)restartModal();
+  }else if(!last){S.meta.lastSeen=tk;save();}
+}
+function touchSeen(){const tk=todayKey();if(S.meta&&S.meta.lastSeen!==tk&&pauseChecked){S.meta.lastSeen=tk;save();}}
+function restartModal(list){
+  const tk=todayKey();
+  const old=S.tasks.filter(t=>!t.done&&t.date&&t.date<tk&&goal(t.goalId)).sort(byOrder);
+  if(!old.length){closeModal();return;}
+  if(!list){
+    modal(`<h3>${tr('Schön, dass du wieder da bist.','Good to have you back.')}</h3><div class="small" style="line-height:1.5">${tr(`Aus den letzten Tagen sind noch <b>${old.length}</b> ${old.length===1?'Aufgabe':'Aufgaben'} offen. Damit du nicht mit einem Berg startest: Was willst du damit machen?`,`There ${old.length===1?'is':'are'} still <b>${old.length}</b> open ${old.length===1?'task':'tasks'} from the last few days. So you don’t start with a pile: what would you like to do?`)}</div>
+    <div class="actions" style="flex-direction:column;align-items:stretch"><button class="btn gold" data-a="rs-review">${tr('Durchgehen','Go through them')}</button><button class="btn" data-a="rs-all-ablage">${tr('Alle in die Ablage','Move all to backlog')}</button><button class="btn ghost" data-a="rs-keep">${tr('Alle behalten','Keep all')}</button></div>`);
+    return;
+  }
+  modal(`<h3>${tr('Aufgaben durchgehen','Go through tasks')}</h3><div class="small">${tr('Für jede Aufgabe: heute machen, in die Ablage oder loslassen.','For each task: do today, move to backlog, or let go.')}</div>
+    <div class="rs-list">${old.map(t=>{const g=goal(t.goalId);return `<div class="rs-item" style="border-left-color:${g.color}"><div class="tt">${esc(t.title)}</div><div class="seg"><button data-a="rs-one" data-t="${t.id}" data-v="today">${tr('Heute','Today')}</button><button data-a="rs-one" data-t="${t.id}" data-v="ablage">${tr('Ablage','Backlog')}</button><button data-a="rs-one" data-t="${t.id}" data-v="drop">${tr('Loslassen','Let go')}</button></div></div>`;}).join('')}</div>
+    <div class="actions"><span class="sp"></span><button class="btn" data-a="close">${tr('Fertig','Done')}</button></div>`);
+}
+
+// ================= Rückblick-Erinnerung =================
+function reviewDue(){
+  const p=P();if(!p.review)return null;
+  const today=parseKey(todayKey());const back=(today.getDay()-p.reviewDay+7)%7;if(back>2)return null;
+  const rd=new Date(today);rd.setDate(rd.getDate()-back);
+  const r=new Date(rd);if(rd.getDay()===+p.weekStart)r.setDate(r.getDate()-1);
+  const o=(r.getDay()-p.weekStart+7)%7;r.setDate(r.getDate()-o);const wk=dkey(r);
+  const rv=S.reviews[wk];if(rv&&Object.values(rv).some(v=>v&&String(v).trim()))return null;
+  if(p.dismissed&&p.dismissed[wk])return null;
+  return wk;
+}
+function weekOffsetOf(wk){return Math.round((parseKey(wk)-weekOf(0)[0])/(7*86400000));}
 
 // ================= Bausteine =================
 const I={
@@ -422,45 +628,64 @@ const I={
   chev:d=>`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="${d<0?'M15 5l-7 7 7 7':'M9 5l7 7-7 7'}"/></svg>`,
   up:()=>`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>`,
   down:()=>`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`,
-  undo:()=>`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg>`
+  undo:()=>`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg>`,
+  box:()=>`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v4H3zM5 11v9h14v-9M10 15h4"/></svg>`,
+  today:()=>`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="12" cy="15" r="1.6" fill="currentColor"/></svg>`
 };
+const NAV=()=>[
+  ['heute',tr('Heute','Today'),'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>'],
+  ['woche',tr('Woche','Week'),'<rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="11" rx="1.5"/><rect x="17" y="4" width="4" height="7" rx="1.5"/>'],
+  ['fokus',tr('Fokus','Focus'),'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>'],
+  ['logbuch',tr('Logbuch','Log'),'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h4"/>'],
+  ['ziele',tr('Ziele','Goals'),'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>'],
+  ['rueckblick',tr('Rückblick','Review'),'<path d="M5 20V10M12 20V4M19 20v-7"/>']];
 const chip=g=>`<span class="chip"><i style="background:${g.color}"></i>${esc(g.name)}</span>`;
-const noGoals=()=>`<div class="card empty"><div style="font-size:17px;color:var(--text);font-weight:600;margin-bottom:6px">Wofür willst du deine Zeit einsetzen?</div>Lege ein bis drei langfristige Ziele an, zum Beispiel ein Projekt, einen Halbmarathon oder eine Abschlussarbeit. Jede Aufgabe gehört dann zu einem Ziel, und du siehst, wie viele Stunden wirklich hineinfließen.<br><button class="btn" data-a="new-goal">Erstes Ziel anlegen</button></div>`;
-function goalSelect(cls,sel){const gs=activeGoals();return `<select class="${cls}">${gs.map(g=>`<option value="${g.id}" ${g.id===sel?'selected':''}>● ${esc(g.name)}</option>`).join('')}<option value="_none" ${sel==='_none'?'selected':''}>○ Ohne Ziel</option></select>`;}
+const noGoals=()=>`<div class="card empty"><div style="font-size:17px;color:var(--text);font-weight:600;margin-bottom:6px">${tr('Wofür willst du deine Zeit einsetzen?','What do you want to spend your time on?')}</div>${tr('Lege ein bis drei langfristige Ziele an, zum Beispiel ein Projekt, einen Halbmarathon oder eine Abschlussarbeit. Jede Aufgabe gehört dann zu einem Ziel, und du siehst, wie viele Stunden wirklich hineinfließen.','Create one to three long-term goals, for example a project, a half marathon or a thesis. Every task then belongs to a goal, and you see how many hours really go into it.')}<br><button class="btn" data-a="new-goal">${tr('Erstes Ziel anlegen','Create first goal')}</button></div>`;
+function goalSelect(cls,sel){const gs=activeGoals();return `<select class="${cls}">${gs.map(g=>`<option value="${g.id}" ${g.id===sel?'selected':''}>● ${esc(g.name)}</option>`).join('')}<option value="_none" ${sel==='_none'?'selected':''}>○ ${tr('Ohne Ziel','No goal')}</option></select>`;}
 function pickGoal(){const gs=activeGoals();if(lastGoal&&(lastGoal==='_none'||gs.find(g=>g.id===lastGoal)))return lastGoal;return gs[0]?gs[0].id:'_none';}
+function avatarInner(){const pr=S.profile||{};if(pr.avatar)return `<img src="${pr.avatar}" alt="">`;const n=(pr.name||'').trim();if(n)return esc(n.split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase());return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>`;}
+function updateAvatar(){const b=$('#avatar-btn');if(!b)return;b.innerHTML=avatarInner()+`<span class="sd ${syncStateFn()}"></span>`;b.title=(S.profile&&S.profile.name?S.profile.name+' · ':'')+SYNC_TEXT;b.classList.toggle('on',tab==='einstellungen');}
+function statusLine(){return `<i class="${syncStateFn()}"></i>${esc(SYNC_TEXT||NOSYNC())}`;}
 
 function render(){
   pendingRender=false;
-  $('#today-label').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
-  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  applyTheme();
+  $('#today-label').textContent=new Date(Date.now()-DS()).toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'});
+  $('#navin').innerHTML=NAV().map(([k,l,ic])=>`<button data-tab="${k}" class="${k===tab?'on':''}"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>${l}</button>`).join('');
   $('#wrap').classList.toggle('wide',tab==='woche'||tab==='logbuch');
-  const V={heute:viewToday,woche:viewWeek,fokus:viewFocus,logbuch:viewLog,ziele:viewGoals,rueckblick:viewReview,hilfe:viewHelp};
-  const hb=$('.hbtn');if(hb)hb.classList.toggle('on',tab==='hilfe');
+  const V={heute:viewToday,woche:viewWeek,fokus:viewFocus,logbuch:viewLog,ziele:viewGoals,rueckblick:viewReview,einstellungen:viewSettings,hilfe:viewHelp};
   $('#view').innerHTML=V[tab]();
+  updateAvatar();
+  postRender();
   tick();
+}
+function postRender(){
+  document.querySelectorAll('[data-pathp]').forEach(el=>{const p=el.querySelector('.track'),d=el.querySelector('.pdot');if(!p||!d)return;try{const L=p.getTotalLength();const pt=p.getPointAtLength(L*Math.max(0,Math.min(1,+el.dataset.pathp)));d.setAttribute('cx',pt.x);d.setAttribute('cy',pt.y);}catch(e){}});
+  lastDoneId=null;
+  if(celebrateQueue&&!$('#modal-root').innerHTML){const h=celebrateQueue;celebrateQueue=null;modal(h);}
 }
 function timerCard(){
   const r=S.running;
-  if(!r){const n=focusQueue()[0];return `<div class="card timer idle"><div class="grow"><div class="t">0:00</div><div class="lbl" style="color:var(--muted)">${n?'Als Nächstes: '+esc(n.title):'Plane deinen Tag, dann geht’s los.'}</div></div>${n?`<button class="btn gold" data-a="focus-go">Fokus starten</button>`:''}</div>`;}
+  if(!r){const n=focusQueue()[0];return `<div class="card timer idle"><div class="grow"><div class="t">0:00</div><div class="lbl" style="color:var(--muted)">${n?tr('Als Nächstes: ','Up next: ')+esc(n.title):tr('Plane deinen Tag, dann geht’s los.','Plan your day, then get going.')}</div></div>${n?`<button class="btn gold" data-a="focus-go">${tr('Fokus starten','Start focus')}</button>`:''}</div>`;}
   const t=S.tasks.find(x=>x.id===r.taskId),g=goal(r.goalId);
-  return `<div class="card timer"><div class="grow"><div class="t" data-clock>${fmtClock(runningSecs())}</div><div class="lbl">${esc(t?t.title:'')} · ${esc(g?g.name:'')}</div></div><button class="btn ghost" data-a="tab" data-tab="fokus" style="background:rgba(0,0,0,.25)">Fokus</button><button class="btn stop" data-a="stop">Pause</button></div>`;
+  return `<div class="card timer"><div class="grow"><div class="t" data-clock>${fmtClock(runningSecs())}</div><div class="lbl">${esc(t?t.title:'')} · ${esc(g?g.name:'')}</div></div><button class="btn ghost" data-a="tab" data-tab="fokus" style="background:rgba(0,0,0,.25);color:#fff">${tr('Fokus','Focus')}</button><button class="btn stop" data-a="stop">${tr('Pause','Pause')}</button></div>`;
 }
 
 // ================= Heute =================
 function weekGoalBlock(){
   const days=weekOf(0).map(dkey),gs=activeGoals();if(!gs.length)return '';
-  return `<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:10px"><b style="font-size:14px">Ziel-Stunden diese Woche</b><span class="small" data-live-week>${fmtShort(days.reduce((a,k)=>a+goalSecs(k),0))}</span></div><div class="qh">${gs.map(g=>{const w=days.reduce((a,k)=>a+secsOn(g.id,k),0),tg=(g.target||0)*3600;return `<div class="r"><div class="n"><span class="dot" style="background:${g.color}"></span><span>${esc(g.name)}</span></div><div class="v">${fmtShort(w)}${tg?' / '+g.target+'h':''}</div><div class="bar"><i style="width:${tg?Math.min(100,w/tg*100):0}%;background:${g.color}"></i></div></div>`;}).join('')}</div></div>`;
+  return `<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:10px"><b style="font-size:14px">${tr('Ziel-Stunden diese Woche','Goal hours this week')}</b><span class="small">${fmtShort(days.reduce((a,k)=>a+goalSecs(k),0))}</span></div><div class="qh">${gs.map(g=>{const w=days.reduce((a,k)=>a+secsOn(g.id,k),0),tg=(g.target||0)*3600;return `<div class="r"><div class="n"><span class="dot" style="background:${g.color}"></span><span>${esc(g.name)}</span></div><div class="v">${fmtShort(w)}${tg?' / '+g.target+'h':''}</div><div class="bar"><i style="width:${tg?Math.min(100,w/tg*100):0}%;background:${g.color}"></i></div></div>`;}).join('')}</div></div>`;
 }
-function qItem(t,list,i,opts={}){
+function qItem(t,i,opts={}){
   const g=goal(t.goalId),run=S.running&&S.running.taskId===t.id,tk=todayKey();
   const meta=[chip(g)];
-  if(t.date<tk)meta.push('<span>übernommen</span>');
+  if(t.date<tk)meta.push(`<span>${tr('übernommen','carried over')}</span>`);
   const s=taskSecs(t);if(s>=30||run)meta.push(`<span ${run?`data-live-task="${t.id}"`:''}>${fmtDur(s)}</span>`);
   if(t.notes)meta.push('<span>📝</span>');
   return `<div class="qitem ${i===0&&opts.first?'first':''}" style="border-left-color:${g.color}" draggable="true" data-drag="${t.id}">
-    <button class="chk" data-a="done" data-t="${t.id}" title="Erledigt"></button>
+    <button class="chk" data-a="done" data-t="${t.id}" title="${tr('Erledigt','Done')}"></button>
     <div class="tt"><div class="t1">${esc(t.title)}</div><div class="meta">${meta.join('')}</div></div>
-    <div class="ord"><button data-a="up" data-t="${t.id}" data-list="${opts.list}" title="Nach oben">${I.up()}</button><button data-a="down" data-t="${t.id}" data-list="${opts.list}" title="Nach unten">${I.down()}</button></div>
+    <div class="ord"><button data-a="up" data-t="${t.id}" data-list="${opts.list}" title="${tr('Nach oben','Move up')}">${I.up()}</button><button data-a="down" data-t="${t.id}" data-list="${opts.list}" title="${tr('Nach unten','Move down')}">${I.down()}</button></div>
     <button class="icon ${run?'on':'play'}" data-a="${run?'stop':'play'}" data-t="${t.id}">${run?I.pause():I.play()}</button></div>`;
 }
 function viewToday(){
@@ -468,15 +693,20 @@ function viewToday(){
   if(!activeGoals().length&&!S.tasks.length)return noGoals();
   const all=dayTasks(tk),q=all.filter(isGoalTask),o=all.filter(t=>!isGoalTask(t));
   const done=S.tasks.filter(t=>t.done&&t.doneOn===tk).sort((a,b)=>(a.doneAt||0)-(b.doneAt||0));
-  let h=timerCard();
-  h+=`<h2>Heute in dieser Reihenfolge</h2><div class="qlist" data-drop="${tk}" data-droplist="q">${q.length?q.map((t,i)=>qItem(t,q,i,{first:true,list:'q'})).join(''):`<div class="card small" style="margin:0">Noch keine Aufgaben für deine Ziele. Was bringt dich heute weiter?</div>`}</div>`;
-  h+=`<form class="addbar" data-add="${tk}"><input placeholder="Neue Aufgabe für heute…" maxlength="140">${goalSelect('add-goal',pickGoal())}<button class="btn" type="submit">+</button></form>`;
-  if(o.length){h+=`<button class="other-toggle" data-a="toggle-other">${showOther?I.down():I.chev(1)} ${o.length} ${o.length===1?'Aufgabe':'Aufgaben'} ohne Ziel</button>`;
-    if(showOther)h+=`<div class="qlist">${o.map((t,i)=>qItem(t,o,i,{list:'o'})).join('')}</div>`;}
+  let h='';
+  const due=reviewDue();
+  if(due)h+=`<div class="banner"><div style="font-size:22px">🌄</div><div class="tx"><b>${tr('Zeit für deinen Wochenrückblick','Time for your weekly review')}</b><span>${tr('20 Minuten, um auf die Woche zu schauen. Nur wenn es dir passt.','20 minutes to look back on your week. Only if it suits you.')}</span></div><button class="btn gold sm" data-a="review-go" data-w="${due}">${tr('Los','Start')}</button><button class="icon xs" data-a="review-dismiss" data-w="${due}" title="${tr('Diese Woche nicht','Not this week')}">${I.x()}</button></div>`;
+  h+=timerCard();
+  h+=`<h2>${tr('Heute in dieser Reihenfolge','Today, in this order')}</h2><div class="qlist" data-drop="${tk}">${q.length?q.map((t,i)=>qItem(t,i,{first:true,list:'q'})).join(''):`<div class="card small" style="margin:0">${tr('Noch keine Aufgaben für deine Ziele. Was bringt dich heute weiter?','No tasks for your goals yet. What moves you forward today?')}</div>`}</div>`;
+  h+=`<form class="addbar" data-add="${tk}"><input placeholder="${tr('Neue Aufgabe für heute…','New task for today…')}" maxlength="140">${goalSelect('add-goal',pickGoal())}<button class="btn" type="submit">+</button></form>`;
+  if(o.length){h+=`<button class="other-toggle" data-a="toggle-other">${showOther?I.down():I.chev(1)} ${o.length} ${tr(o.length===1?'Aufgabe ohne Ziel':'Aufgaben ohne Ziel',o.length===1?'task without goal':'tasks without goal')}</button>`;
+    if(showOther)h+=`<div class="qlist">${o.map((t,i)=>qItem(t,i,{list:'o'})).join('')}</div>`;}
+  const bl=backlog().length;
+  h+=`<div><button class="ablagelink" data-a="goto-ablage">${I.box()} ${tr('Ablage','Backlog')} (${bl}) ${I.chev(1)}</button></div>`;
   const ds=done.reduce((a,t)=>a+(t.secs||0),0);
-  h+=`<h2>Erledigt heute</h2><div class="card">`;
-  if(!done.length)h+=`<div class="small">Hier sammelt sich alles, was du heute geschafft hast. Der Berg, den du schon erklommen hast.</div>`;
-  else h+=`<div class="done-head"><span class="big">${done.length} ✓</span><span class="small">${ds>=60?fmtDur(ds)+' erfasst':''}</span></div><div class="donelog" style="margin-top:6px">${done.map(t=>{const g=goal(t.goalId)||NONE;return `<div class="d"><span class="chk done" style="width:20px;height:20px;border-radius:6px">${I.check(11)}</span><div class="tt">${esc(t.title)}</div><span class="dot" style="background:${g.color}"></span><span class="tm">${t.secs>=60?fmtShort(t.secs):''}</span><button class="icon xs" data-a="reopen" data-t="${t.id}" title="Wieder öffnen">${I.undo()}</button></div>`;}).join('')}</div>`;
+  h+=`<h2>${tr('Erledigt heute','Done today')}</h2><div class="card">`;
+  if(!done.length)h+=`<div class="small">${tr('Hier sammelt sich alles, was du heute geschafft hast. Der Berg, den du schon erklommen hast.','Everything you finish today collects here. The mountain you have already climbed.')}</div>`;
+  else h+=`<div class="done-head"><span class="big">${done.length} ✓</span><span class="small">${ds>=60?fmtDur(ds)+tr(' erfasst',' tracked'):''}</span></div><div class="donelog" style="margin-top:6px">${done.map(t=>{const g=goal(t.goalId)||NONE();return `<div class="d ${t.id===lastDoneId?'pop':''}"><span class="chk done" style="width:20px;height:20px;border-radius:6px">${I.check(11)}</span><div class="tt">${esc(t.title)}</div><span class="dot" style="background:${g.color}"></span><span class="tm">${t.secs>=60?fmtShort(t.secs):''}</span><button class="icon xs" data-a="reopen" data-t="${t.id}" title="${tr('Wieder öffnen','Reopen')}">${I.undo()}</button></div>`;}).join('')}</div>`;
   h+='</div>'+weekGoalBlock();
   return h;
 }
@@ -484,9 +714,13 @@ function viewToday(){
 // ================= Woche =================
 function viewWeek(){
   const days=weekOf(weekOff),tk=todayKey();
-  let h=`<div class="pagehead"><h1>Woche planen</h1><div class="navbtns"><span class="lbl">${rangeLabel(days)}</span><button class="icon" data-a="week" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="week" data-d="0">Heute</button><button class="icon" data-a="week" data-d="1">${I.chev(1)}</button></div></div>`;
+  let h=`<div class="pagehead"><h1>${tr('Woche planen','Plan the week')}</h1><div class="navbtns"><span class="lbl">${rangeLabel(days)}</span><button class="icon" data-a="week" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="week" data-d="0">${tr('Heute','Today')}</button><button class="icon" data-a="week" data-d="1">${I.chev(1)}</button></div></div>`;
   if(!activeGoals().length&&!S.tasks.length)return h+noGoals();
-  h+=`<div class="hint">Plane nach Tagen, nicht nach Uhrzeiten. Die Reihenfolge in einer Spalte ist deine Reihenfolge für den Tag. Am Computer kannst du Karten ziehen.</div><div class="board" id="board">`;
+  h+=`<div class="hint">${tr('Plane nach Tagen, nicht nach Uhrzeiten. Die Reihenfolge in einer Spalte ist deine Reihenfolge für den Tag. Was noch keinen Tag hat, kommt in die Ablage. Am Computer kannst du Karten ziehen.','Plan by day, not by hour. The order in a column is your order for that day. Anything without a day goes to the backlog. On a computer you can drag cards.')}</div><div class="board" id="board">`;
+  const bl=backlog();
+  h+=`<div class="daycol ablage" id="col-ablage" data-drop="ablage"><div class="dayhead"><b>${I.box()} ${tr('Ablage','Backlog')}</b>${bl.length?`<span class="sum">${bl.length}</span>`:''}</div>
+    <form class="add-day" data-add="ablage"><input placeholder="${tr('+ Idee oder Aufgabe','+ Idea or task')}" maxlength="140">${goalSelect('add-goal',pickGoal())}</form>
+    ${bl.length?bl.map(t=>weekCard(t,null)).join(''):`<div class="small" style="padding:6px 4px">${tr('Aufgaben ohne festen Tag. Nichts geht verloren.','Tasks without a fixed day. Nothing gets lost.')}</div>`}</div>`;
   for(const d of days){
     const k=dkey(d);
     const open=k<tk?[]:(k===tk?dayTasks(k):S.tasks.filter(t=>t.date===k&&!t.done&&goal(t.goalId)).sort(byOrder));
@@ -494,16 +728,20 @@ function viewWeek(){
     const done=S.tasks.filter(t=>t.done&&(t.doneOn===k));
     const sum=allSecs(k);
     h+=`<div class="daycol ${k===tk?'now':''} ${k<tk?'past':''}" ${k===tk?'id="col-today"':''} ${k>=tk?`data-drop="${k}"`:''}><div class="dayhead"><b>${wdShort(d)}</b><span>${d.getDate()}.</span>${sum>=60?`<span class="sum">${fmtShort(sum)}</span>`:''}</div>
-      ${k>=tk?`<form class="add-day" data-add="${k}"><input placeholder="+ Aufgabe" maxlength="140">${goalSelect('add-goal',pickGoal())}</form>`:''}
+      ${k>=tk?`<form class="add-day" data-add="${k}"><input placeholder="${tr('+ Aufgabe','+ Task')}" maxlength="140">${goalSelect('add-goal',pickGoal())}</form>`:''}
       ${sorted.map(t=>weekCard(t,k)).join('')}${done.map(t=>weekCard(t,k)).join('')}</div>`;
   }
   return h+'</div>';
 }
 function weekCard(t,k){
-  const g=goal(t.goalId)||NONE,run=S.running&&S.running.taskId===t.id,s=taskSecs(t);
+  const g=goal(t.goalId)||NONE(),run=S.running&&S.running.taskId===t.id,s=taskSecs(t);
+  let actions;
+  if(t.done)actions=`<span class="chk done">${I.check(11)}</span><span class="sp"></span><button class="icon xs" data-a="reopen" data-t="${t.id}" title="${tr('Wieder öffnen','Reopen')}">${I.undo()}</button>`;
+  else if(!t.date)actions=`<button class="chk" data-a="done" data-t="${t.id}"></button><span class="sp"></span><button class="icon xs" data-a="to-today" data-t="${t.id}" title="${tr('Heute einplanen','Plan for today')}">${I.today()}</button><button class="icon xs" data-a="del-task" data-t="${t.id}" title="${tr('Löschen','Delete')}">${I.x()}</button>`;
+  else actions=`<button class="chk" data-a="done" data-t="${t.id}"></button><span class="sp"></span><button class="icon xs" data-a="move" data-t="${t.id}" data-d="-1" title="${tr('Einen Tag früher','One day earlier')}">${I.chev(-1)}</button><button class="icon xs" data-a="move" data-t="${t.id}" data-d="1" title="${tr('Einen Tag später','One day later')}">${I.chev(1)}</button><button class="icon xs" data-a="to-ablage" data-t="${t.id}" title="${tr('In die Ablage','To backlog')}">${I.box()}</button><button class="icon xs" data-a="del-task" data-t="${t.id}" title="${tr('Löschen','Delete')}">${I.x()}</button>`;
   return `<div class="tcard ${t.done?'done':''} ${run?'running':''}" style="border-left-color:${g.color}" ${t.done?'':`draggable="true" data-drag="${t.id}"`}><div class="title">${esc(t.title)}</div>
     <div class="foot">${chip(g)}<span class="sp"></span>${s>=60||run?`<span class="tm" ${run?`data-live-task="${t.id}"`:''}>${fmtShort(s)}</span>`:''}</div>
-    <div class="foot">${t.done?`<span class="chk done">${I.check(11)}</span><span class="sp"></span><button class="icon xs" data-a="reopen" data-t="${t.id}" title="Wieder öffnen">${I.undo()}</button>`:`<button class="chk" data-a="done" data-t="${t.id}"></button><span class="sp"></span><button class="icon xs" data-a="move" data-t="${t.id}" data-d="-1" title="Einen Tag früher">${I.chev(-1)}</button><button class="icon xs" data-a="move" data-t="${t.id}" data-d="1" title="Einen Tag später">${I.chev(1)}</button><button class="icon xs" data-a="del-task" data-t="${t.id}" title="Löschen">${I.x()}</button>`}</div></div>`;
+    <div class="foot">${actions}</div></div>`;
 }
 
 // ================= Fokus =================
@@ -511,21 +749,21 @@ function viewFocus(){
   const q=focusQueue();
   const r=S.running;
   const cur=(r&&r.taskId&&S.tasks.find(t=>t.id===r.taskId&&!t.done))||q[0];
-  let h=`<div class="pagehead"><h1>Fokus</h1><span class="small">Immer nur eine Aufgabe.</span></div>`;
+  let h=`<div class="pagehead"><h1>${tr('Fokus','Focus')}</h1><span class="small">${tr('Immer nur eine Aufgabe.','One task at a time.')}</span></div>`;
   if(!cur){
     const n=S.tasks.filter(t=>t.done&&t.doneOn===todayKey()).length;
-    return h+`<div class="card empty"><div style="font-size:40px">🌄</div><div style="font-size:18px;color:var(--text);font-weight:600;margin:8px 0 6px">${n?'Alles für heute erledigt':'Nichts geplant'}</div>${n?`Du hast heute ${n} ${n===1?'Aufgabe':'Aufgaben'} geschafft. Feierabend verdient.`:'Lege unter „Heute“ fest, woran du arbeiten willst, und in welcher Reihenfolge.'}<br><button class="btn" data-a="tab" data-tab="heute">Zu Heute</button></div>`;
+    return h+`<div class="card empty"><div style="font-size:40px">🌄</div><div style="font-size:18px;color:var(--text);font-weight:600;margin:8px 0 6px">${n?tr('Alles für heute erledigt','All done for today'):tr('Nichts geplant','Nothing planned')}</div>${n?tr(`Du hast heute ${n} ${n===1?'Aufgabe':'Aufgaben'} geschafft. Feierabend verdient.`,`You finished ${n} ${n===1?'task':'tasks'} today. Well earned rest.`):tr('Lege unter „Heute“ fest, woran du arbeiten willst, und in welcher Reihenfolge.','Decide under “Today” what you want to work on, and in which order.')}<br><button class="btn" data-a="tab" data-tab="heute">${tr('Zu Heute','Go to Today')}</button></div>`;
   }
-  const g=goal(cur.goalId)||NONE,run=r&&r.taskId===cur.id;
+  const g=goal(cur.goalId)||NONE(),run=r&&r.taskId===cur.id;
   const left=q.filter(t=>t.id!==cur.id).length;
   h+=`<div class="card fx" style="border-top:3px solid ${g.color}">${chip(g)}
     <div class="ftitle">${esc(cur.title)}</div>
     <div class="fclock ${run?'':'paused'}" data-live-focus="${cur.id}">${fmtClock(taskSecs(cur))}</div>
-    <div class="fbtns">${run?`<button class="btn ghost" data-a="stop">${I.pause()} Pause</button>`:`<button class="btn" data-a="play" data-t="${cur.id}">${I.play()} ${cur.secs?'Weiter':'Start'}</button>`}
-      <button class="btn gold" data-a="focus-done" data-t="${cur.id}">✓ Erledigt</button>
-      <button class="btn ghost" data-a="later" data-t="${cur.id}">Später</button></div>
-    <textarea data-note="${cur.id}" placeholder="Notizen zu dieser Aufgabe…">${esc(cur.notes||'')}</textarea>
-    <div class="left">${left?`Danach warten noch ${left} ${left===1?'Aufgabe':'Aufgaben'}. Die siehst du erst, wenn diese fertig ist.`:'Das ist die letzte Aufgabe für heute.'}</div></div>`;
+    <div class="fbtns">${run?`<button class="btn ghost" data-a="stop">${I.pause()} ${tr('Pause','Pause')}</button>`:`<button class="btn" data-a="play" data-t="${cur.id}">${I.play()} ${cur.secs?tr('Weiter','Resume'):tr('Start','Start')}</button>`}
+      <button class="btn gold" data-a="focus-done" data-t="${cur.id}">✓ ${tr('Erledigt','Done')}</button>
+      <button class="btn ghost" data-a="later" data-t="${cur.id}">${tr('Später','Later')}</button></div>
+    <textarea data-note="${cur.id}" placeholder="${tr('Notizen zu dieser Aufgabe…','Notes for this task…')}">${esc(cur.notes||'')}</textarea>
+    <div class="left">${left?tr(`Danach warten noch ${left} ${left===1?'Aufgabe':'Aufgaben'}. Die siehst du erst, wenn diese fertig ist.`,`${left} more ${left===1?'task is':'tasks are'} waiting. You will see them once this one is done.`):tr('Das ist die letzte Aufgabe für heute.','This is the last task for today.')}</div></div>`;
   return h;
 }
 
@@ -535,243 +773,78 @@ function viewLog(){
   const now=Date.now();
   const ses=[...S.sessions];
   if(S.running)ses.push({g:S.running.goalId,t:S.running.taskId,s:S.running.start,e:now,live:true});
-  const perDay=keys.map(k=>{const s0=parseKey(k).getTime(),s1=s0+86400000;return ses.filter(x=>x.e>s0&&x.s<s1).map(x=>({...x,a:Math.max(x.s,s0),b:Math.min(x.e,s1),s0}));});
+  const perDay=keys.map(k=>{const s0=dayStartMs(k),s1=dayStartMs(shiftKey(k,1));return ses.filter(x=>x.e>s0&&x.s<s1).map(x=>({...x,a:Math.max(x.s,s0),b:Math.min(x.e,s1),s0}));});
   let h0=8,h1=20;
   perDay.flat().forEach(x=>{const a=(x.a-x.s0)/3600000,b=(x.b-x.s0)/3600000;h0=Math.min(h0,Math.floor(a));h1=Math.max(h1,Math.ceil(b));});
-  const PX=42,H=(h1-h0)*PX;
-  let h=`<div class="pagehead"><h1>Logbuch</h1><div class="navbtns"><span class="lbl">${rangeLabel(days)}</span><button class="icon" data-a="log" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="log" data-d="0">Heute</button><button class="icon" data-a="log" data-d="1">${I.chev(1)}</button></div></div>`;
-  h+=`<div class="hint">Kein Plan, sondern ein Protokoll: Hier steht, wann du wirklich woran gearbeitet hast.</div>`;
+  const PX=42,H=(h1-h0)*PX,ds=+P().dayStart||0;
+  let h=`<div class="pagehead"><h1>${tr('Logbuch','Log')}</h1><div class="navbtns"><span class="lbl">${rangeLabel(days)}</span><button class="icon" data-a="log" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="log" data-d="0">${tr('Heute','Today')}</button><button class="icon" data-a="log" data-d="1">${I.chev(1)}</button></div></div>`;
+  h+=`<div class="hint">${tr('Kein Plan, sondern ein Protokoll: Hier steht, wann du wirklich woran gearbeitet hast.','Not a plan but a record: this shows when you actually worked on what.')}</div>`;
   h+=`<div class="card tl-wrap"><div class="tl"><div></div>`;
   days.forEach((d,i)=>{const k=keys[i];const dn=S.tasks.filter(t=>t.done&&t.doneOn===k).length;const qs=goalSecs(k),al=allSecs(k);
-    h+=`<div class="hd ${k===tk?'now':''}"><b>${wdShort(d)} ${d.getDate()}.</b><div class="s">${al>=60?fmtShort(qs)+' Ziele':'–'}${al-qs>=60?' · '+fmtShort(al-qs)+' sonst.':''}${dn?' · '+dn+' ✓':''}</div></div>`;});
-  h+=`<div class="hours" style="height:${H}px">${Array.from({length:h1-h0+1},(_,i)=>`<div style="top:${i*PX}px">${pad(h0+i)}</div>`).join('')}</div>`;
+    h+=`<div class="hd ${k===tk?'now':''}"><b>${wdShort(d)} ${d.getDate()}.</b><div class="s">${al>=60?fmtShort(qs)+tr(' Ziele',' goals'):'–'}${al-qs>=60?' · '+fmtShort(al-qs)+tr(' sonst.',' other'):''}${dn?' · '+dn+' ✓':''}</div></div>`;});
+  h+=`<div class="hours" style="height:${H}px">${Array.from({length:h1-h0+1},(_,i)=>`<div style="top:${i*PX}px">${pad((h0+i+ds)%24)}</div>`).join('')}</div>`;
   perDay.forEach((list,i)=>{
     h+=`<div class="col ${keys[i]===tk?'now':''}" style="height:${H}px;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent ${PX-1}px,var(--line) ${PX-1}px,var(--line) ${PX}px)">`;
-    list.forEach(x=>{const g=goal(x.g)||NONE,t=S.tasks.find(y=>y.id===x.t);const top=((x.a-x.s0)/3600000-h0)*PX,ht=Math.max(3,(x.b-x.a)/3600000*PX);
-      h+=`<div class="blk ${x.live?'live':''}" style="top:${top}px;height:${ht}px;background:${g.color}" title="${fmtTime(x.s)}–${x.live?'jetzt':fmtTime(x.e)} · ${esc(t?t.title:g.name)}">${ht>=22?esc(t?t.title:g.name):''}${ht>=40?`<span>${fmtTime(x.s)}–${x.live?'jetzt':fmtTime(x.e)}</span>`:''}</div>`;});
+    list.forEach(x=>{const g=goal(x.g)||NONE(),t=S.tasks.find(y=>y.id===x.t);const top=((x.a-x.s0)/3600000-h0)*PX,ht=Math.max(3,(x.b-x.a)/3600000*PX);
+      h+=`<div class="blk ${x.live?'live':''}" style="top:${top}px;height:${ht}px;background:${g.color}" title="${fmtTime(x.s)}–${x.live?tr('jetzt','now'):fmtTime(x.e)} · ${esc(t?t.title:g.name)}">${ht>=22?esc(t?t.title:g.name):''}${ht>=40?`<span>${fmtTime(x.s)}–${x.live?tr('jetzt','now'):fmtTime(x.e)}</span>`:''}</div>`;});
     h+='</div>';
   });
   h+='</div></div>';
   const used=[...new Set(perDay.flat().map(x=>x.g))].map(goal).filter(Boolean);
   if(used.length)h+=`<div class="legend">${used.map(g=>`<span><i class="dot" style="background:${g.color}"></i>${esc(g.name)}</span>`).join('')}</div>`;
   const done=S.tasks.filter(t=>t.done&&keys.includes(t.doneOn)).sort((a,b)=>(a.doneAt||0)-(b.doneAt||0));
-  h+=`<h2>Erledigt diese Woche · ${done.length}</h2><div class="card">${done.length?`<div class="donelog">${done.map(t=>{const g=goal(t.goalId)||NONE;return `<div class="d"><span class="chk done" style="width:20px;height:20px;border-radius:6px">${I.check(11)}</span><div class="tt">${esc(t.title)} <span class="small">· ${wdShort(parseKey(t.doneOn))}</span></div><span class="dot" style="background:${g.color}"></span><span class="tm">${t.secs>=60?fmtShort(t.secs):''}</span></div>`;}).join('')}</div>`:'<div class="small">In dieser Woche noch nichts abgehakt.</div>'}</div>`;
+  h+=`<h2>${tr('Erledigt diese Woche','Done this week')} · ${done.length}</h2><div class="card">${done.length?`<div class="donelog">${done.map(t=>{const g=goal(t.goalId)||NONE();return `<div class="d"><span class="chk done" style="width:20px;height:20px;border-radius:6px">${I.check(11)}</span><div class="tt">${esc(t.title)} <span class="small">· ${wdShort(parseKey(t.doneOn))}</span></div><span class="dot" style="background:${g.color}"></span><span class="tm">${t.secs>=60?fmtShort(t.secs):''}</span></div>`;}).join('')}</div>`:`<div class="small">${tr('In dieser Woche noch nichts abgehakt.','Nothing checked off this week yet.')}</div>`}</div>`;
   return h;
 }
 
 // ================= Ziele + Kompass =================
 function viewGoals(){
   const act=activeGoals(),arc=S.goals.filter(g=>g.archived),c=S.compass||{};
-  let h=`<div class="pagehead"><h1>Ziele</h1><button class="btn" data-a="new-goal">+ Neues Ziel</button></div>`;
-  h+=`<div class="hint">Vertikale Kohärenz: Von deiner Vision bis zur einzelnen Stunde sollte alles zusammenpassen. Weniger ist mehr, drei aktive Ziele reichen.${act.length>3?' <b style="color:var(--gold)">Du hast gerade '+act.length+' aktive Ziele.</b>':''}</div>`;
-  if(!act.length)h+=`<div class="card empty">Noch keine Ziele. Leg dein erstes an.</div>`;
+  let h=`<div class="pagehead"><h1>${tr('Ziele','Goals')}</h1><button class="btn" data-a="new-goal">+ ${tr('Neues Ziel','New goal')}</button></div>`;
+  h+=`<div class="hint">${tr('Vertikale Kohärenz: Von deiner Vision bis zur einzelnen Stunde sollte alles zusammenpassen. Weniger ist mehr, drei aktive Ziele reichen.','Vertical coherence: from your vision down to a single hour, everything should fit together. Less is more, three active goals are enough.')}${act.length>3?' <b style="color:var(--gold)">'+tr('Du hast gerade '+act.length+' aktive Ziele.','You currently have '+act.length+' active goals.')+'</b>':''}</div>`;
+  if(!act.length)h+=`<div class="card empty">${tr('Noch keine Ziele. Leg dein erstes an.','No goals yet. Create your first one.')}</div>`;
   for(const g of act)h+=goalCard(g);
-  h+=`<h2>Kompass</h2><div class="card compass">
-    <label>Was für ein Mensch willst du sein? Was willst du im Leben erreichen?</label><textarea data-compass="vision" placeholder="Deine Vision">${esc(c.vision||'')}</textarea>
-    <label>Ziel in 5 Jahren</label><textarea data-compass="y5">${esc(c.y5||'')}</textarea>
-    <label>Ziel für ${new Date().getFullYear()}</label><textarea data-compass="year">${esc(c.year||'')}</textarea>
-    <label>Fokus diesen Monat</label><textarea data-compass="month">${esc(c.month||'')}</textarea></div>`;
-  if(arc.length){h+='<h2>Archiviert</h2>';for(const g of arc)h+=goalCard(g);}
-  h+=BACKUP_UI();
+  h+=`<h2>${tr('Kompass','Compass')}</h2><div class="card compass">
+    <label>${tr('Was für ein Mensch willst du sein? Was willst du im Leben erreichen?','What kind of person do you want to be? What do you want to achieve in life?')}</label><textarea data-compass="vision" placeholder="${tr('Deine Vision','Your vision')}">${esc(c.vision||'')}</textarea>
+    <label>${tr('Ziel in 5 Jahren','Goal in 5 years')}</label><textarea data-compass="y5">${esc(c.y5||'')}</textarea>
+    <label>${tr('Ziel für','Goal for')} ${new Date().getFullYear()}</label><textarea data-compass="year">${esc(c.year||'')}</textarea>
+    <label>${tr('Fokus diesen Monat','Focus this month')}</label><textarea data-compass="month">${esc(c.month||'')}</textarea></div>`;
+  if(arc.length){h+=`<h2>${tr('Archiviert','Archived')}</h2>`;for(const g of arc)h+=goalCard(g);}
   return h;
 }
+function sunPath(g,total){
+  const hrs=total/3600,nx=nextMilestone(hrs),prev=MILESTONES.filter(m=>m<=hrs).pop()||0;
+  const p=nx?(hrs-prev)/(nx-prev):1;
+  return `<div class="path" data-pathp="${p.toFixed(4)}"><svg viewBox="0 0 300 58" aria-hidden="true">
+    <path class="track" d="M8 50 C 48 50, 52 20, 96 26 S 150 46, 196 28 S 252 10, 276 14"/>
+    <path class="done" d="M8 50 C 48 50, 52 20, 96 26 S 150 46, 196 28 S 252 10, 276 14" pathLength="100" stroke="${g.color}" stroke-dasharray="${(p*100).toFixed(2)} 100"/>
+    <circle cx="288" cy="12" r="9" fill="var(--gold)" opacity=".95"/><circle cx="288" cy="12" r="14" fill="var(--gold)" opacity=".18"/>
+    <circle class="pdot" cx="8" cy="50" r="6" fill="var(--surface)" stroke="${g.color}" stroke-width="3"/></svg>
+    <div class="lbl"><span>${prev?tr('Etappe ','Milestone ')+prev+' h ✓':tr('Start','Start')}</span><span>${nx?tr(`nächste Etappe: ${nx} h · noch ${fmtDur((nx-hrs)*3600)}`,`next milestone: ${nx} h · ${fmtDur((nx-hrs)*3600)} to go`):tr('Alle Etappen erreicht','All milestones reached')}</span></div></div>`;
+}
 function goalCard(g){
-  const wk=weekOf(0).reduce((a,d)=>a+secsOn(g.id,dkey(d)),0),tgt=(g.target||0)*3600;
+  const wk=weekOf(0).reduce((a,d)=>a+secsOn(g.id,dkey(d)),0),tgt=(g.target||0)*3600,tot=totalSecs(g.id);
   const open=S.tasks.filter(t=>t.goalId===g.id&&!t.done).length;
-  return `<div class="card"><div class="goal-h"><span class="dot" style="background:${g.color}"></span><span class="name">${esc(g.name)}</span><button class="icon" data-a="manual" data-g="${g.id}" title="Zeit nachtragen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg></button><button class="btn ghost sm" data-a="edit-goal" data-g="${g.id}">Bearbeiten</button></div>
+  return `<div class="card"><div class="goal-h"><span class="dot" style="background:${g.color}"></span><span class="name">${esc(g.name)}</span><button class="icon" data-a="manual" data-g="${g.id}" title="${tr('Zeit nachtragen','Add time manually')}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg></button><button class="btn ghost sm" data-a="edit-goal" data-g="${g.id}">${tr('Bearbeiten','Edit')}</button></div>
   ${g.why?`<div class="small" style="margin-top:6px">↳ ${esc(g.why)}</div>`:''}
-  <div class="row small" style="margin-top:10px;justify-content:space-between;flex-wrap:wrap"><span>Diese Woche <b style="color:var(--text)">${fmtDur(wk)}</b>${tgt?' von '+g.target+' h':''}</span><span>${open} offen · insgesamt <b style="color:var(--text)">${fmtDur(totalSecs(g.id))}</b></span></div>
+  ${sunPath(g,tot)}
+  <div class="row small" style="margin-top:10px;justify-content:space-between;flex-wrap:wrap"><span>${tr('Diese Woche','This week')} <b style="color:var(--text)">${fmtDur(wk)}</b>${tgt?tr(' von ',' of ')+g.target+' h':''}</span><span>${open} ${tr('offen','open')} · ${tr('insgesamt','total')} <b style="color:var(--text)">${fmtDur(tot)}</b></span></div>
   ${tgt?`<div class="bar"><i style="width:${Math.min(100,wk/tgt*100)}%;background:${g.color}"></i></div>`:''}</div>`;
 }
 
-// ================= Sync über Dropbox oder WebDAV (ohne eigene Datenbank) =================
-const SYNC_KEY='motus_sync',SAVED_KEY='motus_savedAt',FILE='/motus.json';
-const SY={cfg:{type:'none'},timer:null,busy:false,last:null,err:null,pulling:false};
-try{SY.cfg=JSON.parse(localStorage.getItem(SYNC_KEY)||'{"type":"none"}');}catch(e){}
-const saveCfg=()=>{try{localStorage.setItem(SYNC_KEY,JSON.stringify(SY.cfg));}catch(e){}};
-const localStamp=()=>{try{return +localStorage.getItem(SAVED_KEY)||0;}catch(e){return 0;}};
-const setStamp=v=>{try{localStorage.setItem(SAVED_KEY,String(v));}catch(e){}};
-const redirectUri=()=>location.origin+location.pathname;
-const provName=()=>SY.cfg.type==='dropbox'?'Dropbox':SY.cfg.type==='webdav'?'WebDAV':'';
-function syncLabel(){
-  if(SY.cfg.type==='none')return NOSYNC;
-  if(SY.err)return provName()+' · Fehler';
-  if(SY.busy)return provName()+' · synchronisiert…';
-  return provName()+(SY.last?' · '+fmtTime(SY.last):'');
-}
-const showSync=()=>setSync(syncLabel());
-
-// ---- Dropbox (OAuth mit PKCE, nur App-Ordner) ----
-const b64url=buf=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-async function dbxStartAuth(appKey){
-  const v=b64url(crypto.getRandomValues(new Uint8Array(48)));
-  const ch=b64url(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)));
-  localStorage.setItem('motus_pkce',JSON.stringify({v,appKey}));
-  const u=new URL('https://www.dropbox.com/oauth2/authorize');
-  Object.entries({client_id:appKey,response_type:'code',code_challenge:ch,code_challenge_method:'S256',redirect_uri:redirectUri(),token_access_type:'offline'}).forEach(([k,x])=>u.searchParams.set(k,x));
-  location.href=u.toString();
-}
-async function dbxToken(params){
-  const r=await fetch('https://api.dropboxapi.com/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});
-  if(!r.ok)throw new Error('Anmeldung bei Dropbox fehlgeschlagen ('+r.status+')');
-  return r.json();
-}
-async function dbxFinishAuth(){
-  const q=new URLSearchParams(location.search);
-  if(!q.has('code')&&!q.has('error'))return false;
-  history.replaceState(null,'',location.pathname+location.hash);
-  if(q.has('error')){SY.err='Dropbox-Anmeldung abgebrochen';return true;}
-  let p;try{p=JSON.parse(localStorage.getItem('motus_pkce')||'null');}catch(e){}
-  if(!p)return true;
-  localStorage.removeItem('motus_pkce');
-  const t=await dbxToken({grant_type:'authorization_code',code:q.get('code'),client_id:p.appKey,code_verifier:p.v,redirect_uri:redirectUri()});
-  SY.cfg={type:'dropbox',appKey:p.appKey,refresh:t.refresh_token,access:t.access_token,exp:Date.now()+(t.expires_in-60)*1000};
-  saveCfg();return true;
-}
-async function dbxAccess(){
-  const c=SY.cfg;
-  if(c.access&&c.exp>Date.now())return c.access;
-  const t=await dbxToken({grant_type:'refresh_token',refresh_token:c.refresh,client_id:c.appKey});
-  c.access=t.access_token;c.exp=Date.now()+(t.expires_in-60)*1000;saveCfg();return c.access;
-}
-const DROPBOX={
-  async get(){
-    const r=await fetch('https://content.dropboxapi.com/2/files/download',{method:'POST',headers:{Authorization:'Bearer '+await dbxAccess(),'Dropbox-API-Arg':JSON.stringify({path:FILE})}});
-    if(r.status===409)return null;
-    if(!r.ok)throw new Error('Dropbox: Laden fehlgeschlagen ('+r.status+')');
-    return JSON.parse(await r.text());
-  },
-  async put(text){
-    const r=await fetch('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{Authorization:'Bearer '+await dbxAccess(),'Dropbox-API-Arg':JSON.stringify({path:FILE,mode:'overwrite',mute:true}),'Content-Type':'application/octet-stream'},body:text});
-    if(!r.ok)throw new Error('Dropbox: Speichern fehlgeschlagen ('+r.status+')');
-  }
-};
-
-// ---- WebDAV ----
-const davHeaders=()=>{const c=SY.cfg;const h={};if(c.user)h.Authorization='Basic '+btoa(unescape(encodeURIComponent(c.user+':'+(c.pass||''))));return h;};
-const davUrl=()=>{const u=SY.cfg.url.trim();return /\.json$/i.test(u)?u:u.replace(/\/?$/,'/')+'motus.json';};
-const WEBDAV={
-  async get(){
-    const r=await fetch(davUrl()+(davUrl().includes('?')?'&':'?')+'t='+Date.now(),{headers:davHeaders(),cache:'no-store'});
-    if(r.status===404)return null;
-    if(!r.ok)throw new Error('WebDAV: Laden fehlgeschlagen ('+r.status+')');
-    const tx=await r.text();return tx.trim()?JSON.parse(tx):null;
-  },
-  async put(text){
-    const r=await fetch(davUrl(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},davHeaders()),body:text});
-    if(!r.ok)throw new Error('WebDAV: Speichern fehlgeschlagen ('+r.status+')');
-  }
-};
-const provider=()=>SY.cfg.type==='dropbox'?DROPBOX:SY.cfg.type==='webdav'?WEBDAV:null;
-function errText(e){const m=String(e&&e.message||e);if(/\((401|403)\)/.test(m))return 'Zugriff verweigert. Benutzer oder Passwort stimmen nicht.';if(/Failed to fetch|NetworkError|Load failed/i.test(m))return SY.cfg.type==='webdav'?'Keine Verbindung. Entweder ist der Server nicht erreichbar, oder er blockiert Zugriffe aus dem Browser (CORS).':'Keine Verbindung zum Internet.';return m;}
-
-// ---- Abgleich: die neuere Version gewinnt ----
-async function syncPull(){
-  const p=provider();if(!p||SY.busy)return;
-  SY.busy=true;SY.err=null;showSync();
-  try{
-    const remote=await p.get();
-    const mine=localStamp();
-    const hasLocal=S.goals.length||S.tasks.length;
-    if(!SY.cfg.synced&&remote&&remote.state&&hasLocal&&(remote.state.goals||[]).length){
-      SY.busy=false;showSync();
-      SY.pendingRemote=remote;
-      modal(`<h3>Welche Daten behalten?</h3><div class="small">In ${provName()} liegen schon Motus-Daten (${remote.state.goals.length} Ziele, ${(remote.state.tasks||[]).length} Aufgaben), und auf diesem Gerät auch (${S.goals.length} Ziele, ${S.tasks.length} Aufgaben). Welche sollen ab jetzt gelten?</div><div class="actions"><button class="btn ghost" data-a="sync-keep-local">Dieses Gerät</button><span class="sp"></span><button class="btn" data-a="sync-keep-remote">Aus ${provName()}</button></div>`);
-      return;
-    }
-    if(remote&&remote.state&&(remote.savedAt||0)>mine){
-      S=normalize(remote.state);localSave();setStamp(remote.savedAt);softRender();
-    }else if(!remote||(remote.savedAt||0)<mine){
-      await p.put(JSON.stringify({app:'motus',v:2,savedAt:mine||Date.now(),state:S}));
-      if(!mine)setStamp(Date.now());
-    }
-    SY.last=Date.now();if(!SY.cfg.synced){SY.cfg.synced=true;saveCfg();}
-  }catch(e){SY.err=errText(e);}
-  SY.busy=false;showSync();if(tab==='ziele'&&!typing())render();
-}
-async function syncPush(){
-  const p=provider();if(!p)return;
-  if(SY.busy){schedulePush();return;}
-  SY.busy=true;SY.err=null;showSync();
-  try{await p.put(JSON.stringify({app:'motus',v:2,savedAt:localStamp(),state:S}));SY.last=Date.now();}
-  catch(e){SY.err=errText(e);}
-  SY.busy=false;showSync();
-}
-function schedulePush(){if(SY.cfg.type==='none')return;clearTimeout(SY.timer);SY.timer=setTimeout(syncPush,2000);}
-function markDirty(){setStamp(Date.now());schedulePush();}
-async function syncInit(){
-  try{await dbxFinishAuth();}catch(e){SY.err=errText(e);}
-  showSync();
-  if(SY.cfg.type!=='none')syncPull();
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){if(SY.timer){clearTimeout(SY.timer);syncPush();}}else syncPull();});
-  window.addEventListener('online',syncPull);
-  setInterval(()=>{if(!document.hidden&&!SY.timer)syncPull();},120000);
-}
-
-// ---- Oberfläche (unter Ziele) ----
-const BACKUP_UI=()=>{
-  const c=SY.cfg;
-  let h=`<h2>Daten & Synchronisierung</h2><div class="card">`;
-  if(c.type==='none'){
-    h+=`<div class="small" style="margin-bottom:12px">Deine Daten liegen gerade nur in diesem Browser. Verbinde einen Speicher, den du selbst besitzt. Dann landet alles in einer einzigen Datei <b>motus.json</b>, und all deine Geräte gleichen sich darüber ab. Eine fremde Datenbank gibt es dabei nicht.</div>
-      <div class="row" style="flex-wrap:wrap"><button class="btn" data-a="sync-dropbox">Mit Dropbox verbinden</button><button class="btn ghost" data-a="sync-webdav">WebDAV einrichten</button></div>`;
-  }else{
-    h+=`<div class="row" style="justify-content:space-between;flex-wrap:wrap"><div><b>${provName()}</b> verbunden<div class="small">${c.type==='dropbox'?'Datei: Dropbox/Apps/&lt;App-Name&gt;/motus.json':esc(davUrl())}</div></div><div class="row"><button class="btn ghost sm" data-a="sync-now">Jetzt abgleichen</button><button class="btn ghost sm" data-a="sync-off">Trennen</button></div></div>
-      <div class="small" style="margin-top:10px">${SY.err?`<span style="color:var(--danger)">${esc(SY.err)}</span>`:SY.last?'Zuletzt abgeglichen um '+fmtTime(SY.last)+'.':'Noch nicht abgeglichen.'}</div>`;
-  }
-  h+=`<div style="border-top:1px solid var(--line);margin:14px 0 12px"></div><div class="small" style="margin-bottom:10px">Sicherung als Datei, zusätzlich oder ohne Sync:</div><div class="row" style="flex-wrap:wrap"><button class="btn ghost sm" data-a="export">Daten sichern (Datei)</button><label class="btn ghost sm" style="cursor:pointer">Sicherung laden<input type="file" id="import" accept="application/json,.json" style="display:none"></label></div></div>`;
-  return h;
-};
-function dropboxModal(){
-  const secure=location.protocol==='https:'||location.hostname==='localhost';
-  modal(`<h3>Mit Dropbox verbinden</h3>
-  ${secure?'':'<div class="hint" style="color:var(--danger)">Das funktioniert nur, wenn die App über https:// läuft, z. B. auf Codeberg Pages.</div>'}
-  <div class="small" style="line-height:1.55">Einmalig musst du Motus bei Dropbox anmelden. Das ist kostenlos und dauert etwa 3 Minuten:
-  <ol style="margin:8px 0 8px 18px"><li>Öffne <b>dropbox.com/developers/apps</b> und tippe auf <b>Create app</b>.</li>
-  <li>Wähle <b>Scoped access</b> und <b>App folder</b>, und gib einen Namen ein, z. B. „Motus-deinname“.</li>
-  <li>Setze im Reiter <b>Permissions</b> die Haken bei <b>files.content.write</b> und <b>files.content.read</b> und tippe auf <b>Submit</b>.</li>
-  <li>Trage im Reiter <b>Settings</b> unter <b>OAuth 2 → Redirect URIs</b> diese Adresse ein und tippe auf <b>Add</b>:<br><code style="color:var(--gold);word-break:break-all">${esc(redirectUri())}</code></li>
-  <li>Kopiere dort den <b>App key</b> und füge ihn hier ein.</li></ol></div>
-  <form id="dbx-form"><label>App key</label><input name="key" required placeholder="z. B. a1b2c3d4e5f6g7h" autocomplete="off" value="${esc(SY.cfg.appKey||'')}">
-  <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">Abbrechen</button><button class="btn" type="submit" ${secure?'':'disabled'}>Weiter zu Dropbox</button></div></form>`);
-}
-function webdavModal(){
-  modal(`<h3>WebDAV einrichten</h3>
-  <div class="small" style="line-height:1.55">Gib die Adresse eines Ordners oder direkt einer .json-Datei auf deinem WebDAV-Server an, z. B. von deiner NAS oder Nextcloud. <b>Wichtig:</b> Der Server muss Zugriffe aus dem Browser erlauben (CORS). Läuft die App unter derselben Adresse wie der WebDAV-Server, entfällt das. Eine https-Seite kann außerdem keinen http-Server erreichen.</div>
-  <form id="dav-form"><label>Adresse</label><input name="url" required type="url" placeholder="https://nas.example.de/webdav/motus/" value="${esc(SY.cfg.url||'')}">
-  <label>Benutzer</label><input name="user" autocomplete="username" value="${esc(SY.cfg.user||'')}">
-  <label>Passwort</label><input name="pass" type="password" autocomplete="current-password">
-  <div class="small" style="margin-top:8px">Benutzer und Passwort werden nur in diesem Browser gespeichert. Am besten legst du dafür einen eigenen Benutzer an, der nur auf diesen einen Ordner zugreifen darf.</div>
-  <div id="dav-test" class="small" style="margin-top:8px"></div>
-  <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">Abbrechen</button><button class="btn" type="submit">Testen & verbinden</button></div></form>`);
-}
-window.EXTRA_ACTIONS={
-  export(){const b=new Blob([JSON.stringify({app:'motus',v:2,savedAt:localStamp(),exported:new Date().toISOString(),state:S},null,1)],{type:'application/json'});const u=URL.createObjectURL(b);const l=document.createElement('a');l.href=u;l.download='motus-sicherung-'+todayKey()+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);},
-  'do-import'(){if(window._imp){if(S.running)stopTimer(true);S=normalize(window._imp);window._imp=null;save();closeModal();render();}},
-  'sync-dropbox':dropboxModal,
-  'sync-webdav':webdavModal,
-  'sync-now'(){syncPull();},
-  'sync-off'(){modal(`<h3>Synchronisierung trennen?</h3><div class="small">Deine Daten bleiben auf diesem Gerät und in der Datei bei ${provName()} erhalten. Es wird nur nicht mehr abgeglichen.</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">Abbrechen</button><button class="btn danger" data-a="sync-off-ok">Trennen</button></div>`);},
-  'sync-keep-remote'(){const r=SY.pendingRemote;SY.pendingRemote=null;if(r){if(S.running)S.running=null;S=normalize(r.state);localSave();setStamp(r.savedAt||Date.now());}SY.cfg.synced=true;saveCfg();closeModal();SY.last=Date.now();showSync();render();},
-  'sync-keep-local'(){SY.pendingRemote=null;SY.cfg.synced=true;saveCfg();setStamp(Date.now());closeModal();syncPush().then(render);},
-  'sync-off-ok'(){SY.cfg={type:'none'};SY.err=null;SY.last=null;saveCfg();closeModal();showSync();render();}
-};
-window.EXTRA_CHANGE=t=>{if(t.id!=='import'||!t.files||!t.files[0])return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);const st=d.state||d;if(!Array.isArray(st.goals))throw 0;window._imp=st;modal(`<h3>Sicherung laden?</h3><div class="small">Die Sicherung enthält ${st.goals.length} Ziele und ${(st.tasks||[]).length} Aufgaben. Deine aktuellen Daten werden dadurch ersetzt${SY.cfg.type!=='none'?', auch in '+provName():''}.</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">Abbrechen</button><button class="btn" data-a="do-import">Ersetzen</button></div>`);}catch(e){modal(`<h3>Datei nicht lesbar</h3><div class="small">Das ist keine gültige Motus-Sicherung.</div><div class="actions"><span class="sp"></span><button class="btn" data-a="close">OK</button></div>`);}t.value='';};r.readAsText(t.files[0]);};
-document.addEventListener('submit',async e=>{
-  const f=e.target;
-  if(f.id==='dbx-form'){e.preventDefault();e.stopImmediatePropagation();const k=new FormData(f).get('key').trim();if(k)dbxStartAuth(k);}
-  else if(f.id==='dav-form'){
-    e.preventDefault();e.stopImmediatePropagation();
-    const fd=new FormData(f),out=f.querySelector('#dav-test');
-    const prev=SY.cfg;SY.cfg={type:'webdav',url:fd.get('url').trim(),user:fd.get('user').trim(),pass:fd.get('pass')||(prev.type==='webdav'?prev.pass:'')};
-    out.textContent='Teste Verbindung…';
-    try{await WEBDAV.get();saveCfg();closeModal();syncPull();render();}
-    catch(err){out.innerHTML='<span style="color:var(--danger)">'+esc(errText(err))+'</span>';SY.cfg=prev;}
-  }
-},true);
-
-
 // ================= Rückblick =================
+function yearGrid(){
+  const y=new Date(Date.now()-DS()).getFullYear(),tk=todayKey(),ws=+P().weekStart;
+  const first=new Date(y,0,1);const lead=(first.getDay()-ws+7)%7;
+  const start=new Date(y,0,1-lead);const end=new Date(y,11,31);
+  let cells='',d=new Date(start),tot=0,act=0;
+  while(d<=end||((d.getDay()-ws+7)%7)!==0){
+    const k=dkey(d),inY=d.getFullYear()===y;let cls='out',tt='';
+    if(inY){const s=goalSecs(k);if(k<=tk){tot+=s;if(s>=60)act++;}cls=s<60?'':s<1800?'l1':s<3600?'l2':s<7200?'l3':'l4';tt=d.toLocaleDateString(LOC(),{day:'numeric',month:'short'})+' · '+fmtShort(s);if(k===tk)cls+=' today';}
+    cells+=`<i class="${cls}" ${tt?`title="${tt}"`:''}></i>`;d.setDate(d.getDate()+1);if(cells.length>40000)break;
+  }
+  return `<div class="card"><div class="row" style="justify-content:space-between;flex-wrap:wrap;margin-bottom:10px"><b style="font-size:14px">${tr('Dein Jahr','Your year')} ${y}</b><span class="small">${fmtShort(tot)} ${tr('Ziel-Stunden an','goal hours on')} ${act} ${tr('Tagen','days')}</span></div><div class="year"><div class="grid">${cells}</div></div><div class="year"><div class="lg">${tr('weniger','less')} <i></i><i style="background:rgba(253,189,74,.28)"></i><i style="background:rgba(253,189,74,.5)"></i><i style="background:rgba(253,189,74,.75)"></i><i style="background:var(--gold)"></i> ${tr('mehr','more')}</div></div></div>`;
+}
 function viewReview(){
   const days=weekOf(revOff),prev=weekOf(revOff-1),tk=todayKey(),wk=dkey(days[0]),keys=days.map(dkey);
   const goals=S.goals.filter(g=>!g.archived||keys.some(k=>secsOn(g.id,k)>0));
@@ -780,133 +853,165 @@ function viewReview(){
   const doneT=S.tasks.filter(t=>t.done&&keys.includes(t.doneOn));
   const tgtSum=goals.filter(g=>!g.archived).reduce((a,g)=>a+(g.target||0),0)*3600;
   const diff=qW-qP;
-  let h=`<div class="pagehead"><h1>Rückblick</h1><div class="navbtns"><span class="lbl">${revOff===0?'Diese Woche':revOff===-1?'Letzte Woche':rangeLabel(days)}</span><button class="icon" data-a="rev" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="rev" data-d="0">Aktuell</button><button class="icon" data-a="rev" data-d="1">${I.chev(1)}</button></div></div>`;
-  h+=`<div class="hint">Dein festes Ritual: Nimm dir jede Woche 20 Minuten. Was lief gut, was nicht, und warum? Gemessen wird nur die Zeit, die in deine Ziele geflossen ist, also dein Input, nicht das Ergebnis.</div>`;
-  h+=`<div class="stats"><div class="card stat"><div class="v" style="color:var(--gold)">${fmtShort(qW)}</div><div class="k">Ziel-Stunden${tgtSum?' von '+fmtShort(tgtSum):''}</div>${qP||qW?`<div class="trend ${diff>=0?'up':'down'}">${diff>=0?'▲':'▼'} ${fmtShort(Math.abs(diff))} zur Vorwoche</div>`:''}</div><div class="card stat"><div class="v">${doneT.length}</div><div class="k">erledigt</div></div><div class="card stat"><div class="v">${fmtShort(oW)}</div><div class="k">Sonstiges</div></div></div>`;
+  let h=`<div class="pagehead"><h1>${tr('Rückblick','Review')}</h1><div class="navbtns"><span class="lbl">${revOff===0?tr('Diese Woche','This week'):revOff===-1?tr('Letzte Woche','Last week'):rangeLabel(days)}</span><button class="icon" data-a="rev" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="rev" data-d="0">${tr('Aktuell','Current')}</button><button class="icon" data-a="rev" data-d="1">${I.chev(1)}</button></div></div>`;
+  h+=`<div class="hint">${tr('Dein festes Ritual: Nimm dir jede Woche 20 Minuten. Was lief gut, was nicht, und warum? Gemessen wird nur die Zeit, die in deine Ziele geflossen ist, also dein Input, nicht das Ergebnis.','Your weekly ritual: take 20 minutes each week. What went well, what didn’t, and why? Only time that went into your goals is counted, your input, not the outcome.')}</div>`;
+  h+=`<div class="stats"><div class="card stat"><div class="v" style="color:var(--gold)">${fmtShort(qW)}</div><div class="k">${tr('Ziel-Stunden','Goal hours')}${tgtSum?tr(' von ',' of ')+fmtShort(tgtSum):''}</div>${qP||qW?`<div class="trend ${diff>=0?'up':'down'}">${diff>=0?'▲':'▼'} ${fmtShort(Math.abs(diff))} ${tr('zur Vorwoche','vs last week')}</div>`:''}</div><div class="card stat"><div class="v">${doneT.length}</div><div class="k">${tr('erledigt','done')}</div></div><div class="card stat"><div class="v">${fmtShort(oW)}</div><div class="k">${tr('Sonstiges','Other')}</div></div></div>`;
   const per=days.map(d=>goals.map(g=>({g,s:secsOn(g.id,dkey(d))})));
   const max=Math.max(3600,...per.map(p=>p.reduce((a,x)=>a+x.s,0)));
-  h+=`<div class="card"><div class="small">Ziel-Stunden pro Tag · ${rangeLabel(days)}</div><div class="weekchart">${days.map((d,i)=>{const tot=per[i].reduce((a,x)=>a+x.s,0);return `<div class="col"><div class="stack" style="height:${Math.max(3,tot/max*80)}px" title="${fmtDur(tot)}">${per[i].filter(x=>x.s>0).map(x=>`<i style="display:block;height:${x.s/tot*100}%;background:${x.g.color}"></i>`).join('')}</div><div class="d ${dkey(d)===tk?'now':''}">${wdShort(d)}</div></div>`;}).join('')}</div></div>`;
-  h+='<h2>Input-Ziele</h2>';
-  if(!goals.length)h+=`<div class="card empty">Noch keine Ziele.</div>`;
+  h+=`<div class="card"><div class="small">${tr('Ziel-Stunden pro Tag','Goal hours per day')} · ${rangeLabel(days)}</div><div class="weekchart">${days.map((d,i)=>{const tot=per[i].reduce((a,x)=>a+x.s,0);return `<div class="col"><div class="stack" style="height:${Math.max(3,tot/max*80)}px" title="${fmtDur(tot)}">${per[i].filter(x=>x.s>0).map(x=>`<i style="display:block;height:${x.s/tot*100}%;background:${x.g.color}"></i>`).join('')}</div><div class="d ${dkey(d)===tk?'now':''}">${wdShort(d)}</div></div>`;}).join('')}</div></div>`;
+  h+=`<h2>${tr('Input-Ziele','Input goals')}</h2>`;
+  if(!goals.length)h+=`<div class="card empty">${tr('Noch keine Ziele.','No goals yet.')}</div>`;
   for(const g of goals){const w=keys.reduce((a,k)=>a+secsOn(g.id,k),0);const tgt=(g.target||0)*3600;const dn=doneT.filter(t=>t.goalId===g.id).length;
     h+=`<div class="card"><div class="goal-h"><span class="dot" style="background:${g.color}"></span><span class="name">${esc(g.name)}</span><span class="today">${fmtDur(w)}${tgt?' / '+g.target+' h':''}</span></div>
     <div class="bar"><i style="width:${tgt?Math.min(100,w/tgt*100):(qW?w/qW*100:0)}%;background:${g.color}"></i></div>
-    <div class="small" style="margin-top:8px">${tgt?(w>=tgt?'Input-Ziel erreicht 🎉':'Noch '+fmtDur(tgt-w)+' bis zum Input-Ziel'):'Kein Input-Ziel gesetzt'} · ${dn} erledigt</div></div>`;}
+    <div class="small" style="margin-top:8px">${tgt?(w>=tgt?tr('Input-Ziel erreicht 🎉','Input goal reached 🎉'):tr('Noch '+fmtDur(tgt-w)+' bis zum Input-Ziel',fmtDur(tgt-w)+' left to your input goal')):tr('Kein Input-Ziel gesetzt','No input goal set')} · ${dn} ${tr('erledigt','done')}</div></div>`;}
+  h+=yearGrid();
   const r=S.reviews[wk]||{};
-  h+=`<h2>Reflexion</h2><div class="card review"><label>Was lief gut?</label><textarea data-review="good" data-w="${wk}" placeholder="Worauf bist du stolz?">${esc(r.good||'')}</textarea>
-    <label>Was lief nicht gut, und warum?</label><textarea data-review="hard" data-w="${wk}" placeholder="Was hat dich gebremst?">${esc(r.hard||'')}</textarea>
-    <label>Passt dein Alltag noch zu deinen Zielen?</label><textarea data-review="fit" data-w="${wk}" placeholder="Musst du deine Ziele ändern oder deinen Alltag?">${esc(r.fit||'')}</textarea>
-    <label>Was verbesserst du nächste Woche?</label><textarea data-review="next" data-w="${wk}" placeholder="Ein, zwei konkrete Änderungen">${esc(r.next||'')}</textarea></div>`;
+  h+=`<h2>${tr('Reflexion','Reflection')}</h2><div class="card review"><label>${tr('Was lief gut?','What went well?')}</label><textarea data-review="good" data-w="${wk}" placeholder="${tr('Worauf bist du stolz?','What are you proud of?')}">${esc(r.good||'')}</textarea>
+    <label>${tr('Was lief nicht gut, und warum?','What didn’t go well, and why?')}</label><textarea data-review="hard" data-w="${wk}" placeholder="${tr('Was hat dich gebremst?','What held you back?')}">${esc(r.hard||'')}</textarea>
+    <label>${tr('Passt dein Alltag noch zu deinen Zielen?','Does your everyday life still fit your goals?')}</label><textarea data-review="fit" data-w="${wk}" placeholder="${tr('Musst du deine Ziele ändern oder deinen Alltag?','Do you need to change your goals or your routine?')}">${esc(r.fit||'')}</textarea>
+    <label>${tr('Was verbesserst du nächste Woche?','What will you improve next week?')}</label><textarea data-review="next" data-w="${wk}" placeholder="${tr('Ein, zwei konkrete Änderungen','One or two concrete changes')}">${esc(r.next||'')}</textarea></div>`;
   return h;
 }
 
+// ================= Einstellungen =================
+let SYNC_SETTINGS=()=>'';
+function seg(k,opts,cur){return `<div class="seg">${opts.map(([v,l])=>`<button data-a="set" data-k="${k}" data-v="${v}" class="${String(cur)===String(v)?'on':''}">${l}</button>`).join('')}</div>`;}
+function viewSettings(){
+  const p=P(),pr=S.profile||{};
+  const hours=[0,1,2,3,4,5,6].map(h=>`<option value="${h}" ${+p.dayStart===h?'selected':''}>${h===0?tr('Mitternacht (Standard)','Midnight (default)'):pad(h)+':00 '+tr('Uhr','')}</option>`).join('');
+  const wdays=[1,2,3,4,5,6,0].map(i=>`<option value="${i}" ${+p.reviewDay===i?'selected':''}>${wdName(i)}</option>`).join('');
+  let h=`<div class="pagehead"><h1>${tr('Einstellungen','Settings')}</h1></div>`;
+  h+=`<div class="card set"><h3>${tr('Profil','Profile')}</h3><div class="prof"><div class="avatar big">${avatarInner()}<span class="sd ${syncStateFn()}"></span></div>
+    <div class="f"><input data-profile="name" maxlength="40" placeholder="${tr('Dein Name','Your name')}" value="${esc(pr.name||'')}">
+    <div class="row" style="flex-wrap:wrap"><label class="btn ghost sm" style="cursor:pointer">${tr('Bild wählen','Choose picture')}<input type="file" id="avatar-file" accept="image/*" style="display:none"></label>${pr.avatar?`<button class="btn ghost sm" data-a="avatar-remove">${tr('Bild entfernen','Remove picture')}</button>`:''}</div>
+    <div class="statusline" id="statusline">${statusLine()}</div></div></div>
+    <div class="small" style="margin-top:10px">${tr('Name und Bild werden mit deinen Daten gespeichert. Am Punkt neben deinem Bild siehst du, ob alles geladen ist: grün = synchronisiert, grau = nur auf diesem Gerät, rot = Problem.','Name and picture are saved with your data. The dot next to your picture shows whether everything is loaded: green = synced, grey = this device only, red = problem.')}</div></div>`;
+  h+=`<div class="card set"><h3>${tr('Darstellung','Appearance')}</h3>
+    <div class="row2"><div class="l"><b>${tr('Design','Theme')}</b></div>${seg('theme',[['system',tr('System','System')],['light',tr('Hell','Light')],['dark',tr('Dunkel','Dark')]],p.theme)}</div>
+    <div class="row2"><div class="l"><b>${tr('Sprache','Language')}</b></div>${seg('lang',[['de','Deutsch'],['en','English']],lang())}</div></div>`;
+  h+=`<div class="card set"><h3>${tr('Woche & Tag','Week & day')}</h3>
+    <div class="row2"><div class="l"><b>${tr('Woche beginnt am','Week starts on')}</b></div>${seg('weekStart',[[1,wdName(1)],[0,wdName(0)]],p.weekStart)}</div>
+    <div class="row2"><div class="l"><b>${tr('Neuer Tag beginnt um','New day starts at')}</b><span>${tr('Arbeitest du oft nach Mitternacht? Dann zählt die Zeit bis zu dieser Uhrzeit noch zum Vortag.','Often working past midnight? Time until this hour still counts for the previous day.')}</span></div><select data-pref="dayStart">${hours}</select></div></div>`;
+  h+=`<div class="card set"><h3>${tr('Wochenrückblick','Weekly review')}</h3>
+    <div class="row2"><div class="l"><b>${tr('Erinnerung','Reminder')}</b><span>${tr('Ein freundlicher Hinweis unter „Heute“, wenn der Rückblick ansteht. Kein Druck, du kannst ihn wegklicken.','A friendly note under “Today” when the review is due. No pressure, you can dismiss it.')}</span></div>${seg('review',[['true',tr('An','On')],['false',tr('Aus','Off')]],String(p.review))}</div>
+    ${p.review?`<div class="row2"><div class="l"><b>${tr('Am','On')}</b></div><select data-pref="reviewDay">${wdays}</select></div>`:''}</div>`;
+  h+=`<div class="card set"><h3>${tr('Synchronisierung','Sync')}</h3>${SYNC_SETTINGS()}</div>`;
+  h+=`<div class="card set"><h3>${tr('Daten','Data')}</h3>
+    <div class="row2"><div class="l"><b>${tr('Sichern','Back up')}</b><span>${IN_CLAUDE()?tr('Kopiert alle Daten in die Zwischenablage, z. B. zum Einfügen in eine Notiz.','Copies all data to the clipboard, e.g. to paste into a note.'):tr('Speichert alle Daten als Datei.','Saves all data as a file.')}</span></div><button class="btn ghost sm" data-a="export">${IN_CLAUDE()?tr('Kopieren','Copy'):tr('Datei speichern','Save file')}</button></div>
+    <div class="row2"><div class="l"><b>${tr('Sicherung laden','Restore backup')}</b><span>${tr('Ersetzt die aktuellen Daten durch eine Sicherungsdatei.','Replaces current data with a backup file.')}</span></div><label class="btn ghost sm" style="cursor:pointer">${tr('Datei wählen','Choose file')}<input type="file" id="import" accept="application/json,.json,.txt" style="display:none"></label></div>
+    <div class="row2"><div class="l"><b>${tr('Alles löschen','Delete everything')}</b><span>${tr('Ziele, Aufgaben, Zeiten und Reflexionen. Profil und Einstellungen bleiben.','Goals, tasks, times and reflections. Profile and settings stay.')}</span></div><button class="btn danger sm" data-a="reset-ask">${tr('Löschen','Delete')}</button></div></div>`;
+  h+=`<div class="card set"><h3>${tr('Hilfe','Help')}</h3><div class="row2"><div class="l"><b>${tr('Anleitung','Guide')}</b><span>${tr('Prinzipien, Seiten, Routinen und häufige Fragen.','Principles, pages, routines and FAQ.')}</span></div><button class="btn ghost sm" data-a="tab" data-tab="hilfe">${tr('Öffnen','Open')}</button></div></div>`;
+  h+=`<div class="small" style="text-align:center;margin:8px 0 20px">Motus · ${tr('Version','Version')} ${VERSION}</div>`;
+  return h;
+}
+function exportJSON(){return JSON.stringify({app:'motus',v:3,exported:new Date().toISOString(),state:S},null,1);}
+async function doExport(){
+  const txt=exportJSON();
+  if(IN_CLAUDE()){try{await navigator.clipboard.writeText(txt);toast(tr('Daten in die Zwischenablage kopiert','Data copied to clipboard'));}catch(e){modal(`<h3>${tr('Sicherung','Backup')}</h3><div class="small">${tr('Markiere den Text und kopiere ihn.','Select the text and copy it.')}</div><textarea style="min-height:200px;margin-top:10px;font-size:11px">${esc(txt)}</textarea><div class="actions"><button class="btn" data-a="close">OK</button></div>`);}return;}
+  const b=new Blob([txt],{type:'application/json'});const u=URL.createObjectURL(b);const l=document.createElement('a');l.href=u;l.download='motus-sicherung-'+todayKey()+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);
+}
+function resizeImage(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const s=160,c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');const m=Math.min(img.width,img.height);x.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,s,s);res(c.toDataURL('image/jpeg',.82));};img.onerror=rej;img.src=r.result;};r.onerror=rej;r.readAsDataURL(file);});}
 
 // ================= Anleitung =================
-const STORAGE_HELP=`Zuerst in diesem Browser. Unter <b>Ziele → Daten & Synchronisierung</b> kannst du deine eigene <b>Dropbox</b> oder einen <b>WebDAV</b>-Speicher verbinden, z. B. deine NAS. Dann liegt alles in einer Datei <b>motus.json</b>, die all deine Geräte abgleichen, und zwar beim Öffnen, nach jeder Änderung und alle zwei Minuten. Bei gleichzeitigen Änderungen gewinnt die neuere Version. Eine fremde Datenbank gibt es nicht. Zusätzlich kannst du jederzeit eine Sicherung als Datei speichern.`;
+const STORAGE_HELP=()=>IS_PWA?tr(`Zuerst nur in diesem Browser. Unter <b>Einstellungen → Synchronisierung</b> (dein Profilbild oben rechts) kannst du deine eigene <b>Dropbox</b> oder einen <b>WebDAV</b>-Speicher verbinden, z. B. deine NAS oder Nextcloud. Dann liegt alles in einer Datei <b>motus.json</b>, über die sich deine Geräte abgleichen: beim Öffnen, nach jeder Änderung und alle zwei Minuten. Bei gleichzeitigen Änderungen gewinnt die neuere Version. Eine fremde Datenbank gibt es nicht.`,`At first only in this browser. Under <b>Settings → Sync</b> (your profile picture top right) you can connect your own <b>Dropbox</b> or a <b>WebDAV</b> storage, e.g. your NAS or Nextcloud. Everything then lives in a single file <b>motus.json</b> that your devices sync through: on opening, after every change and every two minutes. If two devices change things at the same time, the newer version wins. There is no third-party database.`):'';
 function viewHelp(){
-  const sec=(id,title,body)=>`<div class="card wiki" id="${id}" style="scroll-margin-top:80px"><h3>${title}</h3>${body}<button class="totop" data-a="top">↑ nach oben</button></div>`;
+  const sec=(id,title,body)=>`<div class="card wiki" id="${id}" style="scroll-margin-top:80px"><h3>${title}</h3>${body}<button class="totop" data-a="top">↑ ${tr('nach oben','back to top')}</button></div>`;
   const pr=(n,title,body,where)=>`<div class="pr" style="margin:14px 0"><div class="num">${n}</div><div><b>${title}</b><p style="margin:4px 0">${body}</p><div class="where">→ ${where}</div></div></div>`;
-  let h=`<div class="pagehead"><h1>Anleitung</h1></div>
-  <div class="card wiki"><div class="lead">Motus hilft dir, deine Zeit in das zu stecken, was dir wirklich wichtig ist. Du verbindest deine großen Ziele mit dem, was du heute tust, und siehst, wie viele Stunden tatsächlich hineinfließen.</div>
-  <p>Motus ist kein Kalender, in den du jede halbe Stunde verplanst. Du entscheidest morgens, <b>was</b> heute dran ist und in <b>welcher Reihenfolge</b>. Dann arbeitest du eine Aufgabe nach der anderen ab, und es dauert so lange, wie es dauert.</p></div>
-  <div class="toc">${[['w-prinzipien','Die 6 Prinzipien'],['w-start','Erste Schritte'],['w-seiten','Die Seiten'],['w-routine','Tages- und Wochenroutine'],['w-begriffe','Begriffe'],['w-faq','Häufige Fragen']].map(([id,t])=>`<button data-a="jump" data-to="${id}">${t}</button>`).join('')}</div>`;
-
-  h+=sec('w-prinzipien','Die 6 Prinzipien',
-    pr(1,'Nach Tagen planen, nicht nach Stunden','Feste Zeitblöcke im Kalender stressen und brechen bei jeder Unterbrechung zusammen. Verteile Aufgaben stattdessen auf Tage und bring sie in eine Reihenfolge nach Wichtigkeit.','Heute und Woche')+
-    pr(2,'Immer nur eine Aufgabe sehen','Wer ständig sieht, was noch alles ansteht, verliert Energie für das Jetzt. Im Fokus siehst du nur die aktuelle Aufgabe. Ist sie erledigt, kommt die nächste.','Fokus')+
-    pr(3,'Messen, wohin die Zeit fließt','Was man misst, wird besser. Jede Minute läuft auf eine Aufgabe und damit auf ein Ziel.','Timer bei jeder Aufgabe, Logbuch')+
-    pr(4,'Erledigt-Liste statt To-do-Liste','Schau nicht auf den Berg, der noch vor dir liegt, sondern auf den, den du schon erklommen hast. Das motiviert und liefert dir Daten über deine Arbeit.','Erledigt heute, Logbuch')+
-    pr(5,'Input-Ziele statt Ergebnis-Ziele','„Diese Woche werde ich fertig“ scheitert oft an Dingen, die du nicht beeinflusst. „Diese Woche investiere ich 8 Stunden“ hast du selbst in der Hand. Gezählt werden nur Ziel-Stunden, also Zeit, die wirklich in deine Ziele fließt.','Ziele (Input-Ziel) und Rückblick')+
-    pr(6,'Vertikale Kohärenz und feste Reflexion','Vision, Jahresziel, Monat, Woche und die einzelne Stunde sollten zusammenpassen. Prüfe das jede Woche in einem festen Ritual. Passt es nicht, änderst du entweder deine Ziele oder deinen Alltag.','Kompass unter Ziele, Rückblick'));
-
-  h+=sec('w-start','Erste Schritte',`<ol>
-    <li><b>Kompass ausfüllen</b> (unter Ziele): Wer willst du sein? Was ist dein Jahresziel? Ein paar Sätze reichen.</li>
-    <li><b>Ein bis drei Ziele anlegen.</b> Gib jedem eine Farbe und ein <b>Input-Ziel</b>, also wie viele Stunden pro Woche du investieren willst.</li>
-    <li><b>Die Woche grob planen</b> (unter Woche): Verteile Aufgaben auf die Tage.</li>
-    <li><b>Morgens unter Heute die Reihenfolge festlegen.</b> Das Wichtigste kommt nach oben.</li>
-    <li><b>Fokus starten</b> und abarbeiten. Mehr musst du nicht tun.</li></ol>`);
-
-  h+=sec('w-seiten','Die Seiten',`
-    <details open><summary>Heute</summary><p>Deine Aufgaben für heute in der Reihenfolge, in der du sie erledigen willst. Die oberste ist golden umrandet, sie ist als Nächstes dran.</p><ul>
-      <li><b>Neue Aufgabe:</b> Text eingeben, Ziel wählen, „+“.</li>
-      <li><b>Reihenfolge:</b> mit ⌃ ⌄ verschieben, am Computer auch per Ziehen.</li>
-      <li><b>▶</b> startet den Timer für eine Aufgabe, <b>❚❚</b> pausiert ihn.</li>
-      <li><b>Kästchen antippen</b> heißt erledigt. Die Aufgabe wandert nach „Erledigt heute“, mit ↶ holst du sie zurück.</li>
-      <li>Nicht erledigte Aufgaben von gestern tauchen automatisch heute wieder auf und sind als „übernommen“ markiert.</li>
-      <li><b>Aufgaben ohne Ziel</b> (Flug buchen, Steuer …) stehen eingeklappt ganz unten, damit sie dich nicht ablenken. Erledige sie, wenn das Wichtige geschafft ist.</li>
-      <li>Unten siehst du deine <b>Ziel-Stunden diese Woche</b> im Vergleich zu deinen Input-Zielen.</li></ul></details>
-    <details><summary>Woche</summary><p>Eine Spalte pro Tag, Uhrzeiten gibt es keine. Die Reihenfolge in einer Spalte ist die Reihenfolge für diesen Tag. Aufgaben verschiebst du mit ‹ › um einen Tag, am Computer ziehst du sie einfach in eine andere Spalte oder an eine andere Stelle. Mit den Pfeilen oben blätterst du durch die Wochen.</p></details>
-    <details><summary>Fokus</summary><p>Hier siehst du nur eine einzige Aufgabe, mit großem Timer und einem Feld für Notizen.</p><ul>
-      <li><b>Start / Pause</b> für den Timer.</li>
-      <li><b>✓ Erledigt</b>: Die Aufgabe ist abgehakt, die nächste erscheint, und der Timer läuft gleich für sie weiter.</li>
-      <li><b>Später</b> schiebt die Aufgabe ans Ende der Liste.</li>
-      <li>Zuerst kommen die Aufgaben zu deinen Zielen, danach die ohne Ziel.</li></ul></details>
-    <details><summary>Logbuch</summary><p>Ein Protokoll und kein Plan. Für jeden Tag der Woche siehst du als farbige Blöcke, wann du wirklich woran gearbeitet hast. Oben steht pro Tag, wie viele Ziel-Stunden und wie viel Sonstiges zusammengekommen sind und wie viele Aufgaben du erledigt hast. Darunter findest du alles, was du diese Woche geschafft hast.</p><p class="small">Nachgetragene Zeit zählt in den Summen mit, erscheint aber nicht als Block, weil dafür keine Uhrzeit bekannt ist.</p></details>
-    <details><summary>Ziele</summary><ul>
-      <li><b>Ziele</b> mit Name, Farbe, Input-Ziel in Stunden pro Woche und der Frage, wie das Ziel auf dein Jahresziel einzahlt.</li>
-      <li><b>Uhr-Symbol:</b> Zeit nachtragen, wenn du vergessen hast, den Timer zu starten.</li>
-      <li><b>Archivieren</b> beendet ein Ziel, die Stunden bleiben erhalten. <b>Löschen</b> entfernt alles endgültig.</li>
-      <li><b>Kompass:</b> Vision, 5-Jahres-Ziel, Jahresziel und Monatsfokus. Hier prüfst du, ob deine Ziele dazu passen.</li></ul></details>
-    <details><summary>Rückblick</summary><p>Dein wöchentliches Ritual. Er zeigt die Ziel-Stunden der Woche im Vergleich zur Vorwoche und zu deinen Input-Zielen, die Verteilung über die Tage, erledigte Aufgaben und die Zeit für Sonstiges. Dazu kommen vier Fragen, deren Antworten pro Woche gespeichert werden. Mit den Pfeilen blätterst du zurück zu früheren Wochen.</p></details>`);
-
-  h+=sec('w-routine','Tages- und Wochenroutine',`
-    <p><b>Jeden Morgen (2 Minuten)</b></p><ul><li>Heute öffnen. Was ist wirklich wichtig? Bring es in die richtige Reihenfolge.</li><li>Was nicht heute sein muss, schiebst du unter Woche auf einen anderen Tag.</li><li>Dann auf „Fokus starten“ tippen.</li></ul>
-    <p><b>Tagsüber</b></p><ul><li>Im Fokus bleiben: eine Aufgabe, Timer, fertig, die nächste.</li><li>Kommt etwas dazwischen, drückst du auf Pause. Den Plan musst du nicht umbauen, die Reihenfolge bleibt.</li></ul>
-    <p><b>Abends</b></p><ul><li>Kleinkram ohne Ziel erledigen, falls noch Energie da ist.</li><li>Ein Blick auf „Erledigt heute“.</li></ul>
-    <p><b>Einmal pro Woche, z. B. Sonntag (20 Minuten)</b></p><ul><li>Rückblick öffnen: Zahlen anschauen und die vier Fragen beantworten.</li><li>Ziele und Kompass prüfen: Passt der Alltag noch?</li><li>Die neue Woche unter Woche grob verteilen.</li><li>Tipp: Geh den Rückblick mit jemandem durch, mit einem Freund oder einem Coach. Das macht ihn verbindlicher.</li></ul>`);
-
-  h+=sec('w-begriffe','Begriffe',`<dl>
-    <dt>Ziel</dt><dd>Ein langfristiges Vorhaben, das dir wichtig ist, z. B. Halbmarathon laufen, App launchen oder Bachelorarbeit abgeben. Am besten höchstens drei gleichzeitig.</dd>
-    <dt>Aufgabe</dt><dd>Ein konkreter Schritt für einen Tag. Sie gehört zu einem Ziel oder steht unter „Ohne Ziel“.</dd>
-    <dt>Ziel-Stunden</dt><dd>Zeit, die in Aufgaben zu deinen Zielen geflossen ist. Das ist die wichtigste Zahl in Motus.</dd>
-    <dt>Input-Ziel</dt><dd>Wie viele Stunden pro Woche du in ein Ziel investieren willst.</dd>
-    <dt>Sonstiges</dt><dd>Zeit für Aufgaben ohne Ziel. Sie wird erfasst, zählt aber nicht zu den Ziel-Stunden.</dd>
-    <dt>Übernommen</dt><dd>Eine Aufgabe von einem früheren Tag, die noch offen ist und deshalb heute wieder erscheint.</dd>
-    <dt>Logbuch</dt><dd>Das Protokoll deiner tatsächlich gearbeiteten Zeit.</dd>
-    <dt>Kompass</dt><dd>Deine Vision und die Ziele für 5 Jahre, dieses Jahr und diesen Monat, also das „Oben“ der vertikalen Kohärenz.</dd></dl>`);
-
-  h+=sec('w-faq','Häufige Fragen',`
-    <details><summary>Läuft der Timer weiter, wenn ich die App schließe?</summary><p>Ja. Gespeichert wird die Startzeit, nicht ein laufender Zähler. Wenn du die App wieder öffnest, stimmt die Zeit.</p></details>
-    <details><summary>Ich habe vergessen, den Timer zu starten.</summary><p>Unter Ziele beim jeweiligen Ziel auf das Uhr-Symbol tippen und die Minuten für den passenden Tag nachtragen.</p></details>
-    <details><summary>Warum kann nur ein Timer gleichzeitig laufen?</summary><p>Absichtlich. Du arbeitest immer nur an einer Sache. Startest du eine andere Aufgabe, wird die vorherige automatisch pausiert und ihre Zeit gespeichert.</p></details>
-    <details><summary>Warum gibt es keine Uhrzeiten zum Planen?</summary><p>Weil feste Zeitblöcke bei der ersten Unterbrechung zusammenbrechen und ständig neu sortiert werden müssen. Die Reihenfolge reicht. Wann du tatsächlich woran gearbeitet hast, zeigt dir das Logbuch hinterher.</p></details>
-    <details><summary>Was passiert mit Aufgaben, die ich nicht schaffe?</summary><p>Sie wandern automatisch auf heute und sind als „übernommen“ markiert. Häufen sie sich, ist das ein gutes Thema für den Rückblick.</p></details>
-    <details><summary>Ich habe mein Input-Ziel verfehlt, was nun?</summary><p>Nicht schlimm. Schau im Rückblick, warum. War das Ziel zu hoch, oder passt dein Alltag nicht dazu? Dann änderst du das eine oder das andere.</p></details>
-    <details><summary>Wo werden meine Daten gespeichert?</summary><p>${STORAGE_HELP}</p></details>
-    <details><summary>Wie lange bleiben erledigte Aufgaben sichtbar?</summary><p>Erledigte Aufgaben und Sitzungen bleiben einige Monate erhalten (Aufgaben 90 Tage, Sitzungen 180 Tage). Die erfassten Stunden pro Ziel bleiben dauerhaft.</p></details>`);
+  const L=(de,en)=>tr(de,en);
+  let h=`<div class="pagehead"><h1>${L('Anleitung','Guide')}</h1></div>
+  <div class="card wiki"><div class="lead">${L('Motus hilft dir, deine Zeit in das zu stecken, was dir wirklich wichtig ist. Du verbindest deine großen Ziele mit dem, was du heute tust, und siehst, wie viele Stunden tatsächlich hineinfließen.','Motus helps you spend your time on what really matters to you. You connect your big goals with what you do today, and see how many hours actually go into them.')}</div>
+  <p>${L('Motus ist kein Kalender, in den du jede halbe Stunde verplanst. Du entscheidest morgens, <b>was</b> heute dran ist und in <b>welcher Reihenfolge</b>. Dann arbeitest du eine Aufgabe nach der anderen ab, und es dauert so lange, wie es dauert.','Motus is not a calendar where you schedule every half hour. Each morning you decide <b>what</b> matters today and in <b>which order</b>. Then you work through one task after another, and it takes as long as it takes.')}</p></div>
+  <div class="toc">${[['w-grund',L('Grundsätze','Principles')],['w-prinzipien',L('Die 6 Prinzipien','The 6 principles')],['w-start',L('Erste Schritte','Getting started')],['w-seiten',L('Die Seiten','The pages')],['w-routine',L('Routinen','Routines')],['w-begriffe',L('Begriffe','Glossary')],['w-faq',L('Häufige Fragen','FAQ')]].map(([id,t])=>`<button data-a="jump" data-to="${id}">${t}</button>`).join('')}</div>`;
+  h+=sec('w-grund',L('Grundsätze von Motus','Motus principles'),`<ol>
+    <li><b>${L('Motus macht kein schlechtes Gewissen.','Motus never makes you feel guilty.')}</b> ${L('Keine Strafen, keine Vorwürfe, keine Serien, die reißen können.','No penalties, no reproaches, no streaks that can break.')}</li>
+    <li><b>${L('Pausen sind normal.','Breaks are normal.')}</b> ${L('Wenn du das Tool nicht nutzt, hat das einen Grund, und der liegt nicht bei dir. Nach einer Pause gibt es ein freundliches Willkommen und einen leichten Neustart.','If you don’t use the tool, there is a reason, and it isn’t you. After a break you get a friendly welcome and an easy fresh start.')}</li>
+    <li><b>${L('Belohnt wird echter Fortschritt.','Real progress is what counts.')}</b> ${L('Gezählt werden investierte Stunden in deine Ziele, nicht Häkchen oder tägliches Öffnen.','What counts is hours invested in your goals, not checkmarks or daily opens.')}</li>
+    <li><b>${L('Du bestimmst.','You decide.')}</b> ${L('Erinnerungen sind Einladungen und lassen sich abschalten.','Reminders are invitations and can be switched off.')}</li>
+    <li><b>${L('Deine Daten gehören dir.','Your data belongs to you.')}</b> ${L('Kein fremder Server, kein Tracking.','No third-party server, no tracking.')}</li></ol>`);
+  h+=sec('w-prinzipien',L('Die 6 Prinzipien','The 6 principles'),
+    pr(1,L('Nach Tagen planen, nicht nach Stunden','Plan by day, not by hour'),L('Feste Zeitblöcke stressen und brechen bei jeder Unterbrechung zusammen. Verteile Aufgaben stattdessen auf Tage und bring sie in eine Reihenfolge nach Wichtigkeit.','Fixed time blocks are stressful and collapse with every interruption. Instead, spread tasks across days and order them by importance.'),L('Heute, Woche, Ablage','Today, Week, Backlog'))+
+    pr(2,L('Immer nur eine Aufgabe sehen','See only one task at a time'),L('Wer ständig sieht, was noch alles ansteht, verliert Energie für das Jetzt. Im Fokus siehst du nur die aktuelle Aufgabe. Ist sie erledigt, kommt die nächste.','Constantly seeing everything ahead drains energy for the present. In Focus you only see the current task. When it’s done, the next one appears.'),L('Fokus','Focus'))+
+    pr(3,L('Messen, wohin die Zeit fließt','Measure where your time goes'),L('Was man misst, wird besser. Jede Minute läuft auf eine Aufgabe und damit auf ein Ziel.','What gets measured gets better. Every minute goes to a task and therefore to a goal.'),L('Timer bei jeder Aufgabe, Logbuch','Timer on every task, Log'))+
+    pr(4,L('Erledigt-Liste statt To-do-Liste','Done list instead of to-do list'),L('Schau nicht auf den Berg, der noch vor dir liegt, sondern auf den, den du schon erklommen hast.','Don’t look at the mountain still ahead, look at the one you have already climbed.'),L('Erledigt heute, Logbuch, Jahresübersicht','Done today, Log, year overview'))+
+    pr(5,L('Input-Ziele statt Ergebnis-Ziele','Input goals instead of outcome goals'),L('„Diese Woche werde ich fertig“ scheitert oft an Dingen, die du nicht beeinflusst. „Diese Woche investiere ich 8 Stunden“ hast du selbst in der Hand. Gezählt werden nur Ziel-Stunden.','“I’ll finish this week” often fails because of things outside your control. “I’ll invest 8 hours this week” is in your hands. Only goal hours are counted.'),L('Ziele (Input-Ziel) und Rückblick','Goals (input goal) and Review'))+
+    pr(6,L('Vertikale Kohärenz und feste Reflexion','Vertical coherence and regular reflection'),L('Vision, Jahresziel, Monat, Woche und die einzelne Stunde sollten zusammenpassen. Prüfe das jede Woche. Passt es nicht, änderst du deine Ziele oder deinen Alltag.','Vision, yearly goal, month, week and the single hour should fit together. Check this every week. If it doesn’t fit, change your goals or your routine.'),L('Kompass unter Ziele, Rückblick','Compass under Goals, Review')));
+  h+=sec('w-start',L('Erste Schritte','Getting started'),`<ol>
+    <li>${L('<b>Profil einrichten</b>: Tippe oben rechts auf das Profilbild. Dort findest du Name, Bild, Design, Sprache und Synchronisierung.','<b>Set up your profile</b>: tap the profile picture top right. There you find name, picture, theme, language and sync.')}</li>
+    <li>${L('<b>Kompass ausfüllen</b> (unter Ziele): Wer willst du sein? Was ist dein Jahresziel? Ein paar Sätze reichen.','<b>Fill in your compass</b> (under Goals): who do you want to be? What is your goal for the year? A few sentences are enough.')}</li>
+    <li>${L('<b>Ein bis drei Ziele anlegen</b>, jeweils mit Farbe und einem <b>Input-Ziel</b> (Stunden pro Woche).','<b>Create one to three goals</b>, each with a colour and an <b>input goal</b> (hours per week).')}</li>
+    <li>${L('<b>Die Woche grob planen</b> und Ideen ohne Tag in die <b>Ablage</b> legen.','<b>Roughly plan the week</b> and put ideas without a day into the <b>backlog</b>.')}</li>
+    <li>${L('<b>Morgens unter Heute die Reihenfolge festlegen</b>, dann <b>Fokus starten</b>.','<b>Set the order under Today each morning</b>, then <b>start focus</b>.')}</li></ol>`);
+  h+=sec('w-seiten',L('Die Seiten','The pages'),`
+    <details open><summary>${L('Heute','Today')}</summary><p>${L('Deine Aufgaben für heute in der Reihenfolge, in der du sie erledigen willst. Die oberste ist golden umrandet, sie ist als Nächstes dran.','Your tasks for today in the order you want to do them. The top one has a gold outline, it’s up next.')}</p><ul>
+      <li>${L('<b>Neue Aufgabe:</b> Text eingeben, Ziel wählen, „+“.','<b>New task:</b> type, choose a goal, “+”.')}</li>
+      <li>${L('<b>Reihenfolge:</b> mit ⌃ ⌄ verschieben, am Computer auch per Ziehen.','<b>Order:</b> move with ⌃ ⌄, or drag on a computer.')}</li>
+      <li>${L('<b>▶</b> startet den Timer, <b>❚❚</b> pausiert ihn. Kästchen antippen heißt erledigt, mit ↶ holst du eine Aufgabe zurück.','<b>▶</b> starts the timer, <b>❚❚</b> pauses it. Tapping the box marks it done, ↶ brings a task back.')}</li>
+      <li>${L('Nicht erledigte Aufgaben wandern auf den nächsten Tag („übernommen“). Warst du 3 Tage oder länger weg, bietet Motus dir einen <b>Neustart</b> an, statt dich mit einem Berg zu begrüßen.','Unfinished tasks move to the next day (“carried over”). If you were away for 3 days or more, Motus offers a <b>fresh start</b> instead of greeting you with a pile.')}</li>
+      <li>${L('<b>Aufgaben ohne Ziel</b> stehen eingeklappt unten, damit sie nicht ablenken.','<b>Tasks without a goal</b> are collapsed at the bottom so they don’t distract you.')}</li></ul></details>
+    <details><summary>${L('Woche & Ablage','Week & backlog')}</summary><p>${L('Eine Spalte pro Tag, ganz links die <b>Ablage</b> für alles ohne festen Tag. Mit ‹ › verschiebst du um einen Tag, mit dem Kisten-Symbol in die Ablage, mit dem Kalender-Symbol aus der Ablage auf heute. Am Computer ziehst du Karten einfach dorthin, wo sie hin sollen.','One column per day, with the <b>backlog</b> on the far left for everything without a fixed day. ‹ › moves a task by one day, the box icon moves it to the backlog, the calendar icon moves it from the backlog to today. On a computer, just drag cards where you want them.')}</p></details>
+    <details><summary>${L('Fokus','Focus')}</summary><p>${L('Nur eine Aufgabe, mit Timer und Notizen. <b>✓ Erledigt</b> hakt sie ab und startet direkt die nächste. <b>Später</b> schiebt sie ans Ende.','Just one task, with timer and notes. <b>✓ Done</b> checks it off and starts the next one right away. <b>Later</b> moves it to the end.')}</p></details>
+    <details><summary>${L('Logbuch','Log')}</summary><p>${L('Ein Protokoll, kein Plan: Farbige Blöcke zeigen, wann du woran gearbeitet hast. Darunter alles, was du diese Woche geschafft hast. Nachgetragene Zeit zählt in den Summen, erscheint aber nicht als Block.','A record, not a plan: coloured blocks show when you worked on what. Below that, everything you finished this week. Manually added time counts in the totals but doesn’t appear as a block.')}</p></details>
+    <details><summary>${L('Ziele & Weg zur Sonne','Goals & path to the sun')}</summary><p>${L('Jedes Ziel hat einen <b>Weg zur Sonne</b>. Jede Stunde bringt dich ein Stück weiter zur nächsten <b>Etappe</b> (5, 10, 25, 50, 100 Stunden …). Erreichst du eine, feiert Motus kurz mit dir. Über das Uhr-Symbol trägst du vergessene Zeit nach. Archivieren beendet ein Ziel, die Stunden bleiben erhalten.','Each goal has a <b>path to the sun</b>. Every hour moves you closer to the next <b>milestone</b> (5, 10, 25, 50, 100 hours …). When you reach one, Motus briefly celebrates with you. Use the clock icon to add forgotten time. Archiving ends a goal, the hours are kept.')}</p></details>
+    <details><summary>${L('Rückblick','Review')}</summary><p>${L('Ziel-Stunden der Woche im Vergleich zur Vorwoche und zu deinen Input-Zielen, die <b>Jahresübersicht</b> und vier Fragen zur Reflexion. Wenn du möchtest, erinnert dich Motus freundlich daran (Einstellungen).','Goal hours of the week compared to last week and your input goals, the <b>year overview</b> and four reflection questions. If you like, Motus gently reminds you (Settings).')}</p></details>
+    <details><summary>${L('Einstellungen','Settings')}</summary><p>${L('Über dein Profilbild oben rechts: Name und Bild, Hell/Dunkel, Sprache, Wochenstart, Tagesbeginn, Rückblick-Erinnerung, Synchronisierung sowie Sichern, Laden und Löschen deiner Daten.','Via your profile picture top right: name and picture, light/dark, language, week start, start of day, review reminder, sync, and backing up, restoring and deleting your data.')}</p></details>`);
+  h+=sec('w-routine',L('Tages- und Wochenroutine','Daily and weekly routine'),`
+    <p><b>${L('Jeden Morgen (2 Minuten)','Every morning (2 minutes)')}</b></p><ul><li>${L('Heute öffnen, das Wichtige nach oben, Unwichtiges auf später oder in die Ablage.','Open Today, important things to the top, the rest to later or the backlog.')}</li><li>${L('Fokus starten.','Start focus.')}</li></ul>
+    <p><b>${L('Tagsüber','During the day')}</b></p><ul><li>${L('Eine Aufgabe, Timer, fertig, die nächste. Kommt etwas dazwischen: Pause. Der Plan muss nicht umgebaut werden.','One task, timer, done, next. If something comes up: pause. No need to rebuild the plan.')}</li></ul>
+    <p><b>${L('Einmal pro Woche (20 Minuten)','Once a week (20 minutes)')}</b></p><ul><li>${L('Rückblick: Zahlen anschauen, Fragen beantworten, Ziele und Kompass prüfen, neue Woche grob verteilen.','Review: look at the numbers, answer the questions, check goals and compass, roughly plan the new week.')}</li><li>${L('Tipp: Mit jemandem durchgehen macht es verbindlicher.','Tip: going through it with someone makes it more binding.')}</li></ul>`);
+  h+=sec('w-begriffe',L('Begriffe','Glossary'),`<dl>
+    <dt>${L('Ziel','Goal')}</dt><dd>${L('Ein langfristiges Vorhaben, das dir wichtig ist. Am besten höchstens drei gleichzeitig.','A long-term pursuit that matters to you. Ideally no more than three at a time.')}</dd>
+    <dt>${L('Aufgabe','Task')}</dt><dd>${L('Ein konkreter Schritt. Gehört zu einem Ziel oder steht unter „Ohne Ziel“.','A concrete step. Belongs to a goal or sits under “No goal”.')}</dd>
+    <dt>${L('Ablage','Backlog')}</dt><dd>${L('Aufgaben und Ideen ohne festen Tag. Nichts geht verloren.','Tasks and ideas without a fixed day. Nothing gets lost.')}</dd>
+    <dt>${L('Ziel-Stunden','Goal hours')}</dt><dd>${L('Zeit, die in Aufgaben zu deinen Zielen geflossen ist. Die wichtigste Zahl.','Time spent on tasks for your goals. The most important number.')}</dd>
+    <dt>${L('Input-Ziel','Input goal')}</dt><dd>${L('Wie viele Stunden pro Woche du in ein Ziel investieren willst.','How many hours per week you want to invest in a goal.')}</dd>
+    <dt>${L('Etappe','Milestone')}</dt><dd>${L('Eine Marke bei den gesamten Stunden eines Ziels, z. B. 50 Stunden.','A mark in a goal’s total hours, e.g. 50 hours.')}</dd>
+    <dt>${L('Sonstiges','Other')}</dt><dd>${L('Zeit für Aufgaben ohne Ziel. Wird erfasst, zählt aber nicht zu den Ziel-Stunden.','Time for tasks without a goal. Tracked, but not counted as goal hours.')}</dd>
+    <dt>${L('Kompass','Compass')}</dt><dd>${L('Deine Vision und die Ziele für 5 Jahre, dieses Jahr und diesen Monat.','Your vision and goals for 5 years, this year and this month.')}</dd></dl>`);
+  h+=sec('w-faq',L('Häufige Fragen','FAQ'),`
+    <details><summary>${L('Läuft der Timer weiter, wenn ich die App schließe?','Does the timer keep running when I close the app?')}</summary><p>${L('Ja. Gespeichert wird die Startzeit. Beim Öffnen stimmt die Zeit.','Yes. The start time is saved, so the time is right when you open it again.')}</p></details>
+    <details><summary>${L('Ich habe vergessen, den Timer zu starten.','I forgot to start the timer.')}</summary><p>${L('Unter Ziele beim Ziel auf das Uhr-Symbol tippen und Minuten nachtragen.','Under Goals, tap the clock icon on the goal and add the minutes.')}</p></details>
+    <details><summary>${L('Warum nur ein Timer gleichzeitig?','Why only one timer at a time?')}</summary><p>${L('Absichtlich: Du arbeitest immer nur an einer Sache.','On purpose: you only ever work on one thing.')}</p></details>
+    <details><summary>${L('Warum gibt es keine Serien oder Punkte?','Why are there no streaks or points?')}</summary><p>${L('Weil sie Beschäftigung statt Fortschritt belohnen und Druck machen. Motus feiert stattdessen echte investierte Stunden.','Because they reward busyness over progress and create pressure. Motus celebrates real invested hours instead.')}</p></details>
+    <details><summary>${L('Was passiert, wenn ich länger nicht da war?','What happens if I was away for a while?')}</summary><p>${L('Nach 3 Tagen Pause fragt Motus einmal, was mit den offenen Aufgaben passieren soll: durchgehen, alle in die Ablage oder behalten.','After a 3-day break Motus asks once what to do with open tasks: go through them, move all to the backlog, or keep them.')}</p></details>
+    <details><summary>${L('Ich arbeite oft nach Mitternacht.','I often work past midnight.')}</summary><p>${L('In den Einstellungen kannst du den Tagesbeginn auf z. B. 4 Uhr legen. Dann zählt die Nacht noch zum Vortag.','In Settings you can set the start of the day to e.g. 4 am. The night then still counts for the previous day.')}</p></details>
+    <details><summary>${L('Wo werden meine Daten gespeichert?','Where is my data stored?')}</summary><p>${STORAGE_HELP()}</p></details>
+    <details><summary>${L('Wie lange bleiben erledigte Aufgaben sichtbar?','How long do finished tasks stay visible?')}</summary><p>${L('Erledigte Aufgaben 90 Tage, Sitzungen 180 Tage. Die Stunden pro Ziel bleiben dauerhaft.','Finished tasks 90 days, sessions 180 days. Hours per goal are kept permanently.')}</p></details>`);
   return h;
 }
 
 // ================= Dialoge =================
-function modal(html){$('#modal-root').innerHTML=`<div class="modal-bg" data-a="close-bg"><div class="modal">${html}</div></div>`;const i=$('#modal-root input');if(i)setTimeout(()=>i.focus(),50);}
-function closeModal(){$('#modal-root').innerHTML='';}
+function modal(html){$('#modal-root').innerHTML=`<div class="modal-bg" data-a="close-bg"><div class="modal">${html}</div></div>`;const i=$('#modal-root input:not([type=file])');if(i&&!('ontouchstart' in window))setTimeout(()=>i.focus(),50);}
+function closeModal(){$('#modal-root').innerHTML='';if(celebrateQueue){const h=celebrateQueue;celebrateQueue=null;modal(h);}}
 let editColor=COLORS[0];
 function goalModal(g){
   editColor=g?g.color:COLORS[S.goals.length%COLORS.length];
-  modal(`<h3>${g?'Ziel bearbeiten':'Neues Ziel'}</h3>
+  modal(`<h3>${g?tr('Ziel bearbeiten','Edit goal'):tr('Neues Ziel','New goal')}</h3>
   <form id="goal-form" data-g="${g?g.id:''}">
-  <label>Name</label><input name="name" required maxlength="60" placeholder="z. B. Halbmarathon laufen" value="${g?esc(g.name):''}">
-  <label>Wie zahlt es auf dein Jahresziel ein? (optional)</label><input name="why" maxlength="140" value="${g?esc(g.why||''):''}">
-  <label>Input-Ziel: Stunden pro Woche</label><input name="target" type="number" min="0" max="100" step="0.5" inputmode="decimal" placeholder="z. B. 5" value="${g&&g.target?g.target:''}">
-  <label>Farbe</label><div class="colors">${COLORS.map(c=>`<button type="button" data-a="color" data-c="${c}" class="${c===editColor?'on':''}" style="background:${c}"></button>`).join('')}</div>
-  <div class="actions">${g?`<button type="button" class="btn ghost" data-a="archive" data-g="${g.id}">${g.archived?'Reaktivieren':'Archivieren'}</button><button type="button" class="btn danger" data-a="ask-del-goal" data-g="${g.id}">Löschen</button>`:''}<span class="sp"></span><button type="button" class="btn ghost" data-a="close">Abbrechen</button><button class="btn" type="submit">Speichern</button></div></form>`);
+  <label>${tr('Name','Name')}</label><input name="name" required maxlength="60" placeholder="${tr('z. B. Halbmarathon laufen','e.g. Run a half marathon')}" value="${g?esc(g.name):''}">
+  <label>${tr('Wie zahlt es auf dein Jahresziel ein? (optional)','How does it serve your yearly goal? (optional)')}</label><input name="why" maxlength="140" value="${g?esc(g.why||''):''}">
+  <label>${tr('Input-Ziel: Stunden pro Woche','Input goal: hours per week')}</label><input name="target" type="number" min="0" max="100" step="0.5" inputmode="decimal" placeholder="${tr('z. B. 5','e.g. 5')}" value="${g&&g.target?g.target:''}">
+  <label>${tr('Farbe','Colour')}</label><div class="colors">${COLORS.map(c=>`<button type="button" data-a="color" data-c="${c}" class="${c===editColor?'on':''}" style="background:${c}"></button>`).join('')}</div>
+  <div class="actions">${g?`<button type="button" class="btn ghost" data-a="archive" data-g="${g.id}">${g.archived?tr('Reaktivieren','Reactivate'):tr('Archivieren','Archive')}</button><button type="button" class="btn danger" data-a="ask-del-goal" data-g="${g.id}">${tr('Löschen','Delete')}</button>`:''}<span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn" type="submit">${tr('Speichern','Save')}</button></div></form>`);
 }
 function manualModal(gid){
   const g=goal(gid);
-  modal(`<h3>Zeit nachtragen</h3><div class="small">${esc(g.name)}</div><form id="manual-form" data-g="${gid}">
-  <label>Minuten</label><input name="min" type="number" min="1" max="1440" inputmode="numeric" required placeholder="z. B. 45">
-  <label>Tag</label><input name="day" type="date" value="${todayKey()}" max="${todayKey()}">
-  <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">Abbrechen</button><button class="btn" type="submit">Hinzufügen</button></div></form>`);
+  modal(`<h3>${tr('Zeit nachtragen','Add time')}</h3><div class="small">${esc(g.name)}</div><form id="manual-form" data-g="${gid}">
+  <label>${tr('Minuten','Minutes')}</label><input name="min" type="number" min="1" max="1440" inputmode="numeric" required placeholder="${tr('z. B. 45','e.g. 45')}">
+  <label>${tr('Tag','Day')}</label><input name="day" type="date" value="${todayKey()}" max="${todayKey()}">
+  <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn" type="submit">${tr('Hinzufügen','Add')}</button></div></form>`);
 }
 
 // ================= Ereignisse =================
 function setTab(t){tab=t;try{history.replaceState(null,'','#'+t);}catch(e){}render();window.scrollTo(0,0);if(t==='woche'){const c=$('#col-today');if(c&&window.innerWidth<820)c.scrollIntoView({inline:'start',block:'nearest'});}}
+const EXTRA_ACTIONS={};
 document.addEventListener('click',e=>{
   const nb=e.target.closest('nav button');if(nb){setTab(nb.dataset.tab);return;}
   const el=e.target.closest('[data-a]');if(!el)return;
   const a=el.dataset.a,gid=el.dataset.g,tid=el.dataset.t;
   if(a==='close-bg'&&e.target!==el)return;
   const tk=todayKey();
+  const T=()=>S.tasks.find(x=>x.id===tid);
   switch(a){
     case 'tab':setTab(el.dataset.tab);break;
     case 'play':startTimer(tid);break;
@@ -915,45 +1020,68 @@ document.addEventListener('click',e=>{
     case 'done':completeTask(tid,false);break;
     case 'focus-done':completeTask(tid,true);break;
     case 'reopen':reopenTask(tid);break;
-    case 'later':{const t=S.tasks.find(x=>x.id===tid);if(!t)break;if(S.running&&S.running.taskId===tid)stopTimer(true);t.date=t.date<tk?tk:t.date;t.order=nextOrder(tk);save();render();break;}
+    case 'later':{const t=T();if(!t)break;if(S.running&&S.running.taskId===tid)stopTimer(true);t.date=t.date<tk?tk:t.date;t.order=nextOrder(tk);save();render();break;}
     case 'up':case 'down':{const all=dayTasks(tk);const list=el.dataset.list==='o'?all.filter(t=>!isGoalTask(t)):all.filter(isGoalTask);moveInList(tid,a==='up'?-1:1,list);break;}
     case 'del-task':if(S.running&&S.running.taskId===tid)stopTimer(true);S.tasks=S.tasks.filter(x=>x.id!==tid);save();render();break;
-    case 'move':{const t=S.tasks.find(x=>x.id===tid);if(!t)break;const nk=shiftKey(t.date<tk?tk:t.date,+el.dataset.d);t.date=nk;t.order=nextOrder(nk);save();render();break;}
+    case 'move':{const t=T();if(!t)break;const nk=shiftKey(t.date<tk?tk:t.date,+el.dataset.d);t.date=nk;t.order=nextOrder(nk);save();render();break;}
+    case 'to-ablage':{const t=T();if(!t)break;if(S.running&&S.running.taskId===tid)stopTimer(true);t.date=null;t.order=nextOrder(null);save();render();toast(tr('In die Ablage gelegt','Moved to backlog'));break;}
+    case 'to-today':{const t=T();if(!t)break;t.date=tk;t.order=nextOrder(tk);save();render();toast(tr('Für heute eingeplant','Planned for today'));break;}
+    case 'goto-ablage':tab='woche';weekOff=0;render();window.scrollTo(0,0);{const c=$('#col-ablage');if(c)c.scrollIntoView({inline:'start',block:'nearest'});}break;
     case 'toggle-other':showOther=!showOther;render();break;
     case 'week':weekOff=+el.dataset.d===0?0:weekOff+(+el.dataset.d);render();break;
     case 'log':logOff=+el.dataset.d===0?0:Math.min(0,logOff+(+el.dataset.d));render();break;
     case 'rev':revOff=+el.dataset.d===0?0:Math.min(0,revOff+(+el.dataset.d));render();break;
+    case 'review-go':revOff=weekOffsetOf(el.dataset.w);setTab('rueckblick');break;
+    case 'review-dismiss':{S.prefs=S.prefs||{};S.prefs.dismissed=Object.assign({},S.prefs.dismissed||{},{[el.dataset.w]:true});save();render();break;}
+    case 'rs-review':restartModal(true);break;
+    case 'rs-all-ablage':{const o=S.tasks.filter(t=>!t.done&&t.date&&t.date<tk);let n=nextOrder(null);o.forEach(t=>{t.date=null;t.order=n++;});save();closeModal();render();toast(tr(`${o.length} Aufgaben in der Ablage. Neuer Tag, neuer Anfang.`,`${o.length} tasks in the backlog. New day, fresh start.`));break;}
+    case 'rs-keep':closeModal();break;
+    case 'rs-one':{const t=T();if(!t)break;const v=el.dataset.v;if(v==='today'){t.date=tk;t.order=nextOrder(tk);}else if(v==='ablage'){t.date=null;t.order=nextOrder(null);}else{S.tasks=S.tasks.filter(x=>x.id!==tid);}save();render();restartModal(true);break;}
+    case 'set':{const k=el.dataset.k;let v=el.dataset.v;if(k==='weekStart')v=+v;if(k==='review')v=v==='true';S.prefs=S.prefs||{};S.prefs[k]=v;save();render();break;}
+    case 'avatar-remove':S.profile=S.profile||{};delete S.profile.avatar;save();render();break;
+    case 'export':doExport();break;
+    case 'do-import':if(window._imp){if(S.running)stopTimer(true);const keepP=S.prefs,keepPr=S.profile;S=normalize(window._imp);if(!Object.keys(S.prefs).length)S.prefs=keepP;if(!Object.keys(S.profile).length)S.profile=keepPr;window._imp=null;save();closeModal();render();toast(tr('Sicherung geladen','Backup restored'));}break;
+    case 'reset-ask':modal(`<h3>${tr('Wirklich alles löschen?','Really delete everything?')}</h3><div class="small" style="line-height:1.5">${tr('Alle Ziele, Aufgaben, Zeiten, Reflexionen und der Kompass werden gelöscht. Profil und Einstellungen bleiben. Tipp: Vorher eine Sicherung machen.','All goals, tasks, times, reflections and the compass will be deleted. Profile and settings stay. Tip: make a backup first.')}</div><div class="actions"><button class="btn ghost" data-a="export">${tr('Erst sichern','Back up first')}</button><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn danger" data-a="reset-do">${tr('Alles löschen','Delete everything')}</button></div>`);break;
+    case 'reset-do':{const p=S.prefs,pr=S.profile,m=S.meta;S=EMPTY();S.prefs=p;S.profile=pr;S.meta=m;save();closeModal();setTab('heute');toast(tr('Alles gelöscht. Neuer Anfang.','Everything deleted. Fresh start.'));break;}
+    case 'jump':{const t=document.getElementById(el.dataset.to);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});break;}
+    case 'top':window.scrollTo({top:0,behavior:'smooth'});break;
     case 'new-goal':goalModal(null);break;
     case 'edit-goal':goalModal(goal(gid));break;
     case 'manual':manualModal(gid);break;
     case 'color':editColor=el.dataset.c;document.querySelectorAll('.colors button').forEach(b=>b.classList.toggle('on',b.dataset.c===editColor));break;
     case 'archive':{const g=goal(gid);g.archived=!g.archived;if(g.archived&&S.running&&S.running.goalId===gid)stopTimer(true);save();closeModal();render();break;}
-    case 'ask-del-goal':{const g=goal(gid);modal(`<h3>Ziel löschen?</h3><div class="small">„${esc(g.name)}“ mit allen Aufgaben und erfassten Zeiten wird endgültig gelöscht. Wenn du die Zeiten behalten willst, archiviere das Ziel lieber.</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">Abbrechen</button><button class="btn danger" data-a="del-goal" data-g="${gid}">Löschen</button></div>`);break;}
+    case 'ask-del-goal':{const g=goal(gid);modal(`<h3>${tr('Ziel löschen?','Delete goal?')}</h3><div class="small">${tr(`„${esc(g.name)}“ mit allen Aufgaben und erfassten Zeiten wird endgültig gelöscht. Wenn du die Zeiten behalten willst, archiviere das Ziel lieber.`,`“${esc(g.name)}” with all its tasks and tracked time will be deleted permanently. If you want to keep the time, archive the goal instead.`)}</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn danger" data-a="del-goal" data-g="${gid}">${tr('Löschen','Delete')}</button></div>`);break;}
     case 'del-goal':if(S.running&&S.running.goalId===gid)S.running=null;S.goals=S.goals.filter(g=>g.id!==gid);S.tasks=S.tasks.filter(t=>t.goalId!==gid);S.sessions=S.sessions.filter(x=>x.g!==gid);delete S.log[gid];save();closeModal();render();break;
     case 'close':case 'close-bg':closeModal();break;
-    case 'jump':{const t=document.getElementById(el.dataset.to);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});break;}
-    case 'top':window.scrollTo({top:0,behavior:'smooth'});break;
-    default:if(window.EXTRA_ACTIONS&&EXTRA_ACTIONS[a])EXTRA_ACTIONS[a](el);
+    default:if(EXTRA_ACTIONS[a])EXTRA_ACTIONS[a](el);
   }
 });
-document.addEventListener('change',e=>{const t=e.target;if(t.classList.contains('add-goal'))lastGoal=t.value;if(window.EXTRA_CHANGE)EXTRA_CHANGE(t);});
+document.addEventListener('change',async e=>{
+  const t=e.target;
+  if(t.classList.contains('add-goal'))lastGoal=t.value;
+  else if(t.dataset.pref){S.prefs=S.prefs||{};S.prefs[t.dataset.pref]=+t.value;save();render();}
+  else if(t.id==='avatar-file'&&t.files&&t.files[0]){try{const d=await resizeImage(t.files[0]);S.profile=S.profile||{};S.profile.avatar=d;save();render();}catch(err){toast(tr('Bild konnte nicht geladen werden','Could not load picture'));}}
+  else if(t.id==='import'&&t.files&&t.files[0]){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);const st=d.state||d;if(!Array.isArray(st.goals))throw 0;window._imp=st;modal(`<h3>${tr('Sicherung laden?','Restore backup?')}</h3><div class="small">${tr(`Die Sicherung enthält ${st.goals.length} Ziele und ${(st.tasks||[]).length} Aufgaben. Deine aktuellen Daten werden dadurch ersetzt.`,`The backup contains ${st.goals.length} goals and ${(st.tasks||[]).length} tasks. Your current data will be replaced.`)}</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn" data-a="do-import">${tr('Ersetzen','Replace')}</button></div>`);}catch(err){modal(`<h3>${tr('Datei nicht lesbar','File not readable')}</h3><div class="small">${tr('Das ist keine gültige Motus-Sicherung.','This is not a valid Motus backup.')}</div><div class="actions"><span class="sp"></span><button class="btn" data-a="close">OK</button></div>`);}t.value='';};r.readAsText(t.files[0]);}
+});
 document.addEventListener('input',e=>{
   const t=e.target;
   if(t.dataset.review){const w=t.dataset.w;S.reviews[w]=S.reviews[w]||{};S.reviews[w][t.dataset.review]=t.value.slice(0,4000);save();}
   else if(t.dataset.compass){S.compass=S.compass||{};S.compass[t.dataset.compass]=t.value.slice(0,2000);save();}
   else if(t.dataset.note){const x=S.tasks.find(y=>y.id===t.dataset.note);if(x){x.notes=t.value.slice(0,4000);save();}}
+  else if(t.dataset.profile){S.profile=S.profile||{};S.profile[t.dataset.profile]=t.value.slice(0,40);save();updateAvatar();const b=document.querySelector('.avatar.big');if(b)b.innerHTML=avatarInner()+`<span class="sd ${syncStateFn()}"></span>`;}
 });
 document.addEventListener('submit',e=>{
+  if(e.defaultPrevented)return;
   e.preventDefault();
   const f=e.target;
-  if(f.dataset.add){const v=f.querySelector('input').value.trim();if(!v)return;const g=f.querySelector('select').value||'_none';lastGoal=g;const k=f.dataset.add;const sl=$('#board')?$('#board').scrollLeft:0;
+  if(f.dataset.add){const v=f.querySelector('input').value.trim();if(!v)return;const g=f.querySelector('select').value||'_none';lastGoal=g;const k=f.dataset.add==='ablage'?null:f.dataset.add;const sl=$('#board')?$('#board').scrollLeft:0;
     S.tasks.push({id:uid(),goalId:g,title:v,date:k,done:false,secs:0,order:nextOrder(k)});if(g==='_none'&&k===todayKey())showOther=true;save();render();
-    if($('#board'))$('#board').scrollLeft=sl;const n=document.querySelector(`[data-add="${k}"] input`);if(n)n.focus();return;}
+    if($('#board'))$('#board').scrollLeft=sl;const n=document.querySelector(`[data-add="${f.dataset.add}"] input`);if(n)n.focus();return;}
   if(f.id==='goal-form'){const fd=new FormData(f);const name=fd.get('name').trim();if(!name)return;const target=parseFloat(fd.get('target'))||0;const why=fd.get('why').trim();
     if(f.dataset.g){Object.assign(goal(f.dataset.g),{name,target,why,color:editColor});}
-    else{const id=uid();S.goals.push({id,name,target,why,color:editColor,created:todayKey()});lastGoal=id;}
+    else{const id=uid();S.goals.push({id,name,target,why,color:editColor,created:todayKey(),ms:0});lastGoal=id;}
     save();closeModal();render();return;}
-  if(f.id==='manual-form'){const fd=new FormData(f);const m=parseInt(fd.get('min'),10);if(!m||m<1)return;const day=fd.get('day')||todayKey();const g=f.dataset.g;S.log[g]=S.log[g]||{};S.log[g][day]=(S.log[g][day]||0)+m*60;save();closeModal();render();}
+  if(f.id==='manual-form'){const fd=new FormData(f);const m=parseInt(fd.get('min'),10);if(!m||m<1)return;const day=fd.get('day')||todayKey();const g=f.dataset.g;S.log[g]=S.log[g]||{};S.log[g][day]=(S.log[g][day]||0)+m*60;closeModal();checkMilestones();save();render();}
 });
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==tab&&TABS.includes(h)){tab=h;render();}});
 
@@ -968,14 +1096,262 @@ document.addEventListener('drop',e=>{if(!dragId)return;const d=dropTarget(e);if(
 // ================= Live-Uhr =================
 let lastDay=todayKey();
 function tick(){
-  if(todayKey()!==lastDay){lastDay=todayKey();softRender();return;}
+  if(todayKey()!==lastDay){lastDay=todayKey();touchSeen();softRender();return;}
   if(!S.running)return;
   document.querySelectorAll('[data-clock]').forEach(c=>c.textContent=fmtClock(runningSecs()));
   document.querySelectorAll('[data-live-task]').forEach(tl=>{const t=S.tasks.find(x=>x.id===tl.dataset.liveTask);if(t)tl.textContent=(tl.classList.contains('tm')?fmtShort:fmtDur)(taskSecs(t));});
   document.querySelectorAll('[data-live-focus]').forEach(tl=>{const t=S.tasks.find(x=>x.id===tl.dataset.liveFocus);if(t)tl.textContent=fmtClock(taskSecs(t));});
 }
 setInterval(tick,1000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)softRender();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){touchSeen();softRender();}});
+
+// ================= Sync über Dropbox oder WebDAV (ohne eigene Datenbank) =================
+const SYNC_KEY='motus_sync',SAVED_KEY='motus_savedAt',FILE='/motus.json';
+const SY={cfg:{type:'none'},timer:null,busy:false,last:null,err:null};
+try{SY.cfg=JSON.parse(localStorage.getItem(SYNC_KEY)||'{"type":"none"}');}catch(e){}
+const saveCfg=()=>{try{localStorage.setItem(SYNC_KEY,JSON.stringify(SY.cfg));}catch(e){}};
+const localStamp=()=>{try{return +localStorage.getItem(SAVED_KEY)||0;}catch(e){return 0;}};
+const setStamp=v=>{try{localStorage.setItem(SAVED_KEY,String(v));}catch(e){}};
+const redirectUri=()=>location.origin+location.pathname;
+const provName=()=>SY.cfg.type==='dropbox'?'Dropbox':SY.cfg.type==='webdav'?'WebDAV':'';
+syncStateFn=()=>SY.cfg.type==='none'?'local':SY.err?'err':SY.busy?'busy':SY.last?'ok':'busy';
+function showSync(){
+  let t;
+  if(SY.cfg.type==='none')t=tr('Nur auf diesem Gerät','This device only');
+  else if(SY.err)t=provName()+' · '+tr('Problem','Problem');
+  else if(SY.busy)t=provName()+' · '+tr('gleicht ab…','syncing…');
+  else t=provName()+(SY.last?' · '+tr('synchronisiert ','synced ')+fmtTime(SY.last):'');
+  setSync(t);
+}
+
+// ---- Dropbox (OAuth mit PKCE, nur App-Ordner) ----
+const b64url=buf=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+async function dbxStartAuth(appKey){
+  const v=b64url(crypto.getRandomValues(new Uint8Array(48)));
+  const ch=b64url(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)));
+  localStorage.setItem('motus_pkce',JSON.stringify({v,appKey}));
+  const u=new URL('https://www.dropbox.com/oauth2/authorize');
+  Object.entries({client_id:appKey,response_type:'code',code_challenge:ch,code_challenge_method:'S256',redirect_uri:redirectUri(),token_access_type:'offline'}).forEach(([k,x])=>u.searchParams.set(k,x));
+  location.href=u.toString();
+}
+async function dbxToken(params){
+  const r=await fetch('https://api.dropboxapi.com/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});
+  if(!r.ok){let d='';try{d=(await r.json()).error_description||'';}catch(e){}throw new Error(tr('Anmeldung bei Dropbox fehlgeschlagen','Dropbox sign-in failed')+' ('+r.status+(d?': '+d:'')+')');}
+  return r.json();
+}
+async function dbxFinishAuth(){
+  const q=new URLSearchParams(location.search);
+  if(!q.has('code')&&!q.has('error'))return false;
+  history.replaceState(null,'',location.pathname+location.hash);
+  if(q.has('error')){SY.err=tr('Dropbox-Anmeldung abgebrochen','Dropbox sign-in cancelled');return true;}
+  let p;try{p=JSON.parse(localStorage.getItem('motus_pkce')||'null');}catch(e){}
+  if(!p)return true;
+  localStorage.removeItem('motus_pkce');
+  const t=await dbxToken({grant_type:'authorization_code',code:q.get('code'),client_id:p.appKey,code_verifier:p.v,redirect_uri:redirectUri()});
+  SY.cfg={type:'dropbox',appKey:p.appKey,refresh:t.refresh_token,access:t.access_token,exp:Date.now()+(t.expires_in-60)*1000};
+  saveCfg();setTimeout(()=>toast(tr('Dropbox verbunden ✓','Dropbox connected ✓')),400);return true;
+}
+async function dbxAccess(){
+  const c=SY.cfg;
+  if(c.access&&c.exp>Date.now())return c.access;
+  const t=await dbxToken({grant_type:'refresh_token',refresh_token:c.refresh,client_id:c.appKey});
+  c.access=t.access_token;c.exp=Date.now()+(t.expires_in-60)*1000;saveCfg();return c.access;
+}
+const DROPBOX={
+  async get(){
+    const r=await fetch('https://content.dropboxapi.com/2/files/download',{method:'POST',headers:{Authorization:'Bearer '+await dbxAccess(),'Dropbox-API-Arg':JSON.stringify({path:FILE})}});
+    if(r.status===409)return null;
+    if(!r.ok)throw new Error('Dropbox ('+r.status+')');
+    return JSON.parse(await r.text());
+  },
+  async put(text){
+    const r=await fetch('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{Authorization:'Bearer '+await dbxAccess(),'Dropbox-API-Arg':JSON.stringify({path:FILE,mode:'overwrite',mute:true}),'Content-Type':'application/octet-stream'},body:text});
+    if(!r.ok)throw new Error('Dropbox ('+r.status+')');
+  }
+};
+
+// ---- WebDAV ----
+const davHeaders=c=>{c=c||SY.cfg;const h={};if(c.user)h.Authorization='Basic '+btoa(unescape(encodeURIComponent(c.user+':'+(c.pass||''))));return h;};
+const davUrl=c=>{c=c||SY.cfg;const u=(c.url||'').trim();return /\.json$/i.test(u)?u:u.replace(/\/?$/,'/')+'motus.json';};
+const davDir=c=>davUrl(c).replace(/[^/]*$/,'');
+const WEBDAV={
+  async get(c){
+    const u=davUrl(c);
+    const r=await fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{headers:davHeaders(c),cache:'no-store'});
+    if(r.status===404)return null;
+    if(!r.ok)throw new Error('WebDAV ('+r.status+')');
+    const tx=await r.text();return tx.trim()?JSON.parse(tx):null;
+  },
+  async put(text,c){
+    const r=await fetch(davUrl(c),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},davHeaders(c)),body:text});
+    if(!r.ok)throw new Error('WebDAV ('+r.status+')');
+  }
+};
+const provider=()=>SY.cfg.type==='dropbox'?DROPBOX:SY.cfg.type==='webdav'?WEBDAV:null;
+function errText(e){const m=String(e&&e.message||e);
+  if(/\((401|403)/.test(m))return tr('Zugriff verweigert. Benutzer oder Passwort stimmen nicht.','Access denied. Username or password is wrong.');
+  if(/\(409/.test(m)&&SY.cfg.type!=='dropbox')return tr('Der Ordner existiert nicht. Lege ihn zuerst auf dem Server an.','The folder does not exist. Create it on the server first.');
+  if(/Failed to fetch|NetworkError|Load failed|TypeError/i.test(m))return SY.cfg.type==='webdav'||WZ.type==='webdav'?tr('Keine Verbindung. Entweder ist der Server nicht erreichbar, oder er blockiert Zugriffe aus dem Browser (CORS).','No connection. Either the server is unreachable or it blocks browser access (CORS).'):tr('Keine Verbindung zum Internet.','No internet connection.');
+  return m;}
+
+// ---- Abgleich: die neuere Version gewinnt ----
+async function syncPull(){
+  const p=provider();if(!p||SY.busy)return;
+  SY.busy=true;SY.err=null;showSync();
+  try{
+    const remote=await p.get();
+    const mine=localStamp();
+    const hasLocal=S.goals.length||S.tasks.length;
+    if(!SY.cfg.synced&&remote&&remote.state&&hasLocal&&(remote.state.goals||[]).length){
+      SY.busy=false;SY.pendingRemote=remote;showSync();
+      modal(`<h3>${tr('Welche Daten behalten?','Which data should be kept?')}</h3><div class="small" style="line-height:1.5">${tr(`In ${provName()} liegen schon Motus-Daten (${remote.state.goals.length} Ziele, ${(remote.state.tasks||[]).length} Aufgaben), und auf diesem Gerät auch (${S.goals.length} Ziele, ${S.tasks.length} Aufgaben). Welche sollen ab jetzt gelten?`,`${provName()} already has Motus data (${remote.state.goals.length} goals, ${(remote.state.tasks||[]).length} tasks), and so does this device (${S.goals.length} goals, ${S.tasks.length} tasks). Which should apply from now on?`)}</div><div class="actions"><button class="btn ghost" data-a="sync-keep-local">${tr('Dieses Gerät','This device')}</button><span class="sp"></span><button class="btn" data-a="sync-keep-remote">${tr('Aus ','From ')}${provName()}</button></div>`);
+      return;
+    }
+    if(remote&&remote.state&&(remote.savedAt||0)>mine){
+      S=normalize(remote.state);localSave();setStamp(remote.savedAt);applyTheme();softRender();
+    }else if(!remote||(remote.savedAt||0)<mine){
+      await p.put(JSON.stringify({app:'motus',v:3,savedAt:mine||Date.now(),state:S}));
+      if(!mine)setStamp(Date.now());
+    }
+    SY.last=Date.now();if(!SY.cfg.synced){SY.cfg.synced=true;saveCfg();}
+  }catch(e){SY.err=errText(e);}
+  SY.busy=false;showSync();if(tab==='einstellungen'&&!typing())render();
+}
+async function syncPush(){
+  const p=provider();if(!p)return;
+  if(SY.busy){schedulePush();return;}
+  SY.busy=true;SY.err=null;showSync();
+  try{await p.put(JSON.stringify({app:'motus',v:3,savedAt:localStamp(),state:S}));SY.last=Date.now();}
+  catch(e){SY.err=errText(e);}
+  SY.busy=false;showSync();
+}
+function schedulePush(){if(SY.cfg.type==='none')return;clearTimeout(SY.timer);SY.timer=setTimeout(()=>{SY.timer=null;syncPush();},2000);}
+function markDirty(){setStamp(Date.now());schedulePush();}
+async function syncInit(){
+  try{await dbxFinishAuth();}catch(e){SY.err=errText(e);}
+  showSync();
+  if(SY.cfg.type!=='none')syncPull();
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){if(SY.timer){clearTimeout(SY.timer);SY.timer=null;syncPush();}}else syncPull();});
+  window.addEventListener('online',syncPull);
+  setInterval(()=>{if(!document.hidden&&!SY.timer)syncPull();},120000);
+}
+
+// ---- Einstellungen: Sync-Bereich ----
+SYNC_SETTINGS=()=>{
+  const c=SY.cfg;
+  if(c.type==='none')return `<div class="small" style="line-height:1.55;margin-bottom:12px">${tr('Deine Daten liegen gerade nur in diesem Browser. Verbinde einen Speicher, der dir gehört. Dann landet alles in einer einzigen Datei <b>motus.json</b>, und all deine Geräte gleichen sich darüber ab. Eine fremde Datenbank gibt es dabei nicht.','Your data currently lives only in this browser. Connect storage you own. Everything then goes into a single file <b>motus.json</b>, and all your devices sync through it. No third-party database involved.')}</div>
+    <div class="tiles"><button data-a="wz-start" data-v="dropbox"><b>Dropbox</b><span>${tr('Einfach und zuverlässig. Einmalig ca. 3 Minuten Einrichtung.','Simple and reliable. About 3 minutes of one-time setup.')}</span></button><button data-a="wz-start" data-v="webdav"><b>WebDAV</b><span>${tr('Eigene NAS oder Nextcloud. Für Fortgeschrittene.','Your own NAS or Nextcloud. For advanced users.')}</span></button></div>`;
+  return `<div class="row2"><div class="l"><b>${provName()} ${tr('verbunden','connected')}</b><span>${c.type==='dropbox'?'Dropbox/Apps/&lt;'+tr('App-Name','app name')+'&gt;/motus.json':esc(davUrl())}</span></div><div class="row" style="flex-wrap:wrap"><button class="btn ghost sm" data-a="sync-now">${tr('Jetzt abgleichen','Sync now')}</button><button class="btn ghost sm" data-a="sync-off">${tr('Trennen','Disconnect')}</button></div></div>
+    <div class="small" style="margin-top:6px">${SY.err?`<span style="color:var(--danger)">${esc(SY.err)}</span>${c.type==='webdav'?` · <a href="#" data-a="wz-start" data-v="webdav" style="color:var(--gold)">${tr('Einrichtung prüfen','Check setup')}</a>`:''}`:SY.last?tr('Zuletzt abgeglichen um ','Last synced at ')+fmtTime(SY.last)+'.':tr('Noch nicht abgeglichen.','Not synced yet.')}</div>`;
+};
+
+// ---- Einrichtungshilfe ----
+const WZ={type:null,step:0,prov:null,draft:{}};
+const PROVIDERS={
+  nextcloud:{name:'Nextcloud',url:'https://cloud.example.de/remote.php/dav/files/BENUTZER/Motus/',
+    de:'Adresse: <code>https://DEINE-CLOUD/remote.php/dav/files/BENUTZERNAME/Motus/</code>. Lege den Ordner <b>Motus</b> vorher in Nextcloud an. Statt deines Passworts nimmst du am besten ein <b>App-Passwort</b> (Einstellungen → Sicherheit → Neues App-Passwort).',
+    en:'Address: <code>https://YOUR-CLOUD/remote.php/dav/files/USERNAME/Motus/</code>. Create the folder <b>Motus</b> in Nextcloud first. Instead of your password, ideally use an <b>app password</b> (Settings → Security → Create new app password).',
+    cde:'Nextcloud erlaubt Zugriffe von fremden Webseiten normalerweise nicht. Es gibt Nextcloud-Apps, die das für bestimmte Adressen freischalten (z. B. „WebAppPassword“). Dort trägst du die Adresse von Motus ein.',
+    cen:'Nextcloud usually does not allow access from other websites. There are Nextcloud apps that allow it for specific addresses (e.g. “WebAppPassword”). Enter Motus’ address there.'},
+  synology:{name:'Synology',url:'https://nas.example.de:5006/home/Motus/',
+    de:'Im Paket-Zentrum das Paket <b>WebDAV Server</b> installieren und HTTPS aktivieren (Standard-Port 5006). Adresse z. B.: <code>https://DEINE-NAS:5006/home/Motus/</code>. Den Ordner vorher anlegen.',
+    en:'Install the <b>WebDAV Server</b> package in Package Center and enable HTTPS (default port 5006). Address e.g.: <code>https://YOUR-NAS:5006/home/Motus/</code>. Create the folder first.',
+    cde:'Der WebDAV-Server der Synology erlaubt Zugriffe aus dem Browser meist nicht von sich aus. Möglich ist ein Reverse Proxy (Systemsteuerung → Anmeldeportal → Erweitert) mit eigenen Kopfzeilen für CORS. Das ist etwas Bastelei.',
+    cen:'Synology’s WebDAV server usually does not allow browser access by itself. A reverse proxy (Control Panel → Login Portal → Advanced) with custom CORS headers can work. It takes some tinkering.'},
+  qnap:{name:'QNAP',url:'https://nas.example.de:8081/Motus/',
+    de:'WebDAV in der Systemsteuerung unter Netzwerk- & Dateidienste aktivieren (HTTPS, z. B. Port 8081) und für den freigegebenen Ordner die WebDAV-Rechte setzen. Adresse z. B.: <code>https://DEINE-NAS:8081/FREIGABE/Motus/</code>.',
+    en:'Enable WebDAV in Control Panel under Network & File Services (HTTPS, e.g. port 8081) and set WebDAV permissions for the shared folder. Address e.g.: <code>https://YOUR-NAS:8081/SHARE/Motus/</code>.',
+    cde:'Auch hier blockiert der Browser oft ohne passende CORS-Kopfzeilen. Ein vorgeschalteter Reverse Proxy kann das lösen.',
+    cen:'Here too the browser often blocks access without suitable CORS headers. A reverse proxy in front can solve this.'},
+  other:{name:tr('Anderer','Other'),url:'https://server.example.de/webdav/Motus/',
+    de:'Gib die Adresse eines Ordners auf deinem WebDAV-Server an. Der Ordner sollte schon existieren.',
+    en:'Enter the address of a folder on your WebDAV server. The folder should already exist.',
+    cde:'Der Server muss Zugriffe von der Adresse von Motus erlauben (CORS) und über https erreichbar sein.',
+    cen:'The server must allow access from Motus’ address (CORS) and be reachable via https.'}
+};
+const steps=(n,cur)=>`<div class="wz-steps">${Array.from({length:n},(_,i)=>`<i class="${i<=cur?'on':''}"></i>`).join('')}</div>`;
+const copyRow=v=>`<div class="copyrow"><code>${esc(v)}</code><button class="btn ghost sm" data-a="wz-copy" data-v="${esc(v)}">${tr('Kopieren','Copy')}</button></div>`;
+function wizard(){
+  const secure=location.protocol==='https:'||location.hostname==='localhost';
+  if(WZ.type==='dropbox'){
+    if(WZ.step===0)return modal(`${steps(3,0)}<h3>${tr('Mit Dropbox verbinden','Connect Dropbox')}</h3><div class="small" style="line-height:1.55">${tr('Motus bekommt nur Zugriff auf einen eigenen Ordner in deiner Dropbox (Apps → dein App-Name) und sieht sonst nichts. Dafür meldest du Motus einmalig bei Dropbox an. Das ist kostenlos und dauert etwa 3 Minuten. Am besten am Computer.','Motus only gets access to its own folder in your Dropbox (Apps → your app name) and sees nothing else. For that you register Motus with Dropbox once. It’s free and takes about 3 minutes. Best done on a computer.')}</div>${secure?'':`<div class="hint" style="margin-top:10px;color:var(--danger)">${tr('Das funktioniert nur, wenn Motus über https:// läuft.','This only works when Motus runs over https://.')}</div>`}<div class="actions"><button class="btn ghost" data-a="wz-goto" data-v="2">${tr('Ich habe schon einen App key','I already have an app key')}</button><span class="sp"></span><button class="btn" data-a="wz-goto" data-v="1" ${secure?'':'disabled'}>${tr('Los geht’s','Let’s go')}</button></div>`);
+    if(WZ.step===1)return modal(`${steps(3,1)}<h3>${tr('App bei Dropbox anlegen','Create app at Dropbox')}</h3><ol class="small">
+      <li>${tr('Öffne <b>dropbox.com/developers/apps</b> und melde dich an.','Open <b>dropbox.com/developers/apps</b> and sign in.')} <a href="https://www.dropbox.com/developers/apps/create" target="_blank" rel="noopener" style="color:var(--gold)">${tr('Direkt öffnen','Open directly')} ↗</a></li>
+      <li>${tr('<b>Create app</b> → <b>Scoped access</b> → <b>App folder</b>, Name z. B. „Motus-Sync“ → <b>Create app</b>.','<b>Create app</b> → <b>Scoped access</b> → <b>App folder</b>, name e.g. “Motus-Sync” → <b>Create app</b>.')}</li>
+      <li>${tr('Reiter <b>Permissions</b>: Haken bei <b>files.content.write</b> und <b>files.content.read</b>, dann unten <b>Submit</b>.','Tab <b>Permissions</b>: tick <b>files.content.write</b> and <b>files.content.read</b>, then <b>Submit</b> at the bottom.')}</li>
+      <li>${tr('Reiter <b>Settings</b> → <b>OAuth 2 → Redirect URIs</b>: diese Adresse einfügen und <b>Add</b>:','Tab <b>Settings</b> → <b>OAuth 2 → Redirect URIs</b>: paste this address and click <b>Add</b>:')}${copyRow(redirectUri())}</li>
+      <li>${tr('Ebenfalls unter Settings: den <b>App key</b> kopieren.','Also under Settings: copy the <b>App key</b>.')}</li></ol>
+      <div class="actions"><button class="btn ghost" data-a="wz-goto" data-v="0">${tr('Zurück','Back')}</button><span class="sp"></span><button class="btn" data-a="wz-goto" data-v="2">${tr('Weiter','Next')}</button></div>`);
+    return modal(`${steps(3,2)}<h3>${tr('App key eintragen','Enter app key')}</h3><form id="dbx-form"><label>App key</label><input name="key" required placeholder="a1b2c3d4e5f6g7h" autocomplete="off" value="${esc(SY.cfg.appKey||WZ.draft.key||'')}">
+      <div class="small" style="margin-top:8px">${tr('Danach leitet dich Motus zu Dropbox weiter. Dort bestätigst du den Zugriff und landest wieder hier.','Motus then takes you to Dropbox. Confirm access there and you’ll come right back.')}</div>
+      <div class="actions"><button type="button" class="btn ghost" data-a="wz-goto" data-v="1">${tr('Zurück','Back')}</button><span class="sp"></span><button class="btn gold" type="submit">${tr('Mit Dropbox verbinden','Connect Dropbox')}</button></div></form>`);
+  }
+  if(WZ.type==='webdav'){
+    if(WZ.step===0)return modal(`${steps(3,0)}<h3>${tr('WebDAV einrichten','Set up WebDAV')}</h3><div class="small">${tr('Wo liegt dein Speicher?','Where is your storage?')}</div><div class="tiles">${Object.entries(PROVIDERS).map(([k,p])=>`<button data-a="wz-prov" data-v="${k}"><b>${k==='other'?tr('Anderer','Other'):p.name}</b><span>${k==='nextcloud'?tr('Eigene oder gemietete Cloud','Own or hosted cloud'):k==='synology'?'DiskStation':k==='qnap'?'QNAP NAS':tr('Beliebiger WebDAV-Server','Any WebDAV server')}</span></button>`).join('')}</div>
+      <div class="hint" style="margin-top:12px">${tr('Wichtig vorab: Dein Server muss über <b>https://</b> erreichbar sein und Zugriffe aus dem Browser von dieser Adresse erlauben (CORS):','Important first: your server must be reachable via <b>https://</b> and allow browser access from this address (CORS):')}${copyRow(location.origin)}</div>
+      <div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button></div>`);
+    if(WZ.step===1){const p=PROVIDERS[WZ.prov]||PROVIDERS.other,d=WZ.draft;
+      return modal(`${steps(3,1)}<h3>${p.name==='Anderer'||p.name==='Other'?'WebDAV':p.name}</h3><div class="small" style="line-height:1.55">${tr(p.de,p.en)}</div>
+      <form id="dav-form"><label>${tr('Adresse des Ordners','Folder address')}</label><input name="url" required type="url" placeholder="${esc(p.url)}" value="${esc(d.url||(SY.cfg.type==='webdav'?SY.cfg.url:'')||'')}">
+      <label>${tr('Benutzer','Username')}</label><input name="user" autocomplete="username" value="${esc(d.user||(SY.cfg.type==='webdav'?SY.cfg.user:'')||'')}">
+      <label>${tr('Passwort','Password')}${WZ.prov==='nextcloud'?tr(' (App-Passwort)',' (app password)'):''}</label><input name="pass" type="password" autocomplete="current-password">
+      <div class="small" style="margin-top:8px">${tr('Zugangsdaten bleiben nur in diesem Browser. Am besten einen eigenen Benutzer anlegen, der nur diesen Ordner sehen darf.','Credentials stay only in this browser. Ideally create a separate user that can only see this folder.')}</div>
+      <details style="margin-top:10px"><summary class="small" style="cursor:pointer;color:var(--gold)">${tr('Hinweis zu CORS','About CORS')}</summary><div class="small" style="margin-top:6px;line-height:1.5">${tr(p.cde,p.cen)}</div></details>
+      <div class="actions"><button type="button" class="btn ghost" data-a="wz-goto" data-v="0">${tr('Zurück','Back')}</button><span class="sp"></span><button class="btn" type="submit">${tr('Verbindung testen','Test connection')}</button></div></form>`);}
+    const r=WZ.result||{};
+    const line=(ok,txt)=>`<div><span class="ic">${ok===true?'✅':ok===false?'❌':'⏳'}</span><span>${txt}</span></div>`;
+    return modal(`${steps(3,2)}<h3>${tr('Verbindungstest','Connection test')}</h3><div class="checks">
+      ${line(r.https,tr('Adresse nutzt https','Address uses https'))}
+      ${line(r.reach,tr('Server erreichbar und Browser-Zugriff erlaubt (CORS)','Server reachable and browser access allowed (CORS)'))}
+      ${line(r.auth,tr('Anmeldung erfolgreich','Sign-in successful'))}
+      ${line(r.read,r.exists?tr('Vorhandene Motus-Daten gefunden','Existing Motus data found'):tr('Ordner lesbar','Folder readable'))}
+      ${line(r.write,tr('Schreiben möglich','Writing possible'))}</div>
+      ${r.msg?`<div class="hint" style="margin-top:12px;${r.ok?'':'color:var(--danger)'}">${r.msg}</div>`:''}
+      <div class="actions"><button class="btn ghost" data-a="wz-goto" data-v="1">${tr('Zurück','Back')}</button><span class="sp"></span>${r.ok?`<button class="btn gold" data-a="wz-dav-connect">${tr('Verbinden','Connect')}</button>`:r.running?'':`<button class="btn" data-a="wz-dav-test">${tr('Nochmal testen','Test again')}</button>`}</div>`);
+  }
+}
+async function davTest(){
+  const c=Object.assign({type:'webdav'},WZ.draft);
+  const r={running:true};WZ.result=r;wizard();
+  r.https=/^https:/i.test(c.url)||location.protocol==='http:';
+  if(!r.https){r.running=false;r.msg=tr('Motus läuft über https. Der Browser blockiert deshalb Verbindungen zu http-Adressen. Nutze die https-Adresse deines Servers.','Motus runs on https, so the browser blocks connections to http addresses. Use your server’s https address.');wizard();return;}
+  try{
+    let data;
+    try{data=await WEBDAV.get(c);r.reach=true;r.auth=true;r.read=true;r.exists=!!data;}
+    catch(e){const m=String(e.message||e);r.reach=!/Failed to fetch|NetworkError|Load failed|TypeError/i.test(m);if(!r.reach)throw new Error(tr('Keine Antwort. Häufigste Ursache: Der Server erlaubt keine Zugriffe aus dem Browser (CORS), oder die Adresse ist von hier aus nicht erreichbar (z. B. nur im Heimnetz).','No response. Most common cause: the server doesn’t allow browser access (CORS), or the address isn’t reachable from here (e.g. home network only).'));
+      r.auth=!/\((401|403)/.test(m);if(!r.auth)throw new Error(tr('Benutzer oder Passwort stimmen nicht, oder der Benutzer darf nicht auf den Ordner zugreifen.','Username or password is wrong, or the user may not access the folder.'));
+      throw new Error(tr('Lesen fehlgeschlagen: ','Reading failed: ')+m);}
+    if(!data){
+      const testUrl=davDir(c)+'.motus-test.txt';
+      const w=await fetch(testUrl,{method:'PUT',headers:Object.assign({'Content-Type':'text/plain'},davHeaders(c)),body:'motus'}).catch(()=>null);
+      r.write=!!(w&&w.ok);
+      if(w&&w.ok)fetch(testUrl,{method:'DELETE',headers:davHeaders(c)}).catch(()=>{});
+      if(!r.write)throw new Error(w&&w.status===409?tr('Der Ordner existiert nicht. Lege ihn zuerst auf dem Server an.','The folder doesn’t exist. Create it on the server first.'):w&&(w.status===401||w.status===403)?tr('Keine Schreibrechte für diesen Ordner.','No write permission for this folder.'):tr('Schreiben fehlgeschlagen. Prüfe Rechte und CORS (die Methoden PUT und DELETE müssen erlaubt sein).','Writing failed. Check permissions and CORS (PUT and DELETE methods must be allowed).'));
+    }else r.write=true;
+    r.ok=true;r.msg=r.exists?tr('Alles bereit. Auf dem Server liegen schon Motus-Daten, du kannst gleich wählen, welche gelten sollen.','All set. There is already Motus data on the server, you can choose which data to keep next.'):tr('Alles bereit. Beim Verbinden wird motus.json in diesem Ordner angelegt.','All set. Connecting will create motus.json in this folder.');
+  }catch(e){r.ok=false;r.msg=esc(String(e.message||e));}
+  r.running=false;wizard();
+}
+Object.assign(EXTRA_ACTIONS,{
+  'wz-start'(el){WZ.type=el.dataset.v;WZ.step=0;WZ.prov=null;WZ.draft={};WZ.result=null;wizard();},
+  'wz-goto'(el){WZ.step=+el.dataset.v;wizard();},
+  'wz-prov'(el){WZ.prov=el.dataset.v;WZ.step=1;wizard();},
+  async 'wz-copy'(el){try{await navigator.clipboard.writeText(el.dataset.v);toast(tr('Kopiert','Copied'));}catch(e){toast(tr('Bitte von Hand kopieren','Please copy manually'));}},
+  'wz-dav-test'(){davTest();},
+  'wz-dav-connect'(){SY.cfg=Object.assign({type:'webdav'},WZ.draft);SY.err=null;saveCfg();closeModal();toast(tr('WebDAV verbunden ✓','WebDAV connected ✓'));syncPull();render();},
+  'sync-now'(){syncPull();},
+  'sync-off'(){modal(`<h3>${tr('Synchronisierung trennen?','Disconnect sync?')}</h3><div class="small">${tr(`Deine Daten bleiben auf diesem Gerät und in der Datei bei ${provName()} erhalten. Es wird nur nicht mehr abgeglichen.`,`Your data stays on this device and in the file at ${provName()}. It just won’t be synced anymore.`)}</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn danger" data-a="sync-off-ok">${tr('Trennen','Disconnect')}</button></div>`);},
+  'sync-off-ok'(){SY.cfg={type:'none'};SY.err=null;SY.last=null;saveCfg();closeModal();showSync();render();},
+  'sync-keep-remote'(){const r=SY.pendingRemote;SY.pendingRemote=null;if(r){S.running=null;S=normalize(r.state);localSave();setStamp(r.savedAt||Date.now());}SY.cfg.synced=true;saveCfg();closeModal();SY.last=Date.now();showSync();applyTheme();render();},
+  'sync-keep-local'(){SY.pendingRemote=null;SY.cfg.synced=true;saveCfg();setStamp(Date.now());closeModal();syncPush().then(render);}
+});
+document.addEventListener('submit',e=>{
+  const f=e.target;
+  if(f.id==='dbx-form'){e.preventDefault();e.stopImmediatePropagation();const k=new FormData(f).get('key').trim();if(k){WZ.draft.key=k;dbxStartAuth(k);}}
+  else if(f.id==='dav-form'){e.preventDefault();e.stopImmediatePropagation();const fd=new FormData(f);WZ.draft={url:fd.get('url').trim(),user:fd.get('user').trim(),pass:fd.get('pass')||(SY.cfg.type==='webdav'?SY.cfg.pass:'')||''};WZ.step=2;davTest();}
+},true);
+document.addEventListener('click',e=>{const a=e.target.closest('a[data-a]');if(a)e.preventDefault();},true);
+
 initStore();
 syncInit();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
