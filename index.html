@@ -439,6 +439,82 @@ button.brand:hover .logo{transform:scale(1.05)}
 input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none}
 button,nav,.seg,.tcard .title,.qitem .tt,.chk,.gpick,.tiles button,summary{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 ::selection{background:rgba(212,160,23,.35)}
+/* Links */
+.lkrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.lk{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 9px 3px 4px;border-radius:999px;background:var(--surface-2,rgba(127,127,127,.12));border:1px solid var(--line);color:var(--text);font-size:12.5px;font-weight:500;text-decoration:none;line-height:1.3;transition:background .15s,border-color .15s}
+.lk:hover{border-color:var(--gold);background:rgba(212,160,23,.12)}
+.lk-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
+.lk-ic{position:relative;flex:none;width:18px;height:18px;border-radius:5px;background:var(--moss);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;overflow:hidden}
+.lk-ic img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:1px}
+.lk-m{background:var(--gold);color:#14200f;font-size:11px}
+.lk-more{padding:3px 10px;color:var(--muted);cursor:pointer;font:inherit;font-size:12.5px}
+.tcard .lkrow{margin-top:6px;gap:4px}.tcard .lk-t{max-width:96px}.tcard .lk{font-size:11.5px;padding:2px 7px 2px 3px}.tcard .lk-ic{width:15px;height:15px}
+/* Hero (Heute + Fokus) */
+.hero{background:radial-gradient(90% 120% at 82% 12%,rgba(253,189,74,.42),transparent 55%),linear-gradient(170deg,var(--sky) 0%,#13503f 55%,var(--moss-lo) 100%)!important;border:0!important;color:#fff}
+.hero .lbl{color:#f3e3bf;opacity:.92;font-size:12.5px;display:flex;align-items:center;gap:6px}
+.hero .lbl .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.hero .lbl.up{text-transform:uppercase;letter-spacing:.08em;font-size:10.5px;font-weight:700;opacity:.75}
+.timer.hero{color:#fff}.timer.hero .t{color:#fff;font-size:30px;line-height:1.05}
+.timer .tt1{font-weight:650;font-size:15.5px;line-height:1.3;margin:2px 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.timer .tt1.sm{font-size:13.5px;font-weight:550;opacity:.95;margin:1px 0 2px}
+.tring{position:relative;flex:none;width:58px;height:58px}
+.tring .pring,.fring .pring{position:absolute;inset:0}
+.ring-bg{stroke:rgba(255,255,255,.18)}.ring-fg{stroke:var(--gold);transition:stroke-dashoffset 1s linear}
+.tplay{position:absolute;inset:7px;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .15s}
+.tplay:hover{background:rgba(255,255,255,.24)}.tplay:active{transform:scale(.92)}
+.hero.paused .tplay{background:var(--gold);color:#14200f}
+.btn.glass{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.18)}.btn.glass:hover{background:rgba(255,255,255,.24)}
+.hero .lk{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:#fff}.hero .lk:hover{background:rgba(255,255,255,.22);border-color:var(--gold)}
+/* Fokus */
+.fx.hero{padding:20px 18px 24px;gap:0;overflow:hidden;position:relative}
+.fx-top{display:flex;align-items:center;justify-content:space-between;width:100%}
+.fx-goal{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.12);font-size:13px;font-weight:600}
+.fx-goal .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.fx-edit{width:34px;height:34px;border-radius:50%;color:#fff;opacity:.75;font-size:16px}.fx-edit:hover{opacity:1;background:rgba(255,255,255,.12)}
+.fx.hero .ftitle{font-size:25px;color:#fff;margin:16px 0 2px;text-wrap:balance}
+.fx-links .lkrow{justify-content:center;margin-top:10px}
+.fring{position:relative;width:232px;height:232px;margin:22px auto 6px}
+.fring .ring-bg{stroke:rgba(255,255,255,.14)}
+.fring-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.fx.hero .fclock{font-size:54px;color:#fff;margin:0;line-height:1}
+.fsub{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#f3e3bf;opacity:.8;margin-top:8px;font-weight:600}
+.fx.hero.paused .fclock{opacity:.78}.fx.hero.paused .ring-fg{opacity:.6}
+.fx.hero.run .fring::before{content:"";position:absolute;inset:14px;border-radius:50%;background:radial-gradient(circle,rgba(253,189,74,.22),transparent 68%);animation:breathe 4s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(.92);opacity:.6}50%{transform:scale(1.04);opacity:1}}
+@media(prefers-reduced-motion:reduce){.fx.hero.run .fring::before{animation:none}.ring-fg{transition:none}}
+.fx-today{font-size:13px;color:#f3e3bf;opacity:.9;margin-top:4px}.fx-today b{color:#fff}
+.fx.hero .fbtns{align-items:center;gap:16px;margin-top:20px}
+.fx.hero .fbtns .btn{min-width:104px;padding:12px 16px}
+.fbig{width:76px;height:76px;border-radius:50%;background:var(--gold);color:#14200f;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.3);transition:transform .15s}
+.fbig svg{width:30px;height:30px}.fbig:hover{transform:scale(1.05)}.fbig:active{transform:scale(.94)}
+.fx.hero.run .fbig{background:#fff}
+.fnotes{padding:12px}.fnotes textarea{width:100%;min-height:96px;border:0;background:transparent;resize:vertical;padding:4px}
+.fx-left{font-size:13px;color:var(--muted);text-align:center;margin:4px 0 10px}
+@media(max-width:380px){.fring{width:200px;height:200px}.fring .pring{width:200px;height:200px}.fx.hero .fclock{font-size:46px}.fx.hero .fbtns .btn{min-width:90px}}
+/* Tags & Priorität */
+.prio{color:var(--gold);font-weight:800;margin-right:5px;letter-spacing:-.5px}
+.tag{display:inline-flex;align-items:center;font-size:11.5px;color:var(--muted);background:none;border:0;padding:1px 4px;border-radius:5px;cursor:pointer;font-weight:500}
+.tag:hover{color:var(--text);background:rgba(127,127,127,.12)}.tag.on{color:var(--gold);background:rgba(212,160,23,.12)}
+.meta .tag{margin-left:2px}.tagrow{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}
+.hero .tag{color:#f3e3bf}.hero .tag.on{color:#fff;background:rgba(255,255,255,.14)}.fx-tags{justify-content:center;margin-top:6px}
+.tagbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;margin:10px 0;border:1px solid var(--gold);border-radius:12px;font-size:13.5px;background:rgba(212,160,23,.08)}
+.tagedit{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--surface)}
+.tagedit .tag{font-size:13px}.tagedit input{flex:1;min-width:90px;border:0!important;background:transparent!important;padding:4px!important;box-shadow:none!important}
+.tagsug{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.tagsug .tag{font-size:12.5px;border:1px dashed var(--line)}
+.prioseg button{min-width:52px;font-weight:700}
+/* Notizen-Vorschau */
+.notes-view{min-height:60px;padding:6px 4px;line-height:1.7;font-size:14.5px;cursor:text;white-space:normal;word-break:break-word}
+.notes-view.empty{color:var(--muted)}.notes-view .lk{vertical-align:middle;margin:1px 0}
+/* Ziele & Projekte */
+.goal-h .kind{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700;margin-right:auto;margin-left:2px}
+.goal-h .name{margin-right:6px}
+.pj{margin-top:14px}.pjbar{margin-top:8px}.pj-done{color:var(--gold);font-weight:600}
+.pj-complete{opacity:.85}
+.kindseg{display:flex;gap:8px;margin:4px 0 6px;padding:0;background:none;border:0}
+.kindseg label{flex:1;margin:0;cursor:pointer}.kindseg input{position:absolute;opacity:0;pointer-events:none}
+.kindseg span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px;border-radius:12px;border:1.5px solid var(--line);font-weight:650;font-size:15px;color:var(--text);transition:.15s}
+.kindseg small{font-size:11.5px;font-weight:500;color:var(--muted)}
+.kindseg input:checked+span{border-color:var(--gold);background:rgba(212,160,23,.1)}
+.only-proj{display:none}#goal-form[data-kind=project] .only-proj{display:block}#goal-form[data-kind=project] label .only-proj{display:inline}
 </style>
 </head>
 <body>
@@ -462,11 +538,11 @@ const MILESTONES=[5,10,25,50,100,250,500,1000,2500,5000];
 const TABS=['heute','woche','fokus','ziele','rueckblick','einstellungen','hilfe'];
 const CLIENT=Math.random().toString(36).slice(2,9);
 const EMPTY=()=>({goals:[],tasks:[],log:{},running:null,sessions:[],reviews:{},compass:{},prefs:{},profile:{},meta:{},manual:[]});
-const DEF_PREFS={lang:null,theme:'system',weekStart:1,dayStart:0,review:true,reviewDay:0,dismissed:{}};
+const DEF_PREFS={lang:null,theme:'system',weekStart:1,dayStart:0,review:true,reviewDay:0,favicons:true,dismissed:{}};
 let S=EMPTY();
 let tab='heute';
 try{const h=location.hash.slice(1);if(h==='kalender'||h==='logbuch')tab='rueckblick';else if(TABS.includes(h))tab=h;}catch(e){}
-let weekOff=0,logOff=0,revOff=0,lastGoal=null,showOther=false,pendingRender=false,lastDoneId=null,SYNC_TEXT='',CLOUD='local';
+let tagFilter=null,noteEditing=null,weekOff=0,logOff=0,revOff=0,lastGoal=null,showOther=false,pendingRender=false,lastDoneId=null,SYNC_TEXT='',CLOUD='local';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -489,6 +565,7 @@ function fmtShort(s){const m=Math.round(s/60);if(m<60)return m+'m';const h=Math.
 const fmtTime=ms=>{const d=new Date(ms);return pad(d.getHours())+':'+pad(d.getMinutes());};
 const NONE=()=>({id:'_none',name:tr('Ohne Ziel','No goal'),color:'#7f8c84'});
 const goal=id=>id==='_none'?NONE():S.goals.find(g=>g.id===id);
+const isProj=g=>g&&g.kind==='project';
 const activeGoals=()=>S.goals.filter(g=>!g.archived);
 const isGoalTask=t=>t.goalId!=='_none'&&!!S.goals.find(g=>g.id===t.goalId);
 const rangeLabel=days=>{const a=days[0],b=days[6];return a.getDate()+'.'+(a.getMonth()+1)+'. – '+b.getDate()+'.'+(b.getMonth()+1)+'.'+b.getFullYear();};
@@ -603,6 +680,7 @@ function prune(){
 }
 const typing=()=>{const a=document.activeElement;return a&&(a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&a.type!=='file'));};
 function softRender(){if(typing())pendingRender=true;else render();}
+document.addEventListener('change',e=>{if(e.target.name==='kind'){const f=e.target.closest('#goal-form');if(f){f.dataset.kind=e.target.value;const h=document.querySelector('.goalhelp');if(h)h.style.display=e.target.value==='project'?'none':'';}}});
 document.addEventListener('focusout',()=>setTimeout(()=>{if(pendingRender&&!typing()){pendingRender=false;render();}},150));
 const NOSYNC=()=>IS_PWA?tr('Nur auf diesem Gerät','This device only'):tr('Nur auf diesem Gerät','This device only');
 async function initStore(){
@@ -714,11 +792,15 @@ function postRender(){
   lastDoneId=null;
   if(celebrateQueue&&!$('#modal-root').innerHTML){const h=celebrateQueue;celebrateQueue=null;modal(h);}
 }
+function ringSvg(secs,size,stroke){const r=(size-stroke)/2,c=2*Math.PI*r,f=(secs%3600)/3600;return `<svg class="pring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" data-ring-c="${c.toFixed(2)}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke-width="${stroke}" class="ring-bg"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke-width="${stroke}" class="ring-fg" stroke-linecap="round" stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${(c*(1-f)).toFixed(2)}" transform="rotate(-90 ${size/2} ${size/2})"/></svg>`;}
+function updRing(svg,secs){const c=+svg.dataset.ringC,f=(secs%3600)/3600;const fg=svg.querySelector('.ring-fg');if(fg)fg.setAttribute('stroke-dashoffset',(c*(1-f)).toFixed(2));}
 function timerCard(){
   const r=S.running;
-  if(!r){const n=focusQueue()[0];return `<div class="card timer idle"><div class="grow"><div class="t">0:00</div><div class="lbl" style="color:var(--muted)">${n?tr('Als Nächstes: ','Up next: ')+esc(n.title):tr('Plane deinen Tag, dann geht’s los.','Plan your day, then get going.')}</div></div>${n?`<button class="btn gold" data-a="focus-go">${tr('Fokus starten','Start focus')}</button>`:''}</div>`;}
-  const t=S.tasks.find(x=>x.id===r.taskId),g=goal(r.goalId);
-  return `<div class="card timer"><div class="grow"><div class="t" data-clock>${fmtClock(runningSecs())}</div><div class="lbl">${esc(t?t.title:'')} · ${esc(g?g.name:'')}</div></div><button class="btn ghost" data-a="tab" data-tab="fokus" style="background:rgba(0,0,0,.25);color:#fff">${tr('Fokus','Focus')}</button><button class="btn stop" data-a="stop">${tr('Pause','Pause')}</button></div>`;
+  if(!r){const n=focusQueue()[0];if(!n)return `<div class="card timer idle"><div class="grow"><div class="t">0:00</div><div class="lbl" style="color:var(--muted)">${tr('Plane deinen Tag, dann geht’s los.','Plan your day, then get going.')}</div></div></div>`;
+    const g=goal(n.goalId)||NONE(),s=taskSecs(n);
+    return `<div class="card timer hero paused"><div class="tring">${ringSvg(s,58,4)}<button class="tplay" data-a="play" data-t="${n.id}" title="${tr('Starten','Start')}">${I.play()}</button></div><div class="grow"><div class="lbl up">${tr('Als Nächstes','Up next')}</div><div class="tt1">${esc(titleText(n))}</div><div class="lbl"><span class="dot" style="background:${g.color}"></span>${esc(g.name)}${s>=60?' · '+fmtShort(s):''}</div></div><button class="btn glass" data-a="tab" data-tab="fokus">${tr('Fokus','Focus')}</button></div>`;}
+  const t=S.tasks.find(x=>x.id===r.taskId),g=goal(r.goalId)||NONE(),s=t?taskSecs(t):runningSecs();
+  return `<div class="card timer hero run"><div class="tring">${ringSvg(s,58,4).replace('<svg ','<svg data-live-ring="'+(t?t.id:'')+'" ')}<button class="tplay" data-a="stop" title="${tr('Pause','Pause')}">${I.pause()}</button></div><div class="grow"><div class="t" data-clock>${fmtClock(runningSecs())}</div><div class="tt1 sm">${esc(t?titleText(t):'')}</div><div class="lbl"><span class="dot" style="background:${g.color}"></span>${esc(g.name)}</div></div><button class="btn glass" data-a="tab" data-tab="fokus">${tr('Fokus','Focus')}</button></div>`;
 }
 
 // ================= Heute =================
@@ -731,22 +813,23 @@ function qItem(t,i,opts={}){
   const meta=[chip(g)];
   if(t.date<tk)meta.push(`<span>${tr('übernommen','carried over')}</span>`);
   const s=taskSecs(t);if(s>=30||run)meta.push(`<span ${run?`data-live-task="${t.id}"`:''}>${fmtDur(s)}</span>`);
-  if(t.notes)meta.push('<span>📝</span>');
+  if(t.notes&&t.notes.replace(LINK_RE,'').trim())meta.push('<span>📝</span>');
   return `<div class="qitem ${i===0&&opts.first?'first':''}" style="border-left-color:${g.color}" draggable="true" data-drag="${t.id}">
     <button class="chk" data-a="done" data-t="${t.id}" title="${tr('Erledigt','Done')}"></button>
-    <div class="tt" data-a="edit-task" data-t="${t.id}"><div class="t1">${esc(t.title)}</div><div class="meta">${meta.join('')}</div></div>
+    <div class="tt" data-a="edit-task" data-t="${t.id}"><div class="t1">${prioMark(t)}${esc(titleText(t))}</div><div class="meta">${meta.join('')}${tagsHtml(t)}</div>${linkRow(t,3)}</div>
     <div class="ord"><button data-a="up" data-t="${t.id}" data-list="${opts.list}" title="${tr('Nach oben','Move up')}">${I.up()}</button><button data-a="down" data-t="${t.id}" data-list="${opts.list}" title="${tr('Nach unten','Move down')}">${I.down()}</button></div>
     <button class="icon ${run?'on':'play'}" data-a="${run?'stop':'play'}" data-t="${t.id}">${run?I.pause():I.play()}</button></div>`;
 }
 function viewToday(){
   const tk=todayKey();
   if(!activeGoals().length&&!S.tasks.length)return noGoals();
-  const all=dayTasks(tk),q=all.filter(isGoalTask),o=all.filter(t=>!isGoalTask(t));
+  const all=dayTasks(tk).filter(tagOk),q=all.filter(isGoalTask),o=all.filter(t=>!isGoalTask(t));
   const done=S.tasks.filter(t=>t.done&&t.doneOn===tk).sort((a,b)=>(a.doneAt||0)-(b.doneAt||0));
   let h='';
   const due=reviewDue();
   if(due)h+=`<div class="banner"><div style="font-size:22px">🌄</div><div class="tx"><b>${tr('Zeit für deinen Wochenrückblick','Time for your weekly review')}</b><span>${tr('20 Minuten, um auf die Woche zu schauen. Nur wenn es dir passt.','20 minutes to look back on your week. Only if it suits you.')}</span></div><button class="btn gold sm" data-a="review-go" data-w="${due}">${tr('Los','Start')}</button><button class="icon xs" data-a="review-dismiss" data-w="${due}" title="${tr('Diese Woche nicht','Not this week')}">${I.x()}</button></div>`;
   h+=timerCard();
+  h+=tagBar();
   h+=`<h2>${tr('Heute in dieser Reihenfolge','Today, in this order')}</h2><div class="qlist" data-drop="${tk}">${q.length?q.map((t,i)=>qItem(t,i,{first:true,list:'q'})).join(''):`<div class="card small" style="margin:0">${tr('Noch keine Aufgaben für deine Ziele. Was bringt dich heute weiter?','No tasks for your goals yet. What moves you forward today?')}</div>`}</div>`;
   h+=`<form class="addbar" data-add="${tk}"><input placeholder="${tr('Neue Aufgabe für heute…','New task for today…')}" maxlength="140">${goalSelect('add-goal',pickGoal())}<button class="btn" type="submit">+</button></form>`;
   if(o.length){h+=`<button class="other-toggle" data-a="toggle-other">${showOther?I.down():I.chev(1)} ${o.length} ${tr(o.length===1?'Aufgabe ohne Ziel':'Aufgaben ohne Ziel',o.length===1?'task without goal':'tasks without goal')}</button>`;
@@ -767,7 +850,8 @@ function viewWeek(){
   let h=`<div class="pagehead"><h1>${tr('Woche planen','Plan the week')}</h1><div class="navbtns"><span class="lbl">${rangeLabel(days)}</span><button class="icon" data-a="week" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="week" data-d="0">${tr('Heute','Today')}</button><button class="icon" data-a="week" data-d="1">${I.chev(1)}</button></div></div>`;
   if(!activeGoals().length&&!S.tasks.length)return h+noGoals();
   h+=`<div class="hint">${tr('Plane nach Tagen, nicht nach Uhrzeiten. Die Reihenfolge in einer Spalte ist deine Reihenfolge für den Tag. Was noch keinen Tag hat, kommt in die Ablage. Am Computer kannst du Karten ziehen.','Plan by day, not by hour. The order in a column is your order for that day. Anything without a day goes to the backlog. On a computer you can drag cards.')}</div><div class="board" id="board">`;
-  const bl=backlog();
+  const bl=backlog().filter(tagOk);
+  h=h.replace('<div class="board" id="board">',tagBar()+'<div class="board" id="board">');
   h+=`<div class="daycol ablage" id="col-ablage" data-drop="ablage"><div class="dayhead"><b>${I.box()} ${tr('Ablage','Backlog')}</b>${bl.length?`<span class="sum">${bl.length}</span>`:''}</div>
     <form class="add-day" data-add="ablage"><input placeholder="${tr('+ Idee oder Aufgabe','+ Idea or task')}" maxlength="140">${goalSelect('add-goal',pickGoal())}</form>
     ${bl.length?bl.map(t=>weekCard(t,null)).join(''):`<div class="small" style="padding:6px 4px">${tr('Aufgaben ohne festen Tag. Nichts geht verloren.','Tasks without a fixed day. Nothing gets lost.')}</div>`}</div>`;
@@ -779,7 +863,7 @@ function viewWeek(){
     const sum=allSecs(k);
     h+=`<div class="daycol ${k===tk?'now':''} ${k<tk?'past':''}" ${k===tk?'id="col-today"':''} ${k>=tk?`data-drop="${k}"`:''}><div class="dayhead"><b>${wdShort(d)}</b><span>${d.getDate()}.</span>${sum>=60?`<span class="sum">${fmtShort(sum)}</span>`:''}</div>
       ${k>=tk?`<form class="add-day" data-add="${k}"><input placeholder="${tr('+ Aufgabe','+ Task')}" maxlength="140">${goalSelect('add-goal',pickGoal())}</form>`:''}
-      ${sorted.map(t=>weekCard(t,k)).join('')}${done.map(t=>weekCard(t,k)).join('')}</div>`;
+      ${sorted.filter(tagOk).map(t=>weekCard(t,k)).join('')}${done.filter(tagOk).map(t=>weekCard(t,k)).join('')}</div>`;
   }
   return h+'</div>';
 }
@@ -789,8 +873,8 @@ function weekCard(t,k){
   if(t.done)actions=`<span class="chk done">${I.check(11)}</span><span class="sp"></span><button class="icon xs" data-a="reopen" data-t="${t.id}" title="${tr('Wieder öffnen','Reopen')}">${I.undo()}</button>`;
   else if(!t.date)actions=`<button class="chk" data-a="done" data-t="${t.id}"></button><span class="sp"></span><button class="icon xs" data-a="to-today" data-t="${t.id}" title="${tr('Heute einplanen','Plan for today')}">${I.today()}</button><button class="icon xs" data-a="del-task" data-t="${t.id}" title="${tr('Löschen','Delete')}">${I.x()}</button>`;
   else actions=`<button class="chk" data-a="done" data-t="${t.id}"></button><span class="sp"></span><button class="icon xs" data-a="move" data-t="${t.id}" data-d="-1" title="${tr('Einen Tag früher','One day earlier')}">${I.chev(-1)}</button><button class="icon xs" data-a="move" data-t="${t.id}" data-d="1" title="${tr('Einen Tag später','One day later')}">${I.chev(1)}</button><button class="icon xs" data-a="to-ablage" data-t="${t.id}" title="${tr('In die Ablage','To backlog')}">${I.box()}</button><button class="icon xs" data-a="del-task" data-t="${t.id}" title="${tr('Löschen','Delete')}">${I.x()}</button>`;
-  return `<div class="tcard ${t.done?'done':''} ${run?'running':''}" style="border-left-color:${g.color}" ${t.done?'':`draggable="true" data-drag="${t.id}"`}><div class="title" data-a="edit-task" data-t="${t.id}">${esc(t.title)}</div>
-    <div class="foot">${chip(g)}${t.notes?'<span class="small">📝</span>':''}<span class="sp"></span>${s>=60||run?`<span class="tm" ${run?`data-live-task="${t.id}"`:''}>${fmtShort(s)}</span>`:''}</div>
+  return `<div class="tcard ${t.done?'done':''} ${run?'running':''}" style="border-left-color:${g.color}" ${t.done?'':`draggable="true" data-drag="${t.id}"`}><div class="title" data-a="edit-task" data-t="${t.id}">${prioMark(t)}${esc(titleText(t))}</div>${(t.tags||[]).length&&!t.done?`<div class="tagrow">${tagsHtml(t)}</div>`:''}${t.done?'':linkRow(t,2)}
+    <div class="foot">${chip(g)}${t.notes&&t.notes.replace(LINK_RE,'').trim()?'<span class="small">📝</span>':''}<span class="sp"></span>${s>=60||run?`<span class="tm" ${run?`data-live-task="${t.id}"`:''}>${fmtShort(s)}</span>`:''}</div>
     <div class="foot">${actions}</div></div>`;
 }
 
@@ -805,15 +889,19 @@ function viewFocus(){
     return h+`<div class="card empty"><div style="font-size:40px">🌄</div><div style="font-size:18px;color:var(--text);font-weight:600;margin:8px 0 6px">${n?tr('Alles für heute erledigt','All done for today'):tr('Nichts geplant','Nothing planned')}</div>${n?tr(`Du hast heute ${n} ${n===1?'Aufgabe':'Aufgaben'} geschafft. Feierabend verdient.`,`You finished ${n} ${n===1?'task':'tasks'} today. Well earned rest.`):tr('Lege unter „Heute“ fest, woran du arbeiten willst, und in welcher Reihenfolge.','Decide under “Today” what you want to work on, and in which order.')}<br><button class="btn" data-a="tab" data-tab="heute">${tr('Zu Heute','Go to Today')}</button></div>`;
   }
   const g=goal(cur.goalId)||NONE(),run=r&&r.taskId===cur.id;
-  const left=q.filter(t=>t.id!==cur.id).length;
-  h+=`<div class="card fx" style="border-top:3px solid ${g.color}">${chip(g)}
-    <div class="ftitle">${esc(cur.title)}</div>
-    <div class="fclock ${run?'':'paused'}" data-live-focus="${cur.id}">${fmtClock(taskSecs(cur))}</div>
-    <div class="fbtns">${run?`<button class="btn ghost" data-a="stop">${I.pause()} ${tr('Pause','Pause')}</button>`:`<button class="btn" data-a="play" data-t="${cur.id}">${I.play()} ${cur.secs?tr('Weiter','Resume'):tr('Start','Start')}</button>`}
-      <button class="btn gold" data-a="focus-done" data-t="${cur.id}">✓ ${tr('Erledigt','Done')}</button>
-      <button class="btn ghost" data-a="later" data-t="${cur.id}">${tr('Später','Later')}</button></div>
-    <textarea data-note="${cur.id}" placeholder="${tr('Notizen zu dieser Aufgabe…','Notes for this task…')}">${esc(cur.notes||'')}</textarea>
-    <div class="left">${left?tr(`Danach warten noch ${left} ${left===1?'Aufgabe':'Aufgaben'}. Die siehst du erst, wenn diese fertig ist.`,`${left} more ${left===1?'task is':'tasks are'} waiting. You will see them once this one is done.`):tr('Das ist die letzte Aufgabe für heute.','This is the last task for today.')}</div></div>`;
+  const left=q.filter(t=>t.id!==cur.id).length,secs=taskSecs(cur),gToday=g.id!=='_none'?secsOn(g.id,todayKey()):0;
+  h+=`<div class="card fx hero ${run?'run':'paused'}" style="--gc:${g.color}">
+    <div class="fx-top"><span class="fx-goal"><span class="dot" style="background:${g.color}"></span>${esc(g.name)}</span><button class="fx-edit" data-a="edit-task" data-t="${cur.id}" title="${tr('Bearbeiten','Edit')}">✎</button></div>
+    <div class="ftitle">${prioMark(cur)}${esc(titleText(cur))}</div>${(cur.tags||[]).length?`<div class="tagrow fx-tags">${tagsHtml(cur)}</div>`:''}
+    <div class="fx-links">${linkRow(cur)}</div>
+    <div class="fring">${ringSvg(secs,232,8).replace('<svg ','<svg data-live-ring="'+cur.id+'" ')}<div class="fring-in"><div class="fclock" data-live-focus="${cur.id}">${fmtClock(secs)}</div><div class="fsub">${run?tr('läuft','running'):secs?tr('pausiert','paused'):tr('bereit','ready')}</div></div></div>
+    ${gToday>=60?`<div class="fx-today">${tr('Heute für ','Today for ')}${esc(g.name)}: <b>${fmtDur(gToday)}</b></div>`:''}
+    <div class="fbtns"><button class="btn glass" data-a="later" data-t="${cur.id}">${tr('Später','Later')}</button>
+      ${run?`<button class="fbig" data-a="stop" title="${tr('Pause','Pause')}">${I.pause()}</button>`:`<button class="fbig" data-a="play" data-t="${cur.id}" title="${secs?tr('Weiter','Resume'):tr('Start','Start')}">${I.play()}</button>`}
+      <button class="btn gold" data-a="focus-done" data-t="${cur.id}">✓ ${tr('Erledigt','Done')}</button></div>
+  </div>
+  <div class="card fnotes">${noteEditing===cur.id?`<textarea data-note="${cur.id}" placeholder="${tr('Notizen, Links, nächste Schritte…','Notes, links, next steps…')}">${esc(cur.notes||'')}</textarea><div class="small" style="text-align:right;margin-top:4px"><button class="btn ghost sm" data-a="note-done">${tr('Fertig','Done')}</button></div>`:`<div class="notes-view ${cur.notes?'':'empty'}" data-a="note-edit" data-t="${cur.id}">${cur.notes?notesHtml(cur.notes):tr('Notizen, Links, nächste Schritte… (antippen)','Notes, links, next steps… (tap)')}</div>`}</div>
+  <div class="fx-left">${left?tr(`Danach warten noch ${left} ${left===1?'Aufgabe':'Aufgaben'}. Die siehst du erst, wenn diese fertig ist.`,`${left} more ${left===1?'task is':'tasks are'} waiting. You will see them once this one is done.`):tr('Das ist die letzte Aufgabe für heute.','This is the last task for today.')}</div>`;
   return h;
 }
 
@@ -855,11 +943,13 @@ function logSection(days){
 // ================= Ziele =================
 function viewGoals(){
   const act=activeGoals(),arc=S.goals.filter(g=>g.archived);
-  let h=`<div class="pagehead"><h1>${tr('Ziele','Goals')}</h1><button class="btn" data-a="new-goal">+ ${tr('Neues Ziel','New goal')}</button></div>`;
-  h+=`<div class="hint">${tr('Hier stehen die <b>2–3 Dinge, in die du gerade bewusst Zeit steckst</b>. Am besten Dinge, die dir wirklich wichtig sind und die im Alltag sonst untergehen. Weniger ist mehr.','These are the <b>2–3 things you are consciously investing time in right now</b>. Ideally things that really matter to you and would otherwise get lost in everyday life. Less is more.')}${act.length>3?' <b style="color:var(--gold)">'+tr('Du hast gerade '+act.length+' aktive Ziele.','You currently have '+act.length+' active goals.')+'</b>':''}</div>`;
-  if(!act.length)h+=`<div class="card empty">${tr('Noch keine Ziele. Leg dein erstes an.','No goals yet. Create your first one.')}</div>`;
-  for(const g of act)h+=goalCard(g);
-  if(arc.length){h+=`<h2>${tr('Archiviert','Archived')}</h2>`;for(const g of arc)h+=goalCard(g);}
+  let h=`<div class="pagehead"><h1>${tr('Ziele & Projekte','Goals & projects')}</h1><button class="btn" data-a="new-goal">+ ${tr('Neu','New')}</button></div>`;
+  h+=`<div class="hint">${tr('<b>Ziele</b> laufen dauerhaft, zum Beispiel Sport oder Spanisch. <b>Projekte</b> haben ein Ende, zum Beispiel ein Umzug oder ein Website-Relaunch. In beide steckst du bewusst Zeit. Weniger ist mehr.','<b>Goals</b> are ongoing, like sport or Spanish. <b>Projects</b> have an end, like a move or a website relaunch. You consciously invest time in both. Less is more.')}${act.length>5?' <b style="color:var(--gold)">'+tr('Gerade sind '+act.length+' aktiv.','Currently '+act.length+' are active.')+'</b>':''}</div>`;
+  if(!act.length)h+=`<div class="card empty">${tr('Noch nichts angelegt. Leg dein erstes Ziel oder Projekt an.','Nothing yet. Create your first goal or project.')}</div>`;
+  const ag=act.filter(g=>!isProj(g)),ap=act.filter(isProj);
+  if(ag.length&&ap.length)h+=`<h2>${tr('Ziele','Goals')}</h2>`;for(const g of ag)h+=goalCard(g);
+  if(ap.length){if(ag.length)h+=`<h2>${tr('Projekte','Projects')}</h2>`;for(const g of ap)h+=goalCard(g);}
+  if(arc.length){h+=`<h2>${tr('Abgeschlossen & archiviert','Completed & archived')}</h2>`;for(const g of arc)h+=goalCard(g);}
   return h;
 }
 function sunPath(g,total){
@@ -872,15 +962,22 @@ function sunPath(g,total){
     <circle class="pdot" cx="8" cy="50" r="6" fill="var(--surface)" stroke="${g.color}" stroke-width="3"/></svg>
     <div class="lbl"><span>${prev?tr('Etappe ','Milestone ')+prev+' h ✓':tr('Start','Start')}</span><span>${nx?tr(`nächste Etappe: ${nx} h · noch ${fmtDur((nx-hrs)*3600)}`,`next milestone: ${nx} h · ${fmtDur((nx-hrs)*3600)} to go`):tr('Alle Etappen erreicht','All milestones reached')}</span></div></div>`;
 }
+function projProgress(g){const ts=S.tasks.filter(t=>t.goalId===g.id),d=ts.filter(t=>t.done).length;return {n:ts.length,d};}
+function dueText(g){if(!g.due)return '';const tk=todayKey();const days=Math.round((parseKey(g.due)-parseKey(tk))/864e5);const dt=parseKey(g.due).toLocaleDateString(LOC(),{day:'numeric',month:'short'});
+  if(g.completed)return '';if(days>1)return tr(`bis ${dt} · noch ${days} Tage`,`due ${dt} · ${days} days left`);if(days===1)return tr(`bis morgen (${dt})`,`due tomorrow (${dt})`);if(days===0)return tr('bis heute','due today');return tr(`geplant war ${dt}`,`was planned for ${dt}`);}
 function goalCard(g){
   const wk=weekOf(0).reduce((a,d)=>a+secsOn(g.id,dkey(d)),0),tgt=(g.target||0)*3600,tot=totalSecs(g.id);
-  const open=S.tasks.filter(t=>t.goalId===g.id&&!t.done).length;
-  return `<div class="card"><div class="goal-h"><span class="dot" style="background:${g.color}"></span><span class="name">${esc(g.name)}</span><button class="btn ghost sm" data-a="edit-goal" data-g="${g.id}">${tr('Bearbeiten','Edit')}</button></div>
+  const open=S.tasks.filter(t=>t.goalId===g.id&&!t.done).length,pj=isProj(g);
+  let mid;
+  if(pj){const pr=projProgress(g),du=dueText(g);
+    mid=`<div class="pj"><div class="row small" style="justify-content:space-between;flex-wrap:wrap;gap:6px"><span><b style="color:var(--text)">${pr.d}</b> ${tr('von','of')} ${pr.n} ${tr('Aufgaben erledigt','tasks done')}</span>${g.completed?`<span class="pj-done">✓ ${tr('abgeschlossen am ','completed on ')}${new Date(g.completed).toLocaleDateString(LOC(),{day:'numeric',month:'short',year:'numeric'})}</span>`:du?`<span>${du}</span>`:''}</div><div class="bar pjbar"><i style="width:${pr.n?pr.d/pr.n*100:0}%;background:${g.color}"></i></div></div>`;}
+  else mid=sunPath(g,tot);
+  return `<div class="card ${g.completed?'pj-complete':''}"><div class="goal-h"><span class="dot" style="background:${g.color}"></span><span class="name">${esc(g.name)}</span><span class="kind">${pj?tr('Projekt','Project'):tr('Ziel','Goal')}</span><button class="btn ghost sm" data-a="edit-goal" data-g="${g.id}">${tr('Bearbeiten','Edit')}</button></div>
   ${g.why?`<div class="small" style="margin-top:6px">↳ ${esc(g.why)}</div>`:''}
-  ${sunPath(g,tot)}
-  <div class="quick"><button class="btn ghost sm" data-a="quick" data-g="${g.id}" data-m="30">+30 min</button><button class="btn ghost sm" data-a="quick" data-g="${g.id}" data-m="60">+60 min</button><button class="btn ghost sm" data-a="manual" data-g="${g.id}">${tr('Nachtragen…','Add time…')}</button></div>
+  ${mid}
+  ${g.archived?'':`<div class="quick"><button class="btn ghost sm" data-a="quick" data-g="${g.id}" data-m="30">+30 min</button><button class="btn ghost sm" data-a="quick" data-g="${g.id}" data-m="60">+60 min</button><button class="btn ghost sm" data-a="manual" data-g="${g.id}">${tr('Nachtragen…','Add time…')}</button>${pj?`<span class="sp"></span><button class="btn gold sm" data-a="ask-complete" data-g="${g.id}">✓ ${tr('Abschließen','Complete')}</button>`:''}</div>`}
   <div class="row small" style="margin-top:10px;justify-content:space-between;flex-wrap:wrap"><span>${tr('Diese Woche','This week')} <b style="color:var(--text)">${fmtDur(wk)}</b>${tgt?tr(' von ',' of ')+g.target+' h':''}</span><span>${open} ${tr('offen','open')} · ${tr('insgesamt','total')} <b style="color:var(--text)">${fmtDur(tot)}</b></span></div>
-  ${tgt?`<div class="bar"><i style="width:${Math.min(100,wk/tgt*100)}%;background:${g.color}"></i></div>`:''}</div>`;
+  ${tgt&&!g.archived?`<div class="bar"><i style="width:${Math.min(100,wk/tgt*100)}%;background:${g.color}"></i></div>`:''}</div>`;
 }
 
 // ================= Rückblick =================
@@ -942,7 +1039,8 @@ function viewSettings(){
     <div class="small" style="margin-top:10px">${tr('Name und Bild werden mit deinen Daten gespeichert. Am Punkt neben deinem Bild siehst du, ob alles geladen ist: grün = synchronisiert, grau = nur auf diesem Gerät, rot = Problem.','Name and picture are saved with your data. The dot next to your picture shows whether everything is loaded: green = synced, grey = this device only, red = problem.')}</div></div>`;
   h+=`<div class="card set"><h3>${tr('Darstellung','Appearance')}</h3>
     <div class="row2"><div class="l"><b>${tr('Design','Theme')}</b></div>${seg('theme',[['system',tr('System','System')],['light',tr('Hell','Light')],['dark',tr('Dunkel','Dark')]],p.theme)}</div>
-    <div class="row2"><div class="l"><b>${tr('Sprache','Language')}</b></div>${seg('lang',[['de','Deutsch'],['en','English']],lang())}</div></div>`;
+    <div class="row2"><div class="l"><b>${tr('Sprache','Language')}</b></div>${seg('lang',[['de','Deutsch'],['en','English']],lang())}</div>
+    <div class="row2"><div class="l"><b>${tr('Symbole bei Links','Icons for links')}</b><span>${tr('Zeigt das kleine Website-Symbol. Dafür wird nur die Domain (z. B. outlook.office.com) an DuckDuckGo geschickt, nie der ganze Link.','Shows the small website icon. Only the domain (e.g. outlook.office.com) is sent to DuckDuckGo, never the full link.')}</span></div>${seg('favicons',[['true',tr('An','On')],['false',tr('Aus','Off')]],String(favOn()))}</div></div>`;
   h+=`<div class="card set"><h3>${tr('Woche & Tag','Week & day')}</h3>
     <div class="row2"><div class="l"><b>${tr('Woche beginnt am','Week starts on')}</b></div>${seg('weekStart',[[1,wdName(1)],[0,wdName(0)]],p.weekStart)}</div>
     <div class="row2"><div class="l"><b>${tr('Neuer Tag beginnt um','New day starts at')}</b><span>${tr('Arbeitest du oft nach Mitternacht? Dann zählt die Zeit bis zu dieser Uhrzeit noch zum Vortag.','Often working past midnight? Time until this hour still counts for the previous day.')}</span></div><select data-pref="dayStart">${hours}</select></div></div>`;
@@ -1013,7 +1111,7 @@ function viewHelp(){
       <li>${L('Nicht erledigte Aufgaben wandern auf den nächsten Tag („übernommen“). Warst du 3 Tage oder länger weg, bietet Motus dir einen <b>Neustart</b> an, statt dich mit einem Berg zu begrüßen.','Unfinished tasks move to the next day (“carried over”). If you were away for 3 days or more, Motus offers a <b>fresh start</b> instead of greeting you with a pile.')}</li>
       <li>${L('<b>Aufgaben ohne Ziel</b> stehen eingeklappt unten, damit sie nicht ablenken.','<b>Tasks without a goal</b> are collapsed at the bottom so they don’t distract you.')}</li></ul></details>
     <details><summary>${L('Woche & Ablage','Week & backlog')}</summary><p>${L('Eine Spalte pro Tag, ganz links die <b>Ablage</b> für alles ohne festen Tag. Mit ‹ › verschiebst du um einen Tag, mit dem Kisten-Symbol in die Ablage, mit dem Kalender-Symbol aus der Ablage auf heute. Am Computer ziehst du Karten einfach dorthin, wo sie hin sollen.','One column per day, with the <b>backlog</b> on the far left for everything without a fixed day. ‹ › moves a task by one day, the box icon moves it to the backlog, the calendar icon moves it from the backlog to today. On a computer, just drag cards where you want them.')}</p></details>
-    <details><summary>${L('Schnell erfassen & bearbeiten','Quick capture & editing')}</summary><p>${L('Der goldene <b>+</b>-Knopf (am Computer die Taste <b>N</b>) öffnet ein Feld für neue Aufgaben. Ohne weitere Angabe landen sie in der <b>Ablage</b>, sortiert wird später. Eine Zeile pro Aufgabe, so kannst du ganze Listen einfügen. Schreibst du „heute“, „morgen“ oder einen Wochentag wie „fr“ ans Zeilenende, wird die Aufgabe direkt eingeplant. „#Sport“ ordnet sie dem Ziel Sport zu. Aus anderen Apps kommst du über das Teilen-Menü, einen Kurzbefehl oder ein Lesezeichen herein, siehe Einstellungen → Schnell erfassen. <b>Bearbeiten:</b> Tippe auf den Titel einer Aufgabe. Dann kannst du Text, Tag, Ziel und Notizen ändern oder sie löschen.','The golden <b>+</b> button (on a computer the <b>N</b> key) opens a field for new tasks. Without further info they go to the <b>backlog</b>, to be sorted later. One line per task, so you can paste whole lists. Put “today”, “tomorrow” or a weekday like “fri” at the end of a line to plan it right away. “#Sport” assigns it to the goal Sport. From other apps use the share menu, a shortcut or a bookmark, see Settings → Quick capture. <b>Editing:</b> tap a task’s title to change its text, day, goal and notes, or to delete it.')}</p></details>
+    <details><summary>${L('Schnell erfassen & bearbeiten','Quick capture & editing')}</summary><p>${L('Der goldene <b>+</b>-Knopf (am Computer die Taste <b>N</b>) öffnet ein Feld für neue Aufgaben. Ohne weitere Angabe landen sie in der <b>Ablage</b>, sortiert wird später. Eine Zeile pro Aufgabe, so kannst du ganze Listen einfügen. Schreibst du „heute“, „morgen“ oder einen Wochentag wie „fr“ ans Zeilenende, wird die Aufgabe direkt eingeplant. „#Sport“ ordnet sie dem Ziel Sport zu. Aus anderen Apps kommst du über das Teilen-Menü, einen Kurzbefehl oder ein Lesezeichen herein, siehe Einstellungen → Schnell erfassen. <b>Bearbeiten:</b> Tippe auf den Titel einer Aufgabe. Dann kannst du Text, Tag, Ziel und Notizen ändern oder sie löschen. <b>Links:</b> Adressen in Titel oder Notizen, auch kurz wie google.de, erscheinen als kleine Chips mit Symbol auf der Karte, etwa „Outlook-Mail“ oder „Teams-Nachricht“. So findest du mit einem Tipp zur Mail oder zum Dokument zurück.','The golden <b>+</b> button (on a computer the <b>N</b> key) opens a field for new tasks. Without further info they go to the <b>backlog</b>, to be sorted later. One line per task, so you can paste whole lists. Put “today”, “tomorrow” or a weekday like “fri” at the end of a line to plan it right away. “#Sport” assigns it to the goal Sport. From other apps use the share menu, a shortcut or a bookmark, see Settings → Quick capture. <b>Editing:</b> tap a task’s title to change its text, day, goal and notes, or to delete it. <b>Links:</b> addresses in the title or notes, even short ones like google.de, appear as small chips with an icon on the card, e.g. “Outlook mail” or “Teams message”. One tap takes you back to the mail or document.')}</p></details>
     <details><summary>${L('Fokus','Focus')}</summary><p>${L('Nur eine Aufgabe, mit Timer und Notizen. <b>✓ Erledigt</b> hakt sie ab und startet direkt die nächste. <b>Später</b> schiebt sie ans Ende.','Just one task, with timer and notes. <b>✓ Done</b> checks it off and starts the next one right away. <b>Later</b> moves it to the end.')}</p></details>
 
     <details><summary>${L('Ziele & Weg zur Sonne','Goals & path to the sun')}</summary><p>${L('Jedes Ziel hat einen <b>Weg zur Sonne</b>. Jede Stunde bringt dich ein Stück weiter zur nächsten <b>Etappe</b> (5, 10, 25, 50, 100 Stunden …). Erreichst du eine, feiert Motus kurz mit dir. Mit <b>+30 min</b>, <b>+60 min</b> oder <b>Andere…</b> trägst du Zeit ohne Timer nach, auch für vergangene Tage. Archivieren beendet ein Ziel, die Stunden bleiben erhalten.','Each goal has a <b>path to the sun</b>. Every hour moves you closer to the next <b>milestone</b> (5, 10, 25, 50, 100 hours …). When you reach one, Motus briefly celebrates with you. Use <b>+30 min</b>, <b>+60 min</b> or <b>Other…</b> to log time without the timer, also for past days. Archiving ends a goal, the hours are kept.')}</p></details>
@@ -1051,12 +1149,14 @@ function closeModal(){$('#modal-root').innerHTML='';if(celebrateQueue){const h=c
 let editColor=COLORS[0];
 function goalModal(g){
   editColor=g?g.color:COLORS[S.goals.length%COLORS.length];
-  modal(`<h3>${g?tr('Ziel bearbeiten','Edit goal'):tr('Neues Ziel','New goal')}</h3>
-  ${g?'':`<details class="goalhelp" ${S.goals.length?'':'open'}><summary>${tr('Was ist ein gutes Ziel?','What makes a good goal?')}</summary><div class="small" style="line-height:1.55;margin-top:8px">${tr('Ein Ziel ist eines der <b>2–3 Dinge, in die du in den nächsten Wochen oder Monaten bewusst Zeit stecken willst</b>. Große Lebensfragen wie „Wer will ich sein?“ gehören nicht hierher, sondern ins Notizbuch oder ins Gespräch.','A goal is one of the <b>2–3 things you want to consciously invest time in over the next weeks or months</b>. Big life questions like “Who do I want to be?” don’t belong here, but in a notebook or a conversation.')}<ul style="margin:8px 0 8px 18px"><li>${tr('ist dir wirklich wichtig','really matters to you')}</li><li>${tr('du willst pro Woche Stunden hineinstecken','you want to put hours into it each week')}</li><li>${tr('läuft ein paar Wochen bis Monate','runs for a few weeks to months')}</li></ul>${tr('<b>Gut:</b> „Halbmarathon im April laufen“, „Spanisch auf B1“, „Weiterbildung abschließen“<br><b>Eher nicht:</b> „Gesund sein“ (zu vage), „Arbeit“ (zu allgemein), Haushalt<br><br>Den Timer musst du nicht nutzen. Zeit, z. B. fürs Training, trägst du einfach mit einem Tipp nach.','<b>Good:</b> “Run a half marathon in April”, “Spanish to B1”, “Finish my training course”<br><b>Rather not:</b> “Be healthy” (too vague), “Work” (too broad), chores<br><br>You don’t have to use the timer. Time, e.g. for training, can be added with one tap.')}</div></details>`}
-  <form id="goal-form" data-g="${g?g.id:''}">
+  modal(`<h3>${g?(isProj(g)?tr('Projekt bearbeiten','Edit project'):tr('Ziel bearbeiten','Edit goal')):tr('Neues Ziel oder Projekt','New goal or project')}</h3>
+  ${g?'':`<details class="goalhelp only-goal" ${S.goals.length?'':'open'}><summary>${tr('Was ist ein gutes Ziel?','What makes a good goal?')}</summary><div class="small" style="line-height:1.55;margin-top:8px">${tr('Ein Ziel ist eines der <b>2–3 Dinge, in die du in den nächsten Wochen oder Monaten bewusst Zeit stecken willst</b>. Große Lebensfragen wie „Wer will ich sein?“ gehören nicht hierher, sondern ins Notizbuch oder ins Gespräch.','A goal is one of the <b>2–3 things you want to consciously invest time in over the next weeks or months</b>. Big life questions like “Who do I want to be?” don’t belong here, but in a notebook or a conversation.')}<ul style="margin:8px 0 8px 18px"><li>${tr('ist dir wirklich wichtig','really matters to you')}</li><li>${tr('du willst pro Woche Stunden hineinstecken','you want to put hours into it each week')}</li><li>${tr('läuft ein paar Wochen bis Monate','runs for a few weeks to months')}</li></ul>${tr('<b>Gut:</b> „Halbmarathon im April laufen“, „Spanisch auf B1“, „Weiterbildung abschließen“<br><b>Eher nicht:</b> „Gesund sein“ (zu vage), „Arbeit“ (zu allgemein), Haushalt<br><br>Den Timer musst du nicht nutzen. Zeit, z. B. fürs Training, trägst du einfach mit einem Tipp nach.','<b>Good:</b> “Run a half marathon in April”, “Spanish to B1”, “Finish my training course”<br><b>Rather not:</b> “Be healthy” (too vague), “Work” (too broad), chores<br><br>You don’t have to use the timer. Time, e.g. for training, can be added with one tap.')}</div></details>`}
+  <form id="goal-form" data-g="${g?g.id:''}" data-kind="${isProj(g)?'project':'goal'}">
+  <div class="seg kindseg"><label><input type="radio" name="kind" value="goal" ${isProj(g)?'':'checked'}><span>${tr('Ziel','Goal')}<small>${tr('laufend','ongoing')}</small></span></label><label><input type="radio" name="kind" value="project" ${isProj(g)?'checked':''}><span>${tr('Projekt','Project')}<small>${tr('mit Ende','with an end')}</small></span></label></div>
   <label>${tr('Name','Name')}</label><input name="name" required maxlength="60" placeholder="${tr('z. B. Halbmarathon laufen','e.g. Run a half marathon')}" value="${g?esc(g.name):''}">
   <label>${tr('Warum ist dir das wichtig? (optional)','Why does this matter to you? (optional)')}</label><input name="why" maxlength="140" placeholder="${tr('z. B. Mehr Energie für den Alltag','e.g. More energy for everyday life')}" value="${g?esc(g.why||''):''}"><div class="small" style="margin-top:6px">${tr('Ein kurzer Satz in deinen Worten. Er steht später unter dem Ziel und erinnert dich daran, wofür du die Zeit investierst.','A short sentence in your own words. It appears under the goal and reminds you what you invest the time for.')}</div>
-  <label>${tr('Input-Ziel: Stunden pro Woche','Input goal: hours per week')}</label><input name="target" type="number" min="0" max="100" step="0.5" inputmode="decimal" placeholder="${tr('z. B. 5','e.g. 5')}" value="${g&&g.target?g.target:''}"><div class="small" style="margin-top:6px">${tr('Wie viele Stunden willst du pro Woche in dieses Ziel stecken? Gemessen wird dein Einsatz, nicht das Ergebnis.','How many hours per week do you want to put into this goal? Your effort is measured, not the outcome.')}</div>
+  <div class="only-proj"><label>${tr('Geplantes Ende (optional)','Planned end (optional)')}</label><input name="due" type="date" value="${g&&g.due?g.due:''}"></div>
+  <label>${tr('Input-Ziel: Stunden pro Woche','Input goal: hours per week')}<span class="only-proj"> ${tr('(optional)','(optional)')}</span></label><input name="target" type="number" min="0" max="100" step="0.5" inputmode="decimal" placeholder="${tr('z. B. 5','e.g. 5')}" value="${g&&g.target?g.target:''}"><div class="small" style="margin-top:6px">${tr('Wie viele Stunden willst du pro Woche in dieses Ziel stecken? Gemessen wird dein Einsatz, nicht das Ergebnis.','How many hours per week do you want to put into this goal? Your effort is measured, not the outcome.')}</div>
   <label>${tr('Farbe','Colour')}</label><div class="colors">${COLORS.map(c=>`<button type="button" data-a="color" data-c="${c}" class="${c===editColor?'on':''}" style="background:${c}"></button>`).join('')}</div>
   <div class="actions">${g?`<button type="button" class="btn ghost" data-a="archive" data-g="${g.id}">${g.archived?tr('Reaktivieren','Reactivate'):tr('Archivieren','Archive')}</button><button type="button" class="btn danger" data-a="ask-del-goal" data-g="${g.id}">${tr('Löschen','Delete')}</button>`:''}<span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn" type="submit">${tr('Speichern','Save')}</button></div></form>`);
 }
@@ -1107,7 +1207,8 @@ document.addEventListener('click',e=>{
     case 'reopen':reopenTask(tid);break;
     case 'later':{const t=T();if(!t)break;if(S.running&&S.running.taskId===tid)stopTimer(true);t.date=t.date<tk?tk:t.date;t.order=nextOrder(tk);save();render();break;}
     case 'up':case 'down':{const all=dayTasks(tk);const list=el.dataset.list==='o'?all.filter(t=>!isGoalTask(t)):all.filter(isGoalTask);moveInList(tid,a==='up'?-1:1,list);break;}
-    case 'del-task':if(S.running&&S.running.taskId===tid)stopTimer(true);S.tasks=S.tasks.filter(x=>x.id!==tid);save();render();break;
+    case 'del-task':askDelTask(tid,false);break;
+    case 'del-task-ok':doDelTask(tid);break;
     case 'move':{const t=T();if(!t)break;const nk=shiftKey(t.date<tk?tk:t.date,+el.dataset.d);t.date=nk;t.order=nextOrder(nk);save();render();break;}
     case 'to-ablage':{const t=T();if(!t)break;if(S.running&&S.running.taskId===tid)stopTimer(true);t.date=null;t.order=nextOrder(null);save();render();toast(tr('In die Ablage gelegt','Moved to backlog'));break;}
     case 'to-today':{const t=T();if(!t)break;t.date=tk;t.order=nextOrder(tk);save();render();toast(tr('Für heute eingeplant','Planned for today'));break;}
@@ -1121,7 +1222,7 @@ document.addEventListener('click',e=>{
     case 'rs-all-ablage':{const o=S.tasks.filter(t=>!t.done&&t.date&&t.date<tk);let n=nextOrder(null);o.forEach(t=>{t.date=null;t.order=n++;});save();closeModal();render();toast(tr(`${o.length} Aufgaben in der Ablage. Neuer Tag, neuer Anfang.`,`${o.length} tasks in the backlog. New day, fresh start.`));break;}
     case 'rs-keep':closeModal();break;
     case 'rs-one':{const t=T();if(!t)break;const v=el.dataset.v;if(v==='today'){t.date=tk;t.order=nextOrder(tk);}else if(v==='ablage'){t.date=null;t.order=nextOrder(null);}else{S.tasks=S.tasks.filter(x=>x.id!==tid);}save();render();restartModal(true);break;}
-    case 'set':{const k=el.dataset.k;let v=el.dataset.v;if(k==='weekStart')v=+v;if(k==='review')v=v==='true';S.prefs=S.prefs||{};S.prefs[k]=v;save();render();break;}
+    case 'set':{const k=el.dataset.k;let v=el.dataset.v;if(k==='weekStart')v=+v;if(k==='review'||k==='favicons')v=v==='true';S.prefs=S.prefs||{};S.prefs[k]=v;save();render();break;}
     case 'avatar-remove':S.profile=S.profile||{};delete S.profile.avatar;save();render();break;
     case 'export':doExport();break;
     case 'do-import':if(window._imp){if(S.running)stopTimer(true);const keepP=S.prefs,keepPr=S.profile;S=normalize(window._imp);if(!Object.keys(S.prefs).length)S.prefs=keepP;if(!Object.keys(S.profile).length)S.profile=keepPr;window._imp=null;save();closeModal();render();toast(tr('Sicherung geladen','Backup restored'));}break;
@@ -1141,7 +1242,9 @@ document.addEventListener('click',e=>{
     case 'quick':{const g=goal(gid);const m=+el.dataset.m;const e=addManual(gid,todayKey(),m*60,'');toast(`${tr(`${m} min für „${esc(g.name)}“ eingetragen`,`${m} min added to “${esc(g.name)}”`)} · <button data-a="mn-undo" data-id="${e.id}" style="text-decoration:underline;color:inherit;font-weight:600">${tr('Rückgängig','Undo')}</button>`);break;}
     case 'mn-undo':S.manual=(S.manual||[]).filter(x=>x.id!==el.dataset.id);save();render();$('#toast-root').innerHTML='';break;
     case 'color':editColor=el.dataset.c;document.querySelectorAll('.colors button').forEach(b=>b.classList.toggle('on',b.dataset.c===editColor));break;
-    case 'archive':{const g=goal(gid);g.archived=!g.archived;if(g.archived&&S.running&&S.running.goalId===gid)stopTimer(true);save();closeModal();render();break;}
+    case 'ask-complete':{const g=goal(gid);const open=S.tasks.filter(t=>t.goalId===gid&&!t.done).length;modal(`<h3>${tr('Projekt abschließen?','Complete project?')}</h3><div class="small" style="line-height:1.5">${tr(`„${esc(g.name)}“ wandert ins Archiv. Erfasste Zeiten bleiben erhalten.`,`“${esc(g.name)}” moves to the archive. Tracked time is kept.`)}${open?'<br><br>'+tr(`Noch ${open} offene ${open===1?'Aufgabe bleibt':'Aufgaben bleiben'} in der Ablage, ohne Zuordnung.`,`${open} open ${open===1?'task stays':'tasks stay'} in the backlog, unassigned.`):''}</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn gold" data-a="complete-proj" data-g="${gid}">✓ ${tr('Abschließen','Complete')}</button></div>`);break;}
+    case 'complete-proj':{const g=goal(gid);if(S.running&&S.running.goalId===gid)stopTimer(true);S.tasks.forEach(t=>{if(t.goalId===gid&&!t.done){t.goalId='_none';t.date=null;}});g.archived=true;g.completed=Date.now();save();render();const tot=totalSecs(gid),pr=projProgress(g);modal(`<div class="celebrate"><div class="sun"></div><h3>${tr('Projekt abgeschlossen','Project completed')}</h3><div class="small" style="margin-top:6px">${tr(`„${esc(g.name)}“ ist geschafft.`,`“${esc(g.name)}” is done.`)}${tot>=60?'<br>'+tr(`${fmtDur(tot)} Einsatz, ${pr.d} erledigte Aufgaben.`,`${fmtDur(tot)} invested, ${pr.d} tasks done.`):''}</div><div class="actions" style="justify-content:center"><button class="btn gold" data-a="close">${tr('Schön','Nice')}</button></div></div>`);break;}
+    case 'archive':{const g=goal(gid);g.archived=!g.archived;if(!g.archived)delete g.completed;if(g.archived&&S.running&&S.running.goalId===gid)stopTimer(true);save();closeModal();render();break;}
     case 'ask-del-goal':{const g=goal(gid);modal(`<h3>${tr('Ziel löschen?','Delete goal?')}</h3><div class="small">${tr(`„${esc(g.name)}“ mit allen Aufgaben und erfassten Zeiten wird endgültig gelöscht. Wenn du die Zeiten behalten willst, archiviere das Ziel lieber.`,`“${esc(g.name)}” with all its tasks and tracked time will be deleted permanently. If you want to keep the time, archive the goal instead.`)}</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn danger" data-a="del-goal" data-g="${gid}">${tr('Löschen','Delete')}</button></div>`);break;}
     case 'del-goal':if(S.running&&S.running.goalId===gid)S.running=null;S.goals=S.goals.filter(g=>g.id!==gid);S.tasks=S.tasks.filter(t=>t.goalId!==gid);S.sessions=S.sessions.filter(x=>x.g!==gid);S.manual=(S.manual||[]).filter(x=>x.g!==gid);delete S.log[gid];save();closeModal();render();break;
     case 'close':case 'close-bg':closeModal();break;
@@ -1169,9 +1272,9 @@ document.addEventListener('submit',e=>{
   if(f.dataset.add){const v=f.querySelector('input').value.trim();if(!v)return;const g=(f.querySelector('.add-goal')||{}).value||'_none';lastGoal=g;const k=f.dataset.add==='ablage'?null:f.dataset.add;const sl=$('#board')?$('#board').scrollLeft:0;
     S.tasks.push({id:uid(),goalId:g,title:v,date:k,done:false,secs:0,order:nextOrder(k)});if(g==='_none'&&k===todayKey())showOther=true;save();render();
     if($('#board'))$('#board').scrollLeft=sl;const n=document.querySelector(`[data-add="${f.dataset.add}"] input`);if(n)n.focus();return;}
-  if(f.id==='goal-form'){const fd=new FormData(f);const name=fd.get('name').trim();if(!name)return;const target=parseFloat(fd.get('target'))||0;const why=fd.get('why').trim();
-    if(f.dataset.g){Object.assign(goal(f.dataset.g),{name,target,why,color:editColor});}
-    else{const id=uid();S.goals.push({id,name,target,why,color:editColor,created:todayKey(),ms:0});lastGoal=id;}
+  if(f.id==='goal-form'){const fd=new FormData(f);const name=fd.get('name').trim();if(!name)return;const target=parseFloat(fd.get('target'))||0;const why=fd.get('why').trim();const kind=fd.get('kind')==='project'?'project':'goal';const due=kind==='project'&&fd.get('due')?fd.get('due'):null;
+    if(f.dataset.g){const g=goal(f.dataset.g);Object.assign(g,{name,target,why,color:editColor,kind});if(due)g.due=due;else delete g.due;}
+    else{const id=uid();const g={id,name,target,why,color:editColor,created:todayKey(),ms:0,kind};if(due)g.due=due;S.goals.push(g);lastGoal=id;}
     save();closeModal();render();return;}
   if(f.id==='manual-form'){readManual();if(!MN.min||MN.min<1)return;if(MN.day>todayKey())MN.day=todayKey();
     if(MN.id){const e=(S.manual||[]).find(x=>x.id===MN.id);if(e){e.g=MN.g;e.day=MN.day;e.secs=MN.min*60;e.note=MN.note;}closeModal();checkMilestones();save();render();toast(tr('Gespeichert','Saved'));}
@@ -1186,6 +1289,72 @@ document.addEventListener('dragend',()=>{dragId=null;document.querySelectorAll('
 function dropTarget(e){const c=e.target.closest&&e.target.closest('[data-drop]');if(!c)return null;const items=[...c.querySelectorAll('[data-drag]')].filter(x=>x.dataset.drag!==dragId);let before=null;for(const it of items){const r=it.getBoundingClientRect();if(e.clientY<r.top+r.height/2){before=it;break;}}return {c,before};}
 document.addEventListener('dragover',e=>{if(!dragId)return;const d=dropTarget(e);if(!d)return;e.preventDefault();document.querySelectorAll('.dropline').forEach(x=>x.remove());const l=document.createElement('div');l.className='dropline';if(d.before)d.before.before(l);else{const items=d.c.querySelectorAll('[data-drag]');const last=items[items.length-1];if(last)last.after(l);else d.c.appendChild(l);}});
 document.addEventListener('drop',e=>{if(!dragId)return;const d=dropTarget(e);if(!d)return;e.preventDefault();const id=dragId;dragId=null;placeTask(id,d.c.dataset.drop,d.before?d.before.dataset.drag:null);});
+
+
+// ================= Tags & Priorität =================
+const normTag=w=>String(w||'').replace(/^#/,'').toLowerCase().replace(/[^\p{L}\p{N}_-]/gu,'').slice(0,30);
+const allTags=()=>{const m={};S.tasks.forEach(t=>(t.tags||[]).forEach(x=>m[x]=(m[x]||0)+1));return Object.keys(m).sort((a,b)=>m[b]-m[a]||a.localeCompare(b));};
+const tagOk=t=>!tagFilter||(t.tags||[]).includes(tagFilter);
+const prioMark=t=>t.prio?`<span class="prio" title="${tr('Priorität','Priority')}">${'!'.repeat(Math.min(3,t.prio))}</span>`:'';
+const tagsHtml=t=>(t.tags||[]).map(x=>`<button class="tag ${tagFilter===x?'on':''}" data-a="tagf" data-v="${esc(x)}">#${esc(x)}</button>`).join('');
+function tagBar(){return tagFilter?`<div class="tagbar"><span>${tr('Gefiltert nach','Filtered by')} <b>#${esc(tagFilter)}</b></span><button class="btn ghost sm" data-a="tagf" data-v="">${tr('Filter aufheben','Clear filter')} ✕</button></div>`:'';}
+// Notizen mit Link-Chips anzeigen
+function notesHtml(text){let out='',i=0;const t=String(text||'');for(const m of t.matchAll(LINK_RE)){const li=linkInfo(m[0]);if(!li)continue;out+=esc(t.slice(i,m.index))+linkChip(li);i=m.index+li.raw.length;}out+=esc(t.slice(i));return out.replace(/\n/g,'<br>');}
+
+// ================= Links =================
+const TLDS='de|com|net|org|io|at|ch|eu|app|dev|co|uk|info|me|ai|gg|tv|fm|ly|so|to|nl|fr|it|es|pl|be|dk|se|no|fi|cz|us|ca|au|jp|cloud|page|site|online|shop|tech|xyz|link|li|lu|ms|email|team|tools|work|biz|news|blog|berlin|hamburg|koeln|bayern|wien|swiss';
+const LINK_RE=new RegExp(`(https?:\\/\\/[^\\s<>"']+|www\\.[^\\s<>"']+|[\\w.+-]+@[\\w-]+(?:\\.[\\w-]+)*\\.(?:[a-z]{2,24})\\b|(?<![\\w@.\\/-])(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+(?:${TLDS})\\b(?:[\\/?#][^\\s<>"']*)?)`,'gi');
+function trimUrl(u){let s=u.replace(/[.,;:!?…»“”"']+$/,'');while(s.endsWith(')')&&(s.match(/\(/g)||[]).length<(s.match(/\)/g)||[]).length)s=s.slice(0,-1);return s;}
+function linkInfo(raw){
+  const r=trimUrl(raw);let href=r,mail=false;
+  if(/^[\w.+-]+@/.test(r)&&!/^https?:/i.test(r)){href='mailto:'+r;mail=true;}
+  else if(!/^https?:\/\//i.test(r))href='https://'+r;
+  if(mail)return {raw:r,href,host:'',label:r,mail:true};
+  let u;try{u=new URL(href);}catch(e){return null;}
+  const host=u.hostname.replace(/^www\./,'').toLowerCase(),p=u.pathname,full=u.href;
+  const seg=p.split('/').filter(Boolean);let label=host;
+  const is=(...h)=>h.some(x=>host===x||host.endsWith('.'+x));
+  if(is('outlook.office.com','outlook.office365.com','outlook.live.com'))label=/calendar/.test(p)?tr('Outlook-Termin','Outlook event'):tr('Outlook-Mail','Outlook mail');
+  else if(is('teams.microsoft.com','teams.live.com','teams.cloud.microsoft'))label=/meetup-join|meet/.test(p)?tr('Teams-Meeting','Teams meeting'):/message|chat/.test(p)?tr('Teams-Nachricht','Teams message'):'Teams';
+  else if(host==='mail.google.com')label='Gmail';
+  else if(host==='calendar.google.com')label=tr('Google Kalender','Google Calendar');
+  else if(host==='docs.google.com')label=/spreadsheets/.test(p)?'Google Sheet':/presentation/.test(p)?'Google Slides':/forms/.test(p)?'Google Form':'Google Doc';
+  else if(host==='drive.google.com')label='Google Drive';
+  else if(/-my\.sharepoint\.com$/.test(host)||is('onedrive.live.com','1drv.ms'))label='OneDrive';
+  else if(is('sharepoint.com'))label='SharePoint';
+  else if(is('github.com','codeberg.org','gitlab.com'))label=(host.split('.')[0].replace(/^./,c=>c.toUpperCase()).replace('Github','GitHub').replace('Gitlab','GitLab'))+(seg.length>=2?' · '+seg[0]+'/'+seg[1]:'')+(/\/(issues|pull|pulls|merge_requests)\/(\d+)/.test(p)?' #'+p.match(/\/(issues|pull|pulls|merge_requests)\/(\d+)/)[2]:'');
+  else if(is('atlassian.net'))label=(p.match(/\/browse\/([A-Z][A-Z0-9]+-\d+)/)||[])[1]||(/wiki/.test(p)?'Confluence':'Jira');
+  else if(is('notion.so','notion.site'))label='Notion';
+  else if(is('trello.com'))label='Trello';
+  else if(is('figma.com'))label='Figma';
+  else if(is('miro.com'))label='Miro';
+  else if(is('youtube.com','youtu.be'))label='YouTube';
+  else if(is('dropbox.com'))label='Dropbox';
+  else if(is('zoom.us'))label='Zoom';
+  else if(is('businesscentral.dynamics.com'))label='Business Central';
+  else if(is('dev.azure.com','visualstudio.com'))label=(p.match(/_workitems\/edit\/(\d+)/)||[])[1]?'Azure DevOps #'+p.match(/_workitems\/edit\/(\d+)/)[1]:'Azure DevOps';
+  else if((host==='google.com'||host.startsWith('google.'))&&/^\/maps/.test(p)||host==='maps.app.goo.gl')label=tr('Karte','Map');
+  return {raw:r,href:full,host,label,mail:false};
+}
+function extractLinks(...texts){const out=[],seen=new Set();for(const t of texts){if(!t)continue;for(const m of String(t).matchAll(LINK_RE)){const li=linkInfo(m[0]);if(li&&!seen.has(li.href)){seen.add(li.href);out.push(li);}}}return out;}
+const favOn=()=>!S.prefs||S.prefs.favicons!==false;
+function linkIcon(li){
+  if(li.mail)return `<span class="lk-ic lk-m">✉</span>`;
+  const letter=esc((li.host.replace(/^(www|mail|docs|app|my)\./,'')[0]||'?').toUpperCase());
+  return `<span class="lk-ic"><b>${letter}</b>${favOn()?`<img src="https://icons.duckduckgo.com/ip3/${esc(li.host)}.ico" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()" onload="if(this.naturalWidth<2)this.remove()">`:''}</span>`;
+}
+function linkChip(li){return `<a class="lk" href="${esc(li.href)}" target="_blank" rel="noopener noreferrer" draggable="false" title="${esc(li.raw)}">${linkIcon(li)}<span class="lk-t">${esc(li.label)}</span></a>`;}
+function linkRow(t,max){const ls=extractLinks(t.title,t.notes);if(!ls.length)return '';const shown=max&&ls.length>max?ls.slice(0,max-1):ls;return `<div class="lkrow" data-lk-for="${t.id}">${shown.map(linkChip).join('')}${shown.length<ls.length?`<button class="lk lk-more" data-a="edit-task" data-t="${t.id}">+${ls.length-shown.length}</button>`:''}</div>`;}
+// Titel ohne lange Adressen anzeigen (Links stehen als Chips darunter)
+function titleText(t){const s=t.title.replace(LINK_RE,m=>linkInfo(m)&&!/@/.test(m)?'':m).replace(/\s*[-–:·|]\s*$/,'').replace(/\s{2,}/g,' ').trim();if(s)return s;const l=extractLinks(t.title)[0];return l?l.label:t.title;}
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a.lk');if(a){e.stopPropagation();}},true);
+document.addEventListener('focusout',e=>{const t=e.target;if(t.dataset&&t.dataset.note&&noteEditing){setTimeout(()=>{const a=document.activeElement;if(noteEditing&&!(a&&a.dataset&&a.dataset.note)){noteEditing=null;if(tab==='fokus')render();}},150);}});
+document.addEventListener('input',e=>{const t=e.target;if(t.name==='notes'&&t.closest('#te-form')){const r=$('#te-lk');if(r)r.innerHTML=linkRow({id:'te',title:'',notes:t.value});return;}if(t.dataset&&t.dataset.note){const x=S.tasks.find(y=>y.id===t.dataset.note);const row=document.querySelector(`.fx-links`);if(x&&row)row.innerHTML=linkRow({id:x.id,title:x.title,notes:t.value});}});
+
+
+function askDelTask(id,fromEdit){const t=S.tasks.find(x=>x.id===id);if(!t)return;modal(`<h3>${tr('Aufgabe löschen?','Delete task?')}</h3><div class="small" style="line-height:1.5">„${esc(titleText(t))}“${taskSecs(t)>=60?tr(` und die erfassten ${fmtDur(taskSecs(t))} werden gelöscht.`,` and its tracked ${fmtDur(taskSecs(t))} will be deleted.`):tr(' wird gelöscht.',' will be deleted.')}</div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="${fromEdit?'te-back':'close'}">${tr('Abbrechen','Cancel')}</button><button class="btn danger" data-a="del-task-ok" data-t="${id}">${tr('Löschen','Delete')}</button></div>`);}
+let lastDeleted=null;
+function doDelTask(id){const t=S.tasks.find(x=>x.id===id);if(!t)return closeModal();if(S.running&&S.running.taskId===id)stopTimer(true);const i=S.tasks.indexOf(t);S.tasks.splice(i,1);lastDeleted={t,i};closeModal();save();render();toast(`${tr('Aufgabe gelöscht','Task deleted')} · <button data-a="te-restore" style="text-decoration:underline;color:inherit;font-weight:600">${tr('Rückgängig','Undo')}</button>`);}
 
 // ================= Schnell erfassen & Aufgabe bearbeiten =================
 const WD_NAMES=[['sonntag','sunday','so','sun'],['montag','monday','mo','mon'],['dienstag','tuesday','di','tue'],['mittwoch','wednesday','mi','wed'],['donnerstag','thursday','do','thu'],['freitag','friday','fr','fri'],['samstag','saturday','sa','sat']];
@@ -1202,10 +1371,14 @@ function dayWord(w){
 function goalWord(w){const n=w.toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');if(!n)return null;const gs=activeGoals();const key=g=>g.name.toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');return gs.find(g=>key(g)===n)||gs.find(g=>key(g).startsWith(n))||null;}
 // Zeile zerlegen: Aufzählungszeichen weg, #Ziel irgendwo, Tag nur am Zeilenende
 function parseLine(line){
-  let s=line.replace(/^\s*(?:[-*•–]\s*)?(?:\[[ xX]?\]\s*)?/,'').trim();let day,g;
-  s=s.replace(/(^|\s)#([\p{L}\p{N}_-]+)/gu,(m,sp,w)=>{const x=goalWord(w);if(x&&!g){g=x.id;return sp;}return m;}).replace(/\s{2,}/g,' ').trim();
-  for(let k=0;k<2;k++){const m=s.match(/\s(\S+)$/);if(!m)break;const d=dayWord(m[1]);if(d===undefined||day!==undefined)break;day=d;s=s.slice(0,m.index).trim();}
-  return {title:s.slice(0,140),day,g};
+  let s=line.replace(/^\s*(?:[-*•–]\s*)?(?:\[[ xX]?\]\s*)?/,'').trim();let day,g,prio=0;const tags=[];
+  s=s.replace(/(^|\s)#([\p{L}\p{N}_-]+)/gu,(m,sp,w)=>{const x=goalWord(w);if(x&&!g){g=x.id;return sp;}const tg=normTag(w);if(tg&&!tags.includes(tg))tags.push(tg);return sp;}).replace(/\s{2,}/g,' ').trim();
+  for(let k=0;k<3;k++){
+    let m=s.match(/(?:^|\s)(!{1,3})$/);if(m&&!prio){prio=m[1].length;s=s.slice(0,s.length-m[0].length).trim();continue;}
+    m=s.match(/\S(!{2,3})$/);if(m&&!prio){prio=m[1].length;s=s.slice(0,s.length-m[1].length).trim();continue;}
+    m=s.match(/\s(\S+)$/);if(!m)break;const d=dayWord(m[1]);if(d===undefined||day!==undefined)break;day=d;s=s.slice(0,m.index).trim();
+  }
+  return {title:s.slice(0,140),day,g,tags,prio};
 }
 const QC={day:null,g:'_none',notes:''};
 function quickAdd(text,notes){QC.day=null;QC.g='_none';QC.notes=notes||'';renderQC(text||'');}
@@ -1222,7 +1395,7 @@ function renderQC(text){
   ${QC.notes!==''?`<label>${tr('Notiz','Note')}</label><textarea name="n" rows="3">${esc(QC.notes)}</textarea>`:''}
   <label>${tr('Wann','When')}</label>${daySeg(QC.day,'qc-day')}
   <label>${tr('Ziel','Goal')}</label>${goalSeg(QC.g,'qc-goal')}
-  <div class="small" style="margin-top:10px;line-height:1.45;color:var(--muted)">${tr('Tipp: „morgen“, „fr“ oder „#Ziel“ in einer Zeile gilt nur für diese Aufgabe.','Tip: “tomorrow”, “fri” or “#goal” in a line applies to that task only.')}</div>
+  <div class="small" style="margin-top:10px;line-height:1.45;color:var(--muted)">${tr('Tipp: „morgen“ oder „fr“ plant ein, „#Ziel“ ordnet zu, „#wort“ wird ein Tag, „!“ bis „!!!“ setzt die Priorität. Gilt jeweils für die Zeile.','Tip: “tomorrow” or “fri” schedules, “#goal” assigns, “#word” becomes a tag, “!” to “!!!” sets priority. Applies per line.')}</div>
   <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn gold" type="submit">${tr('Speichern','Save')}</button></div></form>`);
   const ta=$('#qc-form [name=t]');if(ta){setTimeout(()=>{ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);},60);}
 }
@@ -1230,7 +1403,7 @@ function saveQC(){
   const text=readQC();const lines=text.split('\n').map(parseLine).filter(x=>x.title);
   if(!lines.length){closeModal();return;}
   const ids=[];
-  for(const x of lines){const k=x.day!==undefined?x.day:QC.day;const t={id:uid(),goalId:x.g||QC.g||'_none',title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(lines.length===1&&QC.notes.trim())t.notes=QC.notes.trim().slice(0,4000);S.tasks.push(t);ids.push(t.id);if(t.goalId==='_none'&&k===todayKey())showOther=true;}
+  for(const x of lines){const k=x.day!==undefined?x.day:QC.day;const t={id:uid(),goalId:x.g||QC.g||'_none',title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;if(lines.length===1&&QC.notes.trim())t.notes=QC.notes.trim().slice(0,4000);S.tasks.push(t);ids.push(t.id);if(t.goalId==='_none'&&k===todayKey())showOther=true;}
   closeModal();save();render();
   const days=[...new Set(lines.map(x=>x.day!==undefined?x.day:QC.day))];
   const where=days.length===1?(days[0]===null?tr('in der Ablage','in the backlog'):tr('für ','for ')+dayLabel(days[0])):tr('eingeplant','planned');
@@ -1238,22 +1411,25 @@ function saveQC(){
 }
 // --- Bearbeiten ---
 const TE={};
-function taskModal(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;Object.assign(TE,{id,title:t.title,notes:t.notes||'',g:goal(t.goalId)?t.goalId:'_none',date:t.date||null,done:!!t.done});renderTE();}
-function readTE(){const f=$('#te-form');if(!f)return;TE.title=f.querySelector('[name=title]').value;TE.notes=f.querySelector('[name=notes]').value;}
+function taskModal(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;Object.assign(TE,{id,title:t.title,notes:t.notes||'',g:goal(t.goalId)?t.goalId:'_none',date:t.date||null,done:!!t.done,prio:t.prio||0,tags:[...(t.tags||[])]});renderTE();}
+function readTE(){const f=$('#te-form');if(!f)return;TE.title=f.querySelector('[name=title]').value;TE.notes=f.querySelector('[name=notes]').value;const ti=f.querySelector('[name=tagin]');if(ti&&ti.value.trim()){ti.value.split(/[\s,]+/).map(normTag).filter(Boolean).forEach(x=>{if(!TE.tags.includes(x))TE.tags.push(x);});ti.value='';}}
 function renderTE(){
   const t=S.tasks.find(x=>x.id===TE.id);if(!t)return closeModal();const s=taskSecs(t);
   modal(`<h3>${tr('Aufgabe bearbeiten','Edit task')}</h3><form id="te-form">
   <label>${tr('Aufgabe','Task')}</label><input name="title" maxlength="140" required value="${esc(TE.title)}">
   ${TE.done?'':`<label>${tr('Wann','When')}</label>${daySeg(TE.date&&TE.date<todayKey()?todayKey():TE.date,'te-day')}`}
   <label>${tr('Ziel','Goal')}</label>${goalSeg(TE.g,'te-goal')}
-  <label>${tr('Notizen','Notes')}</label><textarea name="notes" rows="3" placeholder="${tr('Details, Links, nächste Schritte…','Details, links, next steps…')}">${esc(TE.notes)}</textarea>
+  <label>${tr('Priorität','Priority')}</label><div class="seg prioseg">${[0,1,2,3].map(v=>`<button type="button" class="${TE.prio===v?'on':''}" data-a="te-prio" data-v="${v}">${v?'!'.repeat(v):tr('keine','none')}</button>`).join('')}</div>
+  <label>${tr('Tags','Tags')}</label><div class="tagedit">${TE.tags.map(x=>`<button type="button" class="tag on" data-a="te-rmtag" data-v="${esc(x)}">#${esc(x)} ✕</button>`).join('')}<input name="tagin" placeholder="${tr('#neu','#new')}" autocomplete="off" enterkeyhint="done"></div>
+  ${(()=>{const sug=allTags().filter(x=>!TE.tags.includes(x)).slice(0,8);return sug.length?`<div class="tagsug">${sug.map(x=>`<button type="button" class="tag" data-a="te-addtag" data-v="${esc(x)}">+ #${esc(x)}</button>`).join('')}</div>`:'';})()}
+  <label>${tr('Notizen','Notes')}</label><textarea name="notes" rows="3" placeholder="${tr('Details, Links, nächste Schritte…','Details, links, next steps…')}">${esc(TE.notes)}</textarea><div id="te-lk">${linkRow({id:'te',title:'',notes:TE.notes})}</div>
   ${s>=60?`<div class="small" style="margin-top:8px">${tr('Bisher erfasst: ','Tracked so far: ')}${fmtDur(s)}</div>`:''}
   <div class="actions"><button type="button" class="btn danger" data-a="te-del">${tr('Löschen','Delete')}</button><span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn" type="submit">${tr('Speichern','Save')}</button></div></form>`);
 }
 function saveTE(){
   readTE();const t=S.tasks.find(x=>x.id===TE.id);if(!t)return closeModal();
   const title=TE.title.trim();if(!title)return;
-  t.title=title.slice(0,140);t.notes=TE.notes.slice(0,4000);
+  t.title=title.slice(0,140);t.notes=TE.notes.slice(0,4000);t.prio=TE.prio||0;if(!t.prio)delete t.prio;t.tags=[...TE.tags];if(!t.tags.length)delete t.tags;
   if(t.goalId!==TE.g){t.goalId=TE.g;if(S.running&&S.running.taskId===t.id){stopTimer(true);S.running={goalId:t.goalId,taskId:t.id,start:Date.now()};}}
   if(!t.done){const nd=TE.date;const cur=t.date&&t.date<todayKey()?todayKey():t.date;if(nd!==cur){if(nd===null&&S.running&&S.running.taskId===t.id)stopTimer(true);t.date=nd;t.order=nextOrder(nd);}}
   closeModal();save();render();toast(tr('Gespeichert','Saved'));
@@ -1269,12 +1445,20 @@ Object.assign(EXTRA_ACTIONS,{
   'edit-task'(el){taskModal(el.dataset.t);},
   'te-day'(el){readTE();TE.date=el.dataset.v||null;renderTE();},
   'te-goal'(el){readTE();TE.g=el.dataset.v;renderTE();},
-  'te-del'(){const id=TE.id;const t=S.tasks.find(x=>x.id===id);if(!t)return closeModal();if(S.running&&S.running.taskId===id)stopTimer(true);const i=S.tasks.indexOf(t);S.tasks.splice(i,1);closeModal();save();render();toast(`${tr('Aufgabe gelöscht','Task deleted')} · <button data-a="te-restore" style="text-decoration:underline;color:inherit;font-weight:600">${tr('Rückgängig','Undo')}</button>`);TE.deleted={t,i};},
-  'te-restore'(){if(TE.deleted){S.tasks.splice(Math.min(TE.deleted.i,S.tasks.length),0,TE.deleted.t);TE.deleted=null;save();render();}$('#toast-root').innerHTML='';}
+  'te-del'(){readTE();askDelTask(TE.id,true);},
+  'te-back'(){renderTE();},
+  'note-done'(){noteEditing=null;render();},
+  'te-restore'(){if(lastDeleted){S.tasks.splice(Math.min(lastDeleted.i,S.tasks.length),0,lastDeleted.t);lastDeleted=null;save();render();}$('#toast-root').innerHTML='';},
+  'tagf'(el){const v=el.dataset.v||null;tagFilter=tagFilter===v?null:v;render();},
+  'te-prio'(el){readTE();TE.prio=+el.dataset.v;renderTE();},
+  'te-addtag'(el){readTE();const v=normTag(el.dataset.v);if(v&&!TE.tags.includes(v))TE.tags.push(v);renderTE();},
+  'te-rmtag'(el){readTE();TE.tags=TE.tags.filter(x=>x!==el.dataset.v);renderTE();},
+  'note-edit'(el){if(event&&event.target.closest&&event.target.closest('a.lk'))return;noteEditing=el.dataset.t;render();setTimeout(()=>{const n=document.querySelector(`[data-note="${el.dataset.t}"]`);if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length);}},40);},
 });
 document.addEventListener('change',e=>{const d=e.target.closest&&e.target.closest('[data-a-date]');if(!d||!d.value)return;const act=d.dataset.aDate;if(act==='qc-day'){const t=readQC();QC.day=d.value<todayKey()?todayKey():d.value;renderQC(t);}else if(act==='te-day'){readTE();TE.date=d.value<todayKey()?todayKey():d.value;renderTE();}});
 document.addEventListener('submit',e=>{const f=e.target;if(f.id==='qc-form'){e.preventDefault();e.stopImmediatePropagation();saveQC();}else if(f.id==='te-form'){e.preventDefault();e.stopImmediatePropagation();saveTE();}},true);
 document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.name==='tagin'&&e.target.closest('#te-form')){e.preventDefault();if(e.target.value.trim()){readTE();renderTE();setTimeout(()=>{const i=$('#te-form [name=tagin]');if(i)i.focus();},30);}return;}
   const qt=e.target.closest&&e.target.closest('#qc-form [name=t]');
   if(qt&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();saveQC();return;}
   if((e.key==='n'||e.key==='N')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!typing()&&!$('#modal-root').innerHTML){e.preventDefault();quickAdd('');}
@@ -1299,6 +1483,7 @@ function tick(){
   if(!S.running)return;
   document.querySelectorAll('[data-clock]').forEach(c=>c.textContent=fmtClock(runningSecs()));
   document.querySelectorAll('[data-live-task]').forEach(tl=>{const t=S.tasks.find(x=>x.id===tl.dataset.liveTask);if(t)tl.textContent=(tl.classList.contains('tm')?fmtShort:fmtDur)(taskSecs(t));});
+  document.querySelectorAll('[data-live-ring]').forEach(sv=>{const t=S.tasks.find(x=>x.id===sv.dataset.liveRing);updRing(sv,t?taskSecs(t):runningSecs());});
   document.querySelectorAll('[data-live-focus]').forEach(tl=>{const t=S.tasks.find(x=>x.id===tl.dataset.liveFocus);if(t)tl.textContent=fmtClock(taskSecs(t));});
 }
 setInterval(tick,1000);
