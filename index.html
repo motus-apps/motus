@@ -550,6 +550,11 @@ button,nav,.seg,.tcard .title,.qitem .tt,.chk,.gpick,.tiles button,summary{-webk
 .emojis input:checked+span{border-color:var(--gold);background:rgba(212,160,23,.12)}
 .emoji-own{width:84px!important;text-align:center}
 .viewsw{margin:-4px 0 12px}.viewsw .seg{display:inline-flex}
+.fx-switch{margin-top:16px;color:#f3e3bf;font-size:13px;opacity:.85;padding:6px 10px;border-radius:8px}.fx-switch:hover{opacity:1;background:rgba(255,255,255,.1)}
+.pickrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-bottom:6px;font-size:14.5px;color:var(--text)}
+.pickrow:hover{border-color:var(--gold)}.pickrow .pt{flex:1;min-width:0;font-weight:550}.pickrow .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.picklbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--muted);margin:4px 2px 6px}
+.pickbl summary{cursor:pointer;font-size:13.5px;color:var(--muted);padding:8px 2px}
 </style>
 </head>
 <body>
@@ -979,11 +984,35 @@ function viewProject(g){
   return h;
 }
 
+
+// ================= Fokus: andere Aufgabe vorziehen =================
+function focusPick(curId){
+  const tk=todayKey(),q=focusQueue().filter(t=>t.id!==curId),bl=backlog().filter(t=>!t.done);
+  const row=t=>{const g=goal(t.goalId)||NONE();return `<button class="pickrow" data-a="focus-take" data-t="${t.id}" data-cur="${curId}"><span class="dot" style="background:${g.color}"></span><span class="pt">${prioMark(t)}${esc(titleText(t))}</span><span class="small">${taskSecs(t)>=60?fmtShort(taskSecs(t)):''}</span></button>`;};
+  modal(`<h3>${tr('Andere Aufgabe vorziehen','Pull another task forward')}</h3><div class="small" style="margin-bottom:10px">${tr('Die aktuelle Aufgabe wird pausiert und kommt direkt danach dran.','The current task is paused and comes right after.')}</div>
+  ${q.length?`<div class="picklbl">${tr('Heute','Today')}</div>${q.map(row).join('')}`:`<div class="small" style="margin:6px 0">${tr('Heute ist sonst nichts geplant.','Nothing else is planned for today.')}</div>`}
+  ${bl.length?`<details class="pickbl" ${q.length?'':'open'}><summary>${tr('Aus der Ablage','From the backlog')} (${bl.length})</summary>${bl.map(row).join('')}</details>`:''}
+  <div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button></div>`);
+}
+function focusTake(id,curId){
+  const tk=todayKey(),t=S.tasks.find(x=>x.id===id);if(!t)return;
+  const wasRunning=S.running&&S.running.taskId===curId;
+  if(wasRunning)stopTimer(true);
+  if(!t.date||t.date!==tk&&t.date>tk)t.date=tk;
+  // Reihenfolge: gewählte, dann aktuelle, dann der Rest
+  const q=dayTasks(tk).filter(x=>x.id!==id&&x.id!==curId);const cur=S.tasks.find(x=>x.id===curId);
+  [t,...(cur&&!cur.done?[cur]:[]),...q].forEach((x,i)=>x.order=i);
+  S.meta.focusPin=id;closeModal();
+  if(wasRunning)startTimer(id);else{save();render();}
+  toast(tr('Vorgezogen','Pulled forward'));
+}
+
 // ================= Fokus =================
 function viewFocus(){
   const q=focusQueue();
   const r=S.running;
-  const cur=(r&&r.taskId&&S.tasks.find(t=>t.id===r.taskId&&!t.done))||q[0];
+  const pin=S.meta.focusPin&&q.find(t=>t.id===S.meta.focusPin);
+  const cur=(r&&r.taskId&&S.tasks.find(t=>t.id===r.taskId&&!t.done))||pin||q[0];
   let h=`<div class="pagehead"><h1>${tr('Fokus','Focus')}</h1><span class="small">${tr('Immer nur eine Aufgabe.','One task at a time.')}</span></div>`;
   if(!cur){
     const n=S.tasks.filter(t=>t.done&&t.doneOn===todayKey()).length;
@@ -1000,6 +1029,7 @@ function viewFocus(){
     <div class="fbtns"><button class="btn glass" data-a="later" data-t="${cur.id}">${tr('Später','Later')}</button>
       ${run?`<button class="fbig" data-a="stop" title="${tr('Pause','Pause')}">${I.pause()}</button>`:`<button class="fbig" data-a="play" data-t="${cur.id}" title="${secs?tr('Weiter','Resume'):tr('Start','Start')}">${I.play()}</button>`}
       <button class="btn gold" data-a="focus-done" data-t="${cur.id}">✓ ${tr('Erledigt','Done')}</button></div>
+    <button class="fx-switch" data-a="focus-pick" data-t="${cur.id}">⇄ ${tr('Andere Aufgabe vorziehen','Pull another task forward')}</button>
   </div>
   <div class="card fnotes">${noteEditing===cur.id?`<textarea data-note="${cur.id}" placeholder="${tr('Notizen, Links, nächste Schritte…','Notes, links, next steps…')}">${esc(cur.notes||'')}</textarea><div class="small" style="text-align:right;margin-top:4px"><button class="btn ghost sm" data-a="note-done">${tr('Fertig','Done')}</button></div>`:`<div class="notes-view ${cur.notes?'':'empty'}" data-a="note-edit" data-t="${cur.id}">${cur.notes?notesHtml(cur.notes):tr('Notizen, Links, nächste Schritte… (antippen)','Notes, links, next steps… (tap)')}</div>`}</div>
   <div class="fx-left">${left?tr(`Danach warten noch ${left} ${left===1?'Aufgabe':'Aufgaben'}. Die siehst du erst, wenn diese fertig ist.`,`${left} more ${left===1?'task is':'tasks are'} waiting. You will see them once this one is done.`):tr('Das ist die letzte Aufgabe für heute.','This is the last task for today.')}</div>`;
@@ -1303,7 +1333,7 @@ document.addEventListener('click',e=>{
     case 'done':completeTask(tid,false);break;
     case 'focus-done':completeTask(tid,true);break;
     case 'reopen':reopenTask(tid);break;
-    case 'later':{const t=T();if(!t)break;if(S.running&&S.running.taskId===tid)stopTimer(true);t.date=t.date<tk?tk:t.date;t.order=nextOrder(tk);save();render();break;}
+    case 'later':{const t=T();if(!t)break;if(S.meta.focusPin===tid)delete S.meta.focusPin;if(S.running&&S.running.taskId===tid)stopTimer(true);t.date=t.date<tk?tk:t.date;t.order=nextOrder(tk);save();render();break;}
     case 'up':case 'down':{const all=dayTasks(tk);const list=el.dataset.list==='o'?all.filter(t=>!isGoalTask(t)):all.filter(isGoalTask);moveInList(tid,a==='up'?-1:1,list);break;}
     case 'del-task':askDelTask(tid,false);break;
     case 'del-task-ok':doDelTask(tid);break;
@@ -1561,6 +1591,7 @@ Object.assign(EXTRA_ACTIONS,{
   'te-rmtag'(el){readTE();TE.tags=TE.tags.filter(x=>x!==el.dataset.v);renderTE();},
   'note-edit'(el){if(event&&event.target.closest&&event.target.closest('a.lk'))return;noteEditing=el.dataset.t;render();setTimeout(()=>{const n=document.querySelector(`[data-note="${el.dataset.t}"]`);if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length);}},40);},
 });
+Object.assign(EXTRA_ACTIONS,{'focus-pick'(el){focusPick(el.dataset.t);},'focus-take'(el){focusTake(el.dataset.t,el.dataset.cur);}});
 document.addEventListener('change',e=>{const d=e.target.closest&&e.target.closest('[data-a-date]');if(!d||!d.value)return;const act=d.dataset.aDate;if(act==='qc-day'){const t=readQC();QC.day=d.value<todayKey()?todayKey():d.value;renderQC(t);}else if(act==='te-day'){readTE();TE.date=d.value<todayKey()?todayKey():d.value;renderTE();}});
 document.addEventListener('submit',e=>{const f=e.target;if(f.dataset&&f.dataset.padd){e.preventDefault();e.stopImmediatePropagation();const inp=f.querySelector('input');const lines=inp.value.split('\n').map(parseLine).filter(x=>x.title);for(const x of lines){const k=x.day!==undefined?x.day:null;const t={id:uid(),goalId:f.dataset.padd,title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);}save();render();const n=document.querySelector(`[data-padd="${f.dataset.padd}"] input`);if(n)n.focus();return;}if(f.id==='qc-form'){e.preventDefault();e.stopImmediatePropagation();saveQC();}else if(f.id==='te-form'){e.preventDefault();e.stopImmediatePropagation();saveTE();}},true);
 document.addEventListener('keydown',e=>{
