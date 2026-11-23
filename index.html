@@ -556,6 +556,14 @@ button,nav,.seg,.tcard .title,.qitem .tt,.chk,.gpick,.tiles button,summary{-webk
 .picklbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--muted);margin:4px 2px 6px}
 .pickbl summary{cursor:pointer;font-size:13.5px;color:var(--muted);padding:8px 2px}
 .fp-new{display:flex;gap:8px;margin:0 0 14px}.fp-new input{flex:1}
+.fx-links2{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:12px}.fx-links2 .fx-switch{margin-top:0}
+.fp-goals{margin:-4px 0 14px}
+.movegrid.bd{grid-template-columns:repeat(4,1fr)}.movegrid.bd .btn{padding:10px 4px}
+.slcard{padding:4px 14px}
+.slog summary{cursor:pointer;font-size:13.5px;color:var(--muted);padding:10px 0;font-weight:600}
+.slog{margin-top:6px}.slday{margin:2px 0 10px}
+.sld{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--line);margin-bottom:3px}
+.slr{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);padding:2px 0 2px 8px;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -986,17 +994,41 @@ function viewProject(g){
 }
 
 
+
+// ================= Zeit nachträglich: früher angefangen =================
+function subTime(goalId,startMs,endMs){const L=S.log[goalId]||{};let t=startMs;while(t<endMs){const k=dayOf(t);const e=Math.min(dayStartMs(shiftKey(k,1)),endMs);L[k]=Math.max(0,Math.round((L[k]||0)-(e-t)/1000));t=e;}}
+function backdateInfo(){const r=S.running;if(!r)return null;const ses=S.sessions.filter(x=>x.e<=r.start+2000).sort((a,b)=>b.e-a.e);const last=ses[0];const prev=last&&r.start-last.e<=90000?last:null;
+  const maxMs=prev?(prev.e-prev.s):(last?Math.max(0,r.start-last.e):12*3600000);return {prev,maxMin:Math.floor(maxMs/60000)};}
+function backdateModal(){const b=backdateInfo();if(!b)return;const pt=b.prev&&S.tasks.find(x=>x.id===b.prev.t);
+  const opts=[5,10,15,20,30,45,60,90].filter(m=>m<=b.maxMin);
+  modal(`<h3>${tr('Schon früher angefangen?','Started earlier?')}</h3><div class="small" style="line-height:1.5;margin-bottom:12px">${b.prev?tr(`Die Zeit wird hier draufgerechnet und von „${esc(pt?titleText(pt):'vorheriger Aufgabe')}“ abgezogen (dort liefen ${fmtDur((b.prev.e-b.prev.s)/1000)}).`,`The time is added here and taken from “${esc(pt?titleText(pt):'previous task')}” (it ran ${fmtDur((b.prev.e-b.prev.s)/1000)}).`):tr('Die Zeit wird hier draufgerechnet. Davor lief keine Aufgabe, es wird also nichts abgezogen.','The time is added here. No task was running before, so nothing is deducted.')}</div>
+  ${b.maxMin<1?`<div class="small">${tr('Davor ist keine freie Zeit, die sich verschieben ließe.','There is no earlier time to move.')}</div>`:`<div class="movegrid bd">${opts.map(m=>`<button class="btn ghost" data-a="backdate" data-v="${m}">+${m<60?m+' min':m/60+' h'}</button>`).join('')}</div>
+  <form id="bd-form" class="fp-new" style="margin-top:12px"><input name="m" type="number" min="1" max="${b.maxMin}" inputmode="numeric" placeholder="${tr('Minuten','Minutes')} (max. ${b.maxMin})"><button class="btn" type="submit">${tr('Übernehmen','Apply')}</button></form>`}
+  <div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button></div>`);}
+function backdate(mins){const r=S.running,b=backdateInfo();if(!r||!b)return;mins=Math.max(0,Math.min(b.maxMin,Math.round(mins)));if(!mins)return closeModal();const d=mins*60000;
+  if(b.prev){const p=b.prev;const cut=Math.min(d,p.e-p.s);subTime(p.g,p.e-cut,p.e);const pt=S.tasks.find(x=>x.id===p.t);if(pt)pt.secs=Math.max(0,Math.round((pt.secs||0)-cut/1000));p.e-=cut;if(p.e-p.s<1000)S.sessions=S.sessions.filter(x=>x!==p);}
+  r.start-=d;closeModal();save();render();toast(tr(`${mins} min nachgetragen`,`${mins} min added`));}
+// Verlauf der gebuchten Zeiten
+function sessionLog(t){
+  const list=S.sessions.filter(x=>x.t===t.id).map(x=>({s:x.s,e:x.e}));if(S.running&&S.running.taskId===t.id)list.push({s:S.running.start,e:null});
+  if(!list.length)return '';list.sort((a,b)=>b.s-a.s);
+  const by={};list.forEach(x=>{const k=dayOf(x.s);(by[k]=by[k]||[]).push(x);});
+  const tot=list.reduce((a,x)=>a+((x.e||Date.now())-x.s)/1000,0);
+  return `<details class="slog"><summary>${tr('Verlauf','History')} · ${list.length} ${list.length===1?tr('Eintrag','entry'):tr('Einträge','entries')} · ${fmtDur(tot)}</summary>${Object.entries(by).map(([k,xs])=>{const sum=xs.reduce((a,x)=>a+((x.e||Date.now())-x.s)/1000,0);return `<div class="slday"><div class="sld"><b>${parseKey(k).toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'short'})}</b><span>${fmtDur(sum)}</span></div>${xs.map(x=>`<div class="slr"><span>${fmtTime(x.s)} – ${x.e?fmtTime(x.e):tr('läuft','running')}</span><span>${fmtDur(((x.e||Date.now())-x.s)/1000)}</span></div>`).join('')}</div>`;}).join('')}</details>`;
+}
+
 // ================= Fokus: andere Aufgabe vorziehen =================
 function focusPick(curId){
   const tk=todayKey(),q=focusQueue().filter(t=>t.id!==curId),bl=backlog().filter(t=>!t.done);
   const row=t=>{const g=goal(t.goalId)||NONE();return `<button class="pickrow" data-a="focus-take" data-t="${t.id}" data-cur="${curId}"><span class="dot" style="background:${g.color}"></span><span class="pt">${prioMark(t)}${esc(titleText(t))}</span><span class="small">${taskSecs(t)>=60?fmtShort(taskSecs(t)):''}</span></button>`;};
   modal(`<h3>${tr('Andere Aufgabe vorziehen','Pull another task forward')}</h3><div class="small" style="margin-bottom:10px">${tr('Die aktuelle Aufgabe wird pausiert und kommt direkt danach dran.','The current task is paused and comes right after.')}</div>
-  <form id="fp-new" data-cur="${curId}" class="fp-new"><input name="t" placeholder="${tr('Neue Aufgabe, die jetzt dran ist…','New task to do now…')}" maxlength="200" autocomplete="off" enterkeyhint="go"><button class="btn gold" type="submit">${tr('Los','Go')}</button></form>
+  <form id="fp-new" data-cur="${curId}"><div class="fp-new"><input name="t" placeholder="${tr('Neue Aufgabe, die jetzt dran ist…','New task to do now…')}" maxlength="200" autocomplete="off" enterkeyhint="go"><button class="btn gold" type="submit">${tr('Los','Go')}</button></div>
+  <div class="seg wrapseg fp-goals">${[...activeGoals(),NONE()].map(g=>`<button type="button" class="${g.id==='_none'?'on':''}" data-a="fp-goal" data-v="${g.id}"><i class="dot" style="background:${g.color};display:inline-block;margin-right:6px"></i>${esc(g.name)}</button>`).join('')}</div></form>
   ${q.length?`<div class="picklbl">${tr('Heute','Today')}</div>${q.map(row).join('')}`:`<div class="small" style="margin:6px 0">${tr('Heute ist sonst nichts geplant.','Nothing else is planned for today.')}</div>`}
   ${bl.length?`<details class="pickbl" ${q.length?'':'open'}><summary>${tr('Aus der Ablage','From the backlog')} (${bl.length})</summary>${bl.map(row).join('')}</details>`:''}
   <div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button></div>`);
 }
-function focusNew(text,curId){const x=parseLine(text);if(!x.title)return;const t={id:uid(),goalId:x.g||'_none',title:x.title,date:todayKey(),done:false,secs:0,order:0};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);if(t.goalId==='_none')showOther=true;focusTake(t.id,curId);}
+function focusNew(text,curId,gsel){const x=parseLine(text);if(!x.title)return;const t={id:uid(),goalId:x.g||gsel||'_none',title:x.title,date:todayKey(),done:false,secs:0,order:0};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);if(t.goalId==='_none')showOther=true;focusTake(t.id,curId);}
 function focusTake(id,curId){
   const tk=todayKey(),t=S.tasks.find(x=>x.id===id);if(!t)return;
   const wasRunning=S.running&&S.running.taskId===curId;
@@ -1032,9 +1064,10 @@ function viewFocus(){
     <div class="fbtns"><button class="btn glass" data-a="later" data-t="${cur.id}">${tr('Später','Later')}</button>
       ${run?`<button class="fbig" data-a="stop" title="${tr('Pause','Pause')}">${I.pause()}</button>`:`<button class="fbig" data-a="play" data-t="${cur.id}" title="${secs?tr('Weiter','Resume'):tr('Start','Start')}">${I.play()}</button>`}
       <button class="btn gold" data-a="focus-done" data-t="${cur.id}">✓ ${tr('Erledigt','Done')}</button></div>
-    <button class="fx-switch" data-a="focus-pick" data-t="${cur.id}">⇄ ${tr('Andere Aufgabe vorziehen','Pull another task forward')}</button>
+    <div class="fx-links2"><button class="fx-switch" data-a="focus-pick" data-t="${cur.id}">⇄ ${tr('Andere Aufgabe vorziehen','Pull another task forward')}</button>${run?`<button class="fx-switch" data-a="backdate-open">⏪ ${tr('Früher angefangen','Started earlier')}</button>`:''}</div>
   </div>
   <div class="card fnotes">${noteEditing===cur.id?`<textarea data-note="${cur.id}" placeholder="${tr('Notizen, Links, nächste Schritte…','Notes, links, next steps…')}">${esc(cur.notes||'')}</textarea><div class="small" style="text-align:right;margin-top:4px"><button class="btn ghost sm" data-a="note-done">${tr('Fertig','Done')}</button></div>`:`<div class="notes-view ${cur.notes?'':'empty'}" data-a="note-edit" data-t="${cur.id}">${cur.notes?notesHtml(cur.notes):tr('Notizen, Links, nächste Schritte… (antippen)','Notes, links, next steps… (tap)')}</div>`}</div>
+  ${(()=>{const l=sessionLog(cur);return l?`<div class="card slcard">${l}</div>`:'';})()}
   <div class="fx-left">${left?tr(`Danach warten noch ${left} ${left===1?'Aufgabe':'Aufgaben'}. Die siehst du erst, wenn diese fertig ist.`,`${left} more ${left===1?'task is':'tasks are'} waiting. You will see them once this one is done.`):tr('Das ist die letzte Aufgabe für heute.','This is the last task for today.')}</div>`;
   return h;
 }
@@ -1554,7 +1587,7 @@ function renderTE(){
   <label>${tr('Tags','Tags')}</label><div class="tagedit">${TE.tags.map(x=>`<button type="button" class="tag on" data-a="te-rmtag" data-v="${esc(x)}">#${esc(x)} ✕</button>`).join('')}<input name="tagin" placeholder="${tr('#neu','#new')}" autocomplete="off" enterkeyhint="done"></div>
   ${(()=>{const sug=allTags().filter(x=>!TE.tags.includes(x)).slice(0,8);return sug.length?`<div class="tagsug">${sug.map(x=>`<button type="button" class="tag" data-a="te-addtag" data-v="${esc(x)}">+ #${esc(x)}</button>`).join('')}</div>`:'';})()}
   <label>${tr('Notizen','Notes')}</label><textarea name="notes" rows="3" placeholder="${tr('Details, Links, nächste Schritte…','Details, links, next steps…')}">${esc(TE.notes)}</textarea><div id="te-lk">${linkRow({id:'te',title:'',notes:TE.notes})}</div>
-  ${s>=60?`<div class="small" style="margin-top:8px">${tr('Bisher erfasst: ','Tracked so far: ')}${fmtDur(s)}</div>`:''}
+  ${s>=60?`<div class="small" style="margin-top:8px">${tr('Bisher erfasst: ','Tracked so far: ')}${fmtDur(s)}</div>`:''}${sessionLog(t)}
   <div class="actions"><button type="button" class="btn danger" data-a="te-del">${tr('Löschen','Delete')}</button><span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn" type="submit">${tr('Speichern','Save')}</button></div></form>`);
 }
 function saveTE(){
@@ -1594,9 +1627,9 @@ Object.assign(EXTRA_ACTIONS,{
   'te-rmtag'(el){readTE();TE.tags=TE.tags.filter(x=>x!==el.dataset.v);renderTE();},
   'note-edit'(el){if(event&&event.target.closest&&event.target.closest('a.lk'))return;noteEditing=el.dataset.t;render();setTimeout(()=>{const n=document.querySelector(`[data-note="${el.dataset.t}"]`);if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length);}},40);},
 });
-Object.assign(EXTRA_ACTIONS,{'focus-pick'(el){focusPick(el.dataset.t);},'focus-take'(el){focusTake(el.dataset.t,el.dataset.cur);}});
+Object.assign(EXTRA_ACTIONS,{'fp-goal'(el){el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));const i=$('#fp-new input');if(i)i.focus();},'backdate-open'(){backdateModal();},'backdate'(el){backdate(+el.dataset.v);},'focus-pick'(el){focusPick(el.dataset.t);},'focus-take'(el){focusTake(el.dataset.t,el.dataset.cur);}});
 document.addEventListener('change',e=>{const d=e.target.closest&&e.target.closest('[data-a-date]');if(!d||!d.value)return;const act=d.dataset.aDate;if(act==='qc-day'){const t=readQC();QC.day=d.value<todayKey()?todayKey():d.value;renderQC(t);}else if(act==='te-day'){readTE();TE.date=d.value<todayKey()?todayKey():d.value;renderTE();}});
-document.addEventListener('submit',e=>{const f=e.target;if(f.id==='fp-new'){e.preventDefault();e.stopImmediatePropagation();focusNew(f.querySelector('input').value,f.dataset.cur);return;}if(f.dataset&&f.dataset.padd){e.preventDefault();e.stopImmediatePropagation();const inp=f.querySelector('input');const lines=inp.value.split('\n').map(parseLine).filter(x=>x.title);for(const x of lines){const k=x.day!==undefined?x.day:null;const t={id:uid(),goalId:f.dataset.padd,title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);}save();render();const n=document.querySelector(`[data-padd="${f.dataset.padd}"] input`);if(n)n.focus();return;}if(f.id==='qc-form'){e.preventDefault();e.stopImmediatePropagation();saveQC();}else if(f.id==='te-form'){e.preventDefault();e.stopImmediatePropagation();saveTE();}},true);
+document.addEventListener('submit',e=>{const f=e.target;if(f.id==='fp-new'){e.preventDefault();e.stopImmediatePropagation();const on=f.querySelector('.fp-goals .on');focusNew(f.querySelector('input').value,f.dataset.cur,on?on.dataset.v:'_none');return;}if(f.id==='bd-form'){e.preventDefault();e.stopImmediatePropagation();backdate(+new FormData(f).get('m')||0);return;}if(f.dataset&&f.dataset.padd){e.preventDefault();e.stopImmediatePropagation();const inp=f.querySelector('input');const lines=inp.value.split('\n').map(parseLine).filter(x=>x.title);for(const x of lines){const k=x.day!==undefined?x.day:null;const t={id:uid(),goalId:f.dataset.padd,title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);}save();render();const n=document.querySelector(`[data-padd="${f.dataset.padd}"] input`);if(n)n.focus();return;}if(f.id==='qc-form'){e.preventDefault();e.stopImmediatePropagation();saveQC();}else if(f.id==='te-form'){e.preventDefault();e.stopImmediatePropagation();saveTE();}},true);
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.name==='tagin'&&e.target.closest('#te-form')){e.preventDefault();if(e.target.value.trim()){readTE();renderTE();setTimeout(()=>{const i=$('#te-form [name=tagin]');if(i)i.focus();},30);}return;}
   const qt=e.target.closest&&e.target.closest('#qc-form [name=t]');
