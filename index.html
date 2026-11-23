@@ -555,6 +555,7 @@ button,nav,.seg,.tcard .title,.qitem .tt,.chk,.gpick,.tiles button,summary{-webk
 .pickrow:hover{border-color:var(--gold)}.pickrow .pt{flex:1;min-width:0;font-weight:550}.pickrow .dot{width:9px;height:9px;border-radius:50%;flex:none}
 .picklbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--muted);margin:4px 2px 6px}
 .pickbl summary{cursor:pointer;font-size:13.5px;color:var(--muted);padding:8px 2px}
+.fp-new{display:flex;gap:8px;margin:0 0 14px}.fp-new input{flex:1}
 </style>
 </head>
 <body>
@@ -990,10 +991,12 @@ function focusPick(curId){
   const tk=todayKey(),q=focusQueue().filter(t=>t.id!==curId),bl=backlog().filter(t=>!t.done);
   const row=t=>{const g=goal(t.goalId)||NONE();return `<button class="pickrow" data-a="focus-take" data-t="${t.id}" data-cur="${curId}"><span class="dot" style="background:${g.color}"></span><span class="pt">${prioMark(t)}${esc(titleText(t))}</span><span class="small">${taskSecs(t)>=60?fmtShort(taskSecs(t)):''}</span></button>`;};
   modal(`<h3>${tr('Andere Aufgabe vorziehen','Pull another task forward')}</h3><div class="small" style="margin-bottom:10px">${tr('Die aktuelle Aufgabe wird pausiert und kommt direkt danach dran.','The current task is paused and comes right after.')}</div>
+  <form id="fp-new" data-cur="${curId}" class="fp-new"><input name="t" placeholder="${tr('Neue Aufgabe, die jetzt dran ist…','New task to do now…')}" maxlength="200" autocomplete="off" enterkeyhint="go"><button class="btn gold" type="submit">${tr('Los','Go')}</button></form>
   ${q.length?`<div class="picklbl">${tr('Heute','Today')}</div>${q.map(row).join('')}`:`<div class="small" style="margin:6px 0">${tr('Heute ist sonst nichts geplant.','Nothing else is planned for today.')}</div>`}
   ${bl.length?`<details class="pickbl" ${q.length?'':'open'}><summary>${tr('Aus der Ablage','From the backlog')} (${bl.length})</summary>${bl.map(row).join('')}</details>`:''}
   <div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button></div>`);
 }
+function focusNew(text,curId){const x=parseLine(text);if(!x.title)return;const t={id:uid(),goalId:x.g||'_none',title:x.title,date:todayKey(),done:false,secs:0,order:0};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);if(t.goalId==='_none')showOther=true;focusTake(t.id,curId);}
 function focusTake(id,curId){
   const tk=todayKey(),t=S.tasks.find(x=>x.id===id);if(!t)return;
   const wasRunning=S.running&&S.running.taskId===curId;
@@ -1593,7 +1596,7 @@ Object.assign(EXTRA_ACTIONS,{
 });
 Object.assign(EXTRA_ACTIONS,{'focus-pick'(el){focusPick(el.dataset.t);},'focus-take'(el){focusTake(el.dataset.t,el.dataset.cur);}});
 document.addEventListener('change',e=>{const d=e.target.closest&&e.target.closest('[data-a-date]');if(!d||!d.value)return;const act=d.dataset.aDate;if(act==='qc-day'){const t=readQC();QC.day=d.value<todayKey()?todayKey():d.value;renderQC(t);}else if(act==='te-day'){readTE();TE.date=d.value<todayKey()?todayKey():d.value;renderTE();}});
-document.addEventListener('submit',e=>{const f=e.target;if(f.dataset&&f.dataset.padd){e.preventDefault();e.stopImmediatePropagation();const inp=f.querySelector('input');const lines=inp.value.split('\n').map(parseLine).filter(x=>x.title);for(const x of lines){const k=x.day!==undefined?x.day:null;const t={id:uid(),goalId:f.dataset.padd,title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);}save();render();const n=document.querySelector(`[data-padd="${f.dataset.padd}"] input`);if(n)n.focus();return;}if(f.id==='qc-form'){e.preventDefault();e.stopImmediatePropagation();saveQC();}else if(f.id==='te-form'){e.preventDefault();e.stopImmediatePropagation();saveTE();}},true);
+document.addEventListener('submit',e=>{const f=e.target;if(f.id==='fp-new'){e.preventDefault();e.stopImmediatePropagation();focusNew(f.querySelector('input').value,f.dataset.cur);return;}if(f.dataset&&f.dataset.padd){e.preventDefault();e.stopImmediatePropagation();const inp=f.querySelector('input');const lines=inp.value.split('\n').map(parseLine).filter(x=>x.title);for(const x of lines){const k=x.day!==undefined?x.day:null;const t={id:uid(),goalId:f.dataset.padd,title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);}save();render();const n=document.querySelector(`[data-padd="${f.dataset.padd}"] input`);if(n)n.focus();return;}if(f.id==='qc-form'){e.preventDefault();e.stopImmediatePropagation();saveQC();}else if(f.id==='te-form'){e.preventDefault();e.stopImmediatePropagation();saveTE();}},true);
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.name==='tagin'&&e.target.closest('#te-form')){e.preventDefault();if(e.target.value.trim()){readTE();renderTE();setTimeout(()=>{const i=$('#te-form [name=tagin]');if(i)i.focus();},30);}return;}
   const qt=e.target.closest&&e.target.closest('#qc-form [name=t]');
