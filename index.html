@@ -641,6 +641,14 @@ body.nf-open #fab,body.nf-open nav{display:none}
 .modal-bg{z-index:50}.toast{z-index:60}
 /* Aktionen in Dialogen immer sichtbar */
 .modal .actions{position:sticky;bottom:-20px;z-index:3;background:var(--surface);margin:14px -20px -20px;padding:12px 20px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);box-shadow:0 -8px 16px -10px rgba(0,0,0,.25)}
+/* dezente Dialog-Knöpfe */
+.modal .actions .btn{padding:9px 16px;font-size:14px;box-shadow:none}
+.modal .actions .btn.danger{background:transparent;color:var(--danger);border:1px solid transparent;opacity:.85}
+.modal .actions .btn.danger:hover{background:rgba(184,92,92,.1);opacity:1}
+.modal .actions .btn.ghost{background:transparent;border:1px solid var(--line)}
+.modal .actions .btn:not(.ghost):not(.danger){background:rgba(47,143,91,.14);color:var(--text);border:1px solid rgba(47,143,91,.35)}
+.modal .actions .btn.gold:not(.ghost){background:rgba(212,160,23,.16);color:var(--text);border-color:rgba(212,160,23,.45)}
+.modal .actions .btn:not(.ghost):not(.danger):hover{filter:brightness(1.05)}
 </style>
 </head>
 <body>
