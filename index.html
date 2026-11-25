@@ -688,6 +688,18 @@ mark{background:rgba(253,189,74,.45);color:inherit;border-radius:3px;padding:0 1
 .dcal{width:32px;height:32px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted)}.dcal:hover{color:var(--text);background:rgba(127,127,127,.15)}
 .dhidden{position:absolute;right:0;bottom:0;width:1px;height:1px;opacity:0;pointer-events:none;border:0;padding:0}
 .dfield:not(.inseg){border:1px solid var(--line);background:var(--surface);padding:2px 4px;margin-top:4px}
+/* Datumsfeld im Segment: wie ein Segment-Knopf */
+.seg .dfield.inseg{gap:0;padding:0 2px 0 8px;border-radius:9px;height:34px;align-self:center}
+.seg .dfield.inseg .dtext{width:94px;padding:4px 2px!important;font-size:14px;text-align:left}
+.seg .dfield.inseg .dcal{width:28px;height:28px;margin-left:-2px}
+.seg .dfield.inseg.on{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.seg .dfield.inseg.on .dcal{color:var(--text)}
+.dfield:not(.inseg){padding:2px 2px 2px 10px;gap:0}.dfield:not(.inseg) .dtext{width:100px;padding:6px 2px!important}
+.seg .dfield .dcal{padding:0!important;min-width:28px;width:28px;height:28px;font-size:0}
+.dcal svg{width:17px;height:17px;flex:none}
+.seg .dfield.inseg.on .dtext{color:var(--text)}
+html[data-theme="dark"] .seg .dfield.inseg.on{background:var(--moss)}
+html[data-theme="dark"] .seg .dfield.inseg.on .dtext,html[data-theme="dark"] .seg .dfield.inseg.on .dcal{color:#fff}
 </style>
 </head>
 <body>
