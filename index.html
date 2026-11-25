@@ -743,11 +743,11 @@ function stopTimer(silent,endAt){
   checkMilestones();
   if(!silent){save();render();}
 }
-function completeTask(id,autoNext){
+function completeTask(id,autoNext,onDay){
   const t=S.tasks.find(x=>x.id===id);if(!t)return;
   const wasRunning=S.running&&S.running.taskId===id;
   if(wasRunning)stopTimer(true);
-  t.done=true;t.doneOn=todayKey();t.doneAt=Date.now();if(!t.date)t.date=todayKey();
+  const dk=onDay&&onDay<todayKey()?onDay:todayKey();t.done=true;t.doneOn=dk;t.doneAt=dk===todayKey()?Date.now():dayStartMs(dk)+12*3600000;if(!t.date||onDay)t.date=dk;
   lastDoneId=id;
   if(autoNext&&wasRunning){const n=focusQueue()[0];if(n){S.running={goalId:n.goalId,taskId:n.id,start:Date.now()};}}
   save();render();
@@ -781,6 +781,8 @@ function moveInList(id,dir,list){const i=list.findIndex(t=>t.id===id),j=i+dir;if
 function placeTask(id,dropKey,beforeId){
   const t=S.tasks.find(x=>x.id===id);if(!t)return;
   const k=dropKey==='ablage'?null:dropKey;
+  if(t.done){if(k!==t.doneOn)setDoneDay(id,k);return;}
+  if(k&&k<todayKey()){pastDrop(id,k);return;}
   t.date=k;
   const list=(k===null?backlog():k===todayKey()?dayTasks(k):S.tasks.filter(x=>x.date===k&&!x.done).sort(byOrder)).filter(x=>x.id!==id);
   if(!beforeId){t.order=list.length?(list[list.length-1].order||0)+1:Date.now();}
@@ -1003,7 +1005,7 @@ function viewWeek(){
     const sorted=[...open.filter(isGoalTask),...open.filter(t=>!isGoalTask(t))];
     const done=S.tasks.filter(t=>t.done&&(t.doneOn===k));
     const sum=allSecs(k);
-    h+=`<div class="daycol ${k===tk?'now':''} ${k<tk?'past':''}" ${k===tk?'id="col-today"':''} ${k>=tk?`data-drop="${k}"`:''}><div class="dayhead"><b>${wdShort(d)}</b><span>${d.getDate()}.</span>${sum>=60?`<span class="sum">${fmtShort(sum)}</span>`:''}</div>
+    h+=`<div class="daycol ${k===tk?'now':''} ${k<tk?'past':''}" ${k===tk?'id="col-today"':''} data-drop="${k}"><div class="dayhead"><b>${wdShort(d)}</b><span>${d.getDate()}.</span>${sum>=60?`<span class="sum">${fmtShort(sum)}</span>`:''}</div>
       ${k>=tk?`<form class="add-day" data-add="${k}"><input placeholder="${tr('+ Aufgabe','+ Task')}" maxlength="140">${goalSelect('add-goal',pickGoal())}</form>`:''}
       ${sorted.filter(tagOk).map(t=>weekCard(t,k)).join('')}${done.filter(tagOk).map(t=>weekCard(t,k)).join('')}</div>`;
   }
@@ -1015,17 +1017,31 @@ function weekCard(t,k){
   if(t.done)actions=`<span class="chk done">${I.check(11)}</span><span class="sp"></span><button class="icon xs" data-a="reopen" data-t="${t.id}" title="${tr('Wieder öffnen','Reopen')}">${I.undo()}</button>`;
   else if(!t.date)actions=`<button class="chk" data-a="done" data-t="${t.id}"></button><span class="sp"></span><button class="icon xs" data-a="to-today" data-t="${t.id}" title="${tr('Heute einplanen','Plan for today')}">${I.today()}</button><button class="icon xs" data-a="del-task" data-t="${t.id}" title="${tr('Löschen','Delete')}">${I.x()}</button>`;
   else actions=`<button class="chk" data-a="done" data-t="${t.id}"></button><span class="sp"></span><button class="icon xs" data-a="move" data-t="${t.id}" data-d="-1" title="${tr('Einen Tag früher','One day earlier')}">${I.chev(-1)}</button><button class="icon xs" data-a="move" data-t="${t.id}" data-d="1" title="${tr('Einen Tag später','One day later')}">${I.chev(1)}</button><button class="icon xs" data-a="to-ablage" data-t="${t.id}" title="${tr('In die Ablage','To backlog')}">${I.box()}</button><button class="icon xs" data-a="del-task" data-t="${t.id}" title="${tr('Löschen','Delete')}">${I.x()}</button>`;
-  return `<div class="tcard ${t.done?'done':''} ${run?'running':''}" style="border-left-color:${g.color}" ${t.done?'':`draggable="true" data-drag="${t.id}"`}><div class="title" data-a="edit-task" data-t="${t.id}">${prioMark(t)}${esc(titleText(t))}</div>${(t.tags||[]).length&&!t.done?`<div class="tagrow">${tagsHtml(t)}</div>`:''}${t.done?'':linkRow(t,2)}
+  return `<div class="tcard ${t.done?'done':''} ${run?'running':''}" style="border-left-color:${g.color}" draggable="true" data-drag="${t.id}"><div class="title" data-a="edit-task" data-t="${t.id}">${prioMark(t)}${esc(titleText(t))}</div>${(t.tags||[]).length&&!t.done?`<div class="tagrow">${tagsHtml(t)}</div>`:''}${t.done?'':linkRow(t,2)}
     <div class="foot">${chip(g)}${t.notes&&notePlain(t.notes).replace(LINK_RE,'').trim()?'<span class="small">📝</span>':''}<span class="sp"></span>${s>=60||run?`<span class="tm" ${run?`data-live-task="${t.id}"`:''}>${fmtShort(s)}</span>`:''}</div>
     <div class="foot">${actions}</div></div>`;
 }
 
 
+
+// ================= Erledigt-Datum =================
+function pastDrop(id,k){const t=S.tasks.find(x=>x.id===id);if(!t)return;
+  modal(`<h3>${tr('Auf ','Move to ')}${dayLabel(k)}${tr(' verschieben?','?')}</h3><div class="small" style="line-height:1.5;margin-bottom:12px">„${esc(titleText(t))}“ ${tr('liegt dann in der Vergangenheit. Hast du sie an dem Tag erledigt?','would then be in the past. Did you finish it that day?')}</div><div class="movegrid"><button class="btn" data-a="done-on" data-t="${id}" data-v="${k}">✓ ${tr('Erledigt am ','Done on ')}${dayLabel(k)}</button><button class="btn ghost" data-a="past-open" data-t="${id}" data-v="${k}">${tr('Nur verschieben, bleibt offen','Just move, keep open')}</button></div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button></div>`);}
+function setDoneDay(id,k){const t=S.tasks.find(x=>x.id===id);if(!t)return;const tk=todayKey();
+  if(k===null||k>tk){t.done=false;t.doneOn=null;t.doneAt=null;t.date=k;t.order=nextOrder(k);save();render();toast(k?tr('Wieder offen, eingeplant für ','Reopened, planned for ')+dayLabel(k):tr('Wieder offen, in der Ablage','Reopened, in the backlog'));return;}
+  t.doneOn=k;t.date=k;t.doneAt=k===tk?Date.now():dayStartMs(k)+12*3600000;save();render();toast(tr('Erledigt am ','Done on ')+dayLabel(k));}
+function doneWhen(id,after){const t=S.tasks.find(x=>x.id===id);if(!t)return;const tk=todayKey(),yk=shiftKey(tk,-1),d=t.date&&t.date<tk?t.date:yk;
+  modal(`<h3>${tr('Wann erledigt?','When was it done?')}</h3><div class="small" style="margin-bottom:12px">${esc(titleText(t))}</div><div class="movegrid">
+  <button class="btn" data-a="done-on" data-t="${id}" data-v="${tk}">${tr('Heute','Today')}</button><button class="btn ghost" data-a="done-on" data-t="${id}" data-v="${d}">${dayLabel(d)}</button></div>
+  <label>${tr('Anderer Tag','Other day')}</label><input type="date" data-done-date="${id}" max="${tk}">
+  <div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button></div>`);}
+document.addEventListener('change',e=>{const id=e.target.dataset&&e.target.dataset.doneDate;if(id&&e.target.value){closeModal();if(S.tasks.find(x=>x.id===id&&x.done))setDoneDay(id,e.target.value>todayKey()?todayKey():e.target.value);else completeTask(id,false,e.target.value>todayKey()?todayKey():e.target.value);}});
+
 // ================= Woche als Liste =================
 function dateChip(t){if(!t.date)return `<span class="dchip">${tr('Ablage','Backlog')}</span>`;const tk=todayKey();if(t.date<tk)return `<span class="dchip">${tr('übernommen','carried over')}</span>`;return `<span class="dchip">${dayLabel(t.date)}</span>`;}
 function listRow(t,opts={}){
   const g=goal(t.goalId)||NONE(),run=S.running&&S.running.taskId===t.id,s=taskSecs(t);
-  if(t.done)return `<div class="lrow done" style="border-left-color:${g.color}"><span class="chk done" style="width:22px;height:22px;border-radius:7px">${I.check(11)}</span><div class="tt" data-a="edit-task" data-t="${t.id}"><div class="t1">${esc(titleText(t))}</div></div>${s>=60?`<span class="small">${fmtShort(s)}</span>`:''}<button class="icon xs" data-a="reopen" data-t="${t.id}" title="${tr('Wieder öffnen','Reopen')}">${I.undo()}</button></div>`;
+  if(t.done)return `<div class="lrow done" style="border-left-color:${g.color}" draggable="true" data-drag="${t.id}"><span class="chk done" style="width:22px;height:22px;border-radius:7px">${I.check(11)}</span><div class="tt" data-a="edit-task" data-t="${t.id}"><div class="t1">${esc(titleText(t))}</div></div>${s>=60?`<span class="small">${fmtShort(s)}</span>`:''}<button class="icon xs" data-a="done-move" data-t="${t.id}" title="${tr('Erledigt-Tag ändern','Change done day')}">${I.today()}</button><button class="icon xs" data-a="reopen" data-t="${t.id}" title="${tr('Wieder öffnen','Reopen')}">${I.undo()}</button></div>`;
   const meta=[];if(!opts.noGoal)meta.push(chip(g));if(opts.showDate)meta.push(dateChip(t));if(s>=60||run)meta.push(`<span ${run?`data-live-task="${t.id}"`:''}>${fmtDur(s)}</span>`);
   return `<div class="lrow ${run?'running':''}" style="border-left-color:${g.color}" draggable="true" data-drag="${t.id}"><button class="chk" data-a="done" data-t="${t.id}" title="${tr('Erledigt','Done')}"></button>
     <div class="tt" data-a="edit-task" data-t="${t.id}"><div class="t1">${prioMark(t)}${esc(titleText(t))}</div><div class="meta">${meta.join('')}${tagsHtml(t)}</div>${linkRow(t,3)}</div>
@@ -1036,17 +1052,17 @@ function weekList(days){
   const tk=todayKey();let h='<div class="wlist">';
   const bl=backlog().filter(tagOk);
   const sec=(key,title,items,sub)=>`<div class="lsec" data-drop="${key}"><div class="lhead"><b>${title}</b>${sub||''}</div>${items}</div>`;
-  for(const d of days){const k=dkey(d);if(k<tk){const done=S.tasks.filter(t=>t.done&&t.doneOn===k).filter(tagOk);if(!done.length)continue;h+=`<div class="lsec past"><div class="lhead"><b>${wdShort(d)} ${d.getDate()}.</b><span class="small">${done.length} ✓</span></div>${done.map(t=>listRow(t)).join('')}</div>`;continue;}
+  for(const d of days){const k=dkey(d);if(k<tk){const done=S.tasks.filter(t=>t.done&&t.doneOn===k).filter(tagOk);if(!done.length)continue;h+=`<div class="lsec past" data-drop="${k}"><div class="lhead"><b>${wdShort(d)} ${d.getDate()}.</b><span class="small">${done.length} ✓</span></div>${done.map(t=>listRow(t)).join('')}</div>`;continue;}
     const open=(k===tk?dayTasks(k):S.tasks.filter(t=>t.date===k&&!t.done&&goal(t.goalId)).sort(byOrder)).filter(tagOk);const done=S.tasks.filter(t=>t.done&&t.doneOn===k).filter(tagOk);
     const sum=allSecs(k);const ttl=k===tk?tr('Heute','Today'):k===shiftKey(tk,1)?tr('Morgen','Tomorrow'):`${wdShort(d)} ${d.getDate()}.`;
     h+=`<div class="lsec ${k===tk?'now':''}" data-drop="${k}"><div class="lhead"><b>${ttl}</b>${k!==tk&&k!==shiftKey(tk,1)?'':`<span class="small">${wdShort(d)} ${d.getDate()}.</span>`}<span class="sp"></span>${sum>=60?`<span class="small">${fmtShort(sum)}</span>`:''}<button class="icon xs" data-a="list-add" data-v="${k}" title="${tr('Aufgabe hinzufügen','Add task')}">+</button></div>${open.map(t=>listRow(t)).join('')||`<div class="lempty">${tr('Nichts geplant','Nothing planned')}</div>`}${done.map(t=>listRow(t)).join('')}</div>`;}
   h+=`<div class="lsec ablage" data-drop="ablage"><div class="lhead"><b>${I.box()} ${tr('Ablage','Backlog')}</b><span class="small">${bl.length||''}</span><span class="sp"></span><button class="icon xs" data-a="list-add" data-v="" title="${tr('Aufgabe hinzufügen','Add task')}">+</button></div>${bl.map(t=>listRow(t)).join('')||`<div class="lempty">${tr('Leer. Nichts geht verloren.','Empty. Nothing gets lost.')}</div>`}</div>`;
   return h+'</div>';
 }
-function moveMenu(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;const tk=todayKey();const opts=[[tk,tr('Heute','Today')],[shiftKey(tk,1),tr('Morgen','Tomorrow')],[shiftKey(tk,2),dayLabel(shiftKey(tk,2))],[shiftKey(tk,3),dayLabel(shiftKey(tk,3))],['',tr('Ablage','Backlog')]];
-  modal(`<h3>${tr('Verschieben','Move')}</h3><div class="small" style="margin-bottom:10px">${esc(titleText(t))}</div><div class="movegrid">${opts.map(([k,l])=>`<button class="btn ${((t.date||'')===k)?'':'ghost'}" data-a="move-to" data-t="${id}" data-v="${k}">${l}</button>`).join('')}</div><label>${tr('Anderer Tag','Other day')}</label><input type="date" data-move-date="${id}" min="${tk}" value="${t.date&&t.date>=tk?t.date:''}"><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Schließen','Close')}</button></div>`);}
-function moveTask(id,k){const t=S.tasks.find(x=>x.id===id);if(!t)return;k=k||null;if(k===null&&S.running&&S.running.taskId===id)stopTimer(true);t.date=k;t.order=nextOrder(k);closeModal();save();render();toast(k?tr('Eingeplant für ','Planned for ')+dayLabel(k):tr('In die Ablage gelegt','Moved to backlog'));}
-document.addEventListener('change',e=>{const d=e.target.dataset&&e.target.dataset.moveDate;if(d&&e.target.value)moveTask(d,e.target.value<todayKey()?todayKey():e.target.value);});
+function moveMenu(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;const tk=todayKey();const opts=[[shiftKey(tk,-1),tr('Gestern','Yesterday')],[tk,tr('Heute','Today')],[shiftKey(tk,1),tr('Morgen','Tomorrow')],[shiftKey(tk,2),dayLabel(shiftKey(tk,2))],[shiftKey(tk,3),dayLabel(shiftKey(tk,3))],['',tr('Ablage','Backlog')]];
+  modal(`<h3>${tr('Verschieben','Move')}</h3><div class="small" style="margin-bottom:10px">${esc(titleText(t))}</div><div class="movegrid">${opts.map(([k,l])=>`<button class="btn ${((t.date||'')===k)?'':'ghost'}" data-a="move-to" data-t="${id}" data-v="${k}">${l}</button>`).join('')}</div><label>${tr('Anderer Tag','Other day')}</label><input type="date" data-move-date="${id}" value="${t.date||''}"><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Schließen','Close')}</button></div>`);}
+function moveTask(id,k){const t=S.tasks.find(x=>x.id===id);if(!t)return;k=k||null;if(k&&k<todayKey()){closeModal();pastDrop(id,k);return;}if(k===null&&S.running&&S.running.taskId===id)stopTimer(true);t.date=k;t.order=nextOrder(k);closeModal();save();render();toast(k?tr('Eingeplant für ','Planned for ')+dayLabel(k):tr('In die Ablage gelegt','Moved to backlog'));}
+document.addEventListener('change',e=>{const d=e.target.dataset&&e.target.dataset.moveDate;if(d&&e.target.value)moveTask(d,e.target.value);});
 
 // ================= Projekte =================
 const PEMOJI=['🏁','🚀','🎉','🏆','🎯','⭐','💡','🏠','✈️','💻','📦','🌱','🎓','💪','📖','🎨'];
@@ -1538,9 +1554,9 @@ document.addEventListener('click',e=>{
     case 'play':if(longRun(()=>startTimer(tid)))break;startTimer(tid);break;
     case 'stop':if(longRun(()=>stopTimer()))break;stopTimer();break;
     case 'focus-go':{const n=focusQueue()[0];if(n){S.running={goalId:n.goalId,taskId:n.id,start:Date.now()};save();}setTab('fokus');break;}
-    case 'done':if(S.running&&S.running.taskId===tid&&longRun(()=>completeTask(tid,false)))break;completeTask(tid,false);break;
+    case 'done':{const t=T();if(t&&!(S.running&&S.running.taskId===tid)&&t.date&&t.date<todayKey()){doneWhen(tid);break;}if(S.running&&S.running.taskId===tid&&longRun(()=>completeTask(tid,false)))break;completeTask(tid,false);break;}
     case 'focus-done':if(S.running&&S.running.taskId===tid&&longRun(()=>completeTask(tid,true)))break;completeTask(tid,true);break;
-    case 'reopen':reopenTask(tid);break;
+    case 'reopen':if($('#te-form'))closeModal();reopenTask(tid);break;
     case 'later':{const t=T();if(!t)break;if(S.meta.focusPin===tid)delete S.meta.focusPin;if(S.running&&S.running.taskId===tid)stopTimer(true);t.date=t.date<tk?tk:t.date;t.order=nextOrder(tk);save();render();break;}
     case 'up':case 'down':{const all=dayTasks(tk);const list=el.dataset.list==='o'?all.filter(t=>!isGoalTask(t)):all.filter(isGoalTask);moveInList(tid,a==='up'?-1:1,list);break;}
     case 'del-task':askDelTask(tid,false);break;
@@ -1812,7 +1828,7 @@ function readQC(){const f=$('#qc-form');if(!f)return '';const n=f.querySelector(
 function dayLabel(k){if(k===null)return tr('Ablage','Backlog');const tk=todayKey();if(k===tk)return tr('heute','today');if(k===shiftKey(tk,1))return tr('morgen','tomorrow');return parseKey(k).toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'numeric'});}
 function goalSeg(cur,act){return `<div class="seg wrapseg">${[...activeGoals(),NONE()].map(g=>`<button type="button" class="${cur===g.id?'on':''}" data-a="${act}" data-v="${g.id}"><i class="dot" style="background:${g.color};display:inline-block;margin-right:6px"></i>${esc(g.name)}</button>`).join('')}</div>`;}
 function daySeg(cur,act){const tk=todayKey();const o=[['',tr('Ablage','Backlog')],[tk,tr('Heute','Today')],[shiftKey(tk,1),tr('Morgen','Tomorrow')]];const known=o.some(x=>x[0]===(cur||''));
-  return `<div class="seg wrapseg">${o.map(([k,l])=>`<button type="button" class="${(cur||'')===k?'on':''}" data-a="${act}" data-v="${k}">${l}</button>`).join('')}<input type="date" class="segdate ${known?'':'on'}" data-a-date="${act}" value="${known?'':cur}" min="${tk}"></div>`;}
+  return `<div class="seg wrapseg">${o.map(([k,l])=>`<button type="button" class="${(cur||'')===k?'on':''}" data-a="${act}" data-v="${k}">${l}</button>`).join('')}<input type="date" class="segdate ${known?'':'on'}" data-a-date="${act}" value="${known?'':cur}" ${act==='qc-day'?`min="${tk}"`:''}></div>`;}
 function renderQC(text){
   const n=text.split('\n').filter(l=>l.trim()).length;
   modal(`<div class="seg qctabs"><button type="button" class="on">${tr('Aufgabe','Task')}</button><button type="button" data-a="tm-open">${tr('Zeit nachtragen','Add time')}</button></div><h3>${tr('Schnell erfassen','Quick capture')}</h3><form id="qc-form">
@@ -1843,7 +1859,7 @@ function renderTE(){
   const t=S.tasks.find(x=>x.id===TE.id);if(!t)return closeModal();const s=taskSecs(t);
   modal(`<h3>${tr('Aufgabe bearbeiten','Edit task')}</h3><form id="te-form">
   <label>${tr('Aufgabe','Task')}</label><input name="title" maxlength="140" required value="${esc(TE.title)}">
-  ${TE.done?'':`<label>${tr('Wann','When')}</label>${daySeg(TE.date&&TE.date<todayKey()?todayKey():TE.date,'te-day')}`}
+  ${TE.done?`<label>${tr('Erledigt am','Done on')}</label><div class="row" style="gap:8px;align-items:center"><span class="dchip" style="font-size:13px;padding:5px 10px">${dayLabel(t.doneOn||todayKey())}</span><button type="button" class="btn ghost sm" data-a="te-doneday">${tr('Ändern','Change')}</button><button type="button" class="btn ghost sm" data-a="reopen" data-t="${t.id}">${tr('Wieder öffnen','Reopen')}</button></div>`:`<label>${tr('Wann','When')}</label>${daySeg(TE.date,'te-day')}<button type="button" class="btn ghost sm" data-a="te-doneday" style="margin-top:8px">✓ ${tr('Schon erledigt…','Already done…')}</button>`}
   <label>${tr('Ziel','Goal')}</label>${goalSeg(TE.g,'te-goal')}
   <label>${tr('Priorität','Priority')}</label><div class="seg prioseg">${[0,1,2,3].map(v=>`<button type="button" class="${TE.prio===v?'on':''}" data-a="te-prio" data-v="${v}">${v?'!'.repeat(v):tr('keine','none')}</button>`).join('')}</div>
   <label>${tr('Tags','Tags')}</label><div class="tagedit">${TE.tags.map(x=>`<button type="button" class="tag on" data-a="te-rmtag" data-v="${esc(x)}">#${esc(x)} ✕</button>`).join('')}<input name="tagin" placeholder="${tr('#neu','#new')}" autocomplete="off" enterkeyhint="done"></div>
@@ -1857,7 +1873,7 @@ function saveTE(){
   const title=TE.title.trim();if(!title)return;
   t.title=title.slice(0,140);t.notes=TE.notes.slice(0,30000);if(!t.notes)delete t.notes;t.prio=TE.prio||0;if(!t.prio)delete t.prio;t.tags=[...TE.tags];if(!t.tags.length)delete t.tags;
   if(t.goalId!==TE.g){t.goalId=TE.g;if(S.running&&S.running.taskId===t.id){stopTimer(true);S.running={goalId:t.goalId,taskId:t.id,start:Date.now()};}}
-  if(!t.done){const nd=TE.date;const cur=t.date&&t.date<todayKey()?todayKey():t.date;if(nd!==cur){if(nd===null&&S.running&&S.running.taskId===t.id)stopTimer(true);t.date=nd;t.order=nextOrder(nd);}}
+  if(!t.done){const nd=TE.date;const cur=t.date;if(nd!==cur){if(nd===null&&S.running&&S.running.taskId===t.id)stopTimer(true);t.date=nd;t.order=nextOrder(nd);}}
   closeModal();save();render();toast(tr('Gespeichert','Saved'));
 }
 Object.assign(EXTRA_ACTIONS,{
@@ -1894,8 +1910,8 @@ Object.assign(EXTRA_ACTIONS,{
   'ned'(el){nedCmd(el);},
   'ck-toggle'(el){ckToggle(el.dataset.k,+el.dataset.i);},
 });
-Object.assign(EXTRA_ACTIONS,{'lr-keep'(){const nx=longNext;longNext=null;closeModal();if(nx)nx();},'ses-edit'(el){editSession(el.dataset.t,+el.dataset.s);},'tm-open'(){timeModal(null,false);},'te-time'(){readTE();timeModal(TE.id,true);},'tm-task'(el){readTM();TM.t=el.dataset.t;renderTM();},'tm-goalopen'(el){timeModal(null,false,el.dataset.g);},'tm-newtask'(){readTM();const x=parseLine(TM.q);if(!x.title)return;const nt={id:uid(),goalId:x.g||TM.gf||'_none',title:x.title,date:null,done:false,secs:0,order:nextOrder(null)};if(x.tags.length)nt.tags=x.tags;if(x.prio)nt.prio=x.prio;S.tasks.push(nt);TM.t=nt.id;TM.q='';save();renderTM();},'tm-clear'(){readTM();TM.t=null;TM.g=null;renderTM();},'tm-day'(el){readTM();TM.day=el.dataset.v;renderTM();},'tm-mode'(el){readTM();TM.mode=el.dataset.v;renderTM();},'tm-mins'(el){readTM();TM.mins=+el.dataset.v;renderTM();},'ses-del'(el){delSession(el.dataset.t,+el.dataset.s);},'ses-undo'(){const x=lastSesDel;if(!x)return;lastSesDel=null;addTime(x.g,x.s,x.e);const t=x.t&&S.tasks.find(y=>y.id===x.t);if(t)t.secs=Math.round((t.secs||0)+(x.e-x.s)/1000);S.sessions.push(x);save();if($('#te-form'))renderTE();else render();$('#toast-root').innerHTML='';},'fp-goal'(el){el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));const i=$('#fp-new input');if(i)i.focus();},'backdate-open'(){backdateModal();},'backdate'(el){backdate(+el.dataset.v);},'focus-pick'(el){focusPick(el.dataset.t);},'focus-take'(el){focusTake(el.dataset.t,el.dataset.cur);}});
-document.addEventListener('change',e=>{const d=e.target.closest&&e.target.closest('[data-a-date]');if(!d||!d.value)return;const act=d.dataset.aDate;if(act==='qc-day'){const t=readQC();QC.day=d.value<todayKey()?todayKey():d.value;renderQC(t);}else if(act==='te-day'){readTE();TE.date=d.value<todayKey()?todayKey():d.value;renderTE();}});
+Object.assign(EXTRA_ACTIONS,{'done-on'(el){closeModal();const t=S.tasks.find(x=>x.id===el.dataset.t);if(t&&t.done)setDoneDay(t.id,el.dataset.v);else completeTask(el.dataset.t,false,el.dataset.v);},'past-open'(el){closeModal();const t=S.tasks.find(x=>x.id===el.dataset.t);if(!t)return;t.date=el.dataset.v;t.order=nextOrder(el.dataset.v);save();render();toast(tr('Verschoben, erscheint als übernommen unter Heute','Moved, shows as carried over under Today'));},'done-move'(el){doneWhen(el.dataset.t);},'te-doneday'(el){readTE();closeModal();doneWhen(TE.id);},'lr-keep'(){const nx=longNext;longNext=null;closeModal();if(nx)nx();},'ses-edit'(el){editSession(el.dataset.t,+el.dataset.s);},'tm-open'(){timeModal(null,false);},'te-time'(){readTE();timeModal(TE.id,true);},'tm-task'(el){readTM();TM.t=el.dataset.t;renderTM();},'tm-goalopen'(el){timeModal(null,false,el.dataset.g);},'tm-newtask'(){readTM();const x=parseLine(TM.q);if(!x.title)return;const nt={id:uid(),goalId:x.g||TM.gf||'_none',title:x.title,date:null,done:false,secs:0,order:nextOrder(null)};if(x.tags.length)nt.tags=x.tags;if(x.prio)nt.prio=x.prio;S.tasks.push(nt);TM.t=nt.id;TM.q='';save();renderTM();},'tm-clear'(){readTM();TM.t=null;TM.g=null;renderTM();},'tm-day'(el){readTM();TM.day=el.dataset.v;renderTM();},'tm-mode'(el){readTM();TM.mode=el.dataset.v;renderTM();},'tm-mins'(el){readTM();TM.mins=+el.dataset.v;renderTM();},'ses-del'(el){delSession(el.dataset.t,+el.dataset.s);},'ses-undo'(){const x=lastSesDel;if(!x)return;lastSesDel=null;addTime(x.g,x.s,x.e);const t=x.t&&S.tasks.find(y=>y.id===x.t);if(t)t.secs=Math.round((t.secs||0)+(x.e-x.s)/1000);S.sessions.push(x);save();if($('#te-form'))renderTE();else render();$('#toast-root').innerHTML='';},'fp-goal'(el){el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));const i=$('#fp-new input');if(i)i.focus();},'backdate-open'(){backdateModal();},'backdate'(el){backdate(+el.dataset.v);},'focus-pick'(el){focusPick(el.dataset.t);},'focus-take'(el){focusTake(el.dataset.t,el.dataset.cur);}});
+document.addEventListener('change',e=>{const d=e.target.closest&&e.target.closest('[data-a-date]');if(!d||!d.value)return;const act=d.dataset.aDate;if(act==='qc-day'){const t=readQC();QC.day=d.value<todayKey()?todayKey():d.value;renderQC(t);}else if(act==='te-day'){readTE();TE.date=d.value;renderTE();}});
 document.addEventListener('submit',e=>{const f=e.target;if(f.id==='fp-new'){e.preventDefault();e.stopImmediatePropagation();const on=f.querySelector('.fp-goals .on');focusNew(f.querySelector('input').value,f.dataset.cur,on?on.dataset.v:'_none');return;}if(f.id==='lr-form'){e.preventDefault();e.stopImmediatePropagation();lrApply(new FormData(f).get('end'));return;}if(f.id==='se-form'){e.preventDefault();e.stopImmediatePropagation();saveSession(f);return;}if(f.id==='tm-form'){e.preventDefault();e.stopImmediatePropagation();saveTM();return;}if(f.id==='bd-form'){e.preventDefault();e.stopImmediatePropagation();backdate(+new FormData(f).get('m')||0);return;}if(f.dataset&&f.dataset.padd){e.preventDefault();e.stopImmediatePropagation();const inp=f.querySelector('input');const lines=inp.value.split('\n').map(parseLine).filter(x=>x.title);for(const x of lines){const k=x.day!==undefined?x.day:null;const t={id:uid(),goalId:f.dataset.padd,title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);}save();render();const n=document.querySelector(`[data-padd="${f.dataset.padd}"] input`);if(n)n.focus();return;}if(f.id==='qc-form'){e.preventDefault();e.stopImmediatePropagation();saveQC();}else if(f.id==='te-form'){e.preventDefault();e.stopImmediatePropagation();saveTE();}},true);
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.name==='tagin'&&e.target.closest('#te-form')){e.preventDefault();if(e.target.value.trim()){readTE();renderTE();setTimeout(()=>{const i=$('#te-form [name=tagin]');if(i)i.focus();},30);}return;}
