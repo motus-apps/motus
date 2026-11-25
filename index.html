@@ -2030,7 +2030,7 @@ function renderTE(){
   const t=S.tasks.find(x=>x.id===TE.id);if(!t)return closeModal();const s=taskSecs(t);
   modal(`<h3>${tr('Aufgabe bearbeiten','Edit task')}</h3><form id="te-form">
   <label>${tr('Aufgabe','Task')}</label><input name="title" maxlength="140" required value="${esc(TE.title)}">
-  ${TE.done&&!t.ongoing?'':`<label>${tr('Art','Type')}</label><div class="seg wrapseg">${[['normal',tr('Normal','Normal')],['ongoing','↻ '+tr('Laufend','Ongoing')],['rec','🔁 '+tr('Wiederkehrend','Recurring')]].map(([k,l])=>`<button type="button" class="${TE.kind===k?'on':''}" data-a="te-kind" data-v="${k}">${l}</button>`).join('')}</div>
+  ${TE.done&&!t.ongoing?'':`<label>${tr('Art','Type')}</label><div class="seg wrapseg">${[['normal',tr('Normal','Normal')],['ongoing',tr('Laufend','Ongoing')],['rec',tr('Wiederkehrend','Recurring')]].map(([k,l])=>`<button type="button" class="${TE.kind===k?'on':''}" data-a="te-kind" data-v="${k}">${l}</button>`).join('')}</div>
   ${TE.kind==='ongoing'?`<div class="small" style="margin-top:6px;line-height:1.5">${tr('Ohne Termin und ohne Abhaken. Du buchst immer wieder Zeit darauf. Sie steht unter Heute → ↻ Laufend und ganz oben beim Nachtragen.','No date and no checking off. You keep booking time on it. It sits under Today → ↻ Ongoing and at the top when adding time.')}${TE.done?'':`<br><span class="small">${tr('Diese Woche: ','This week: ')}<b>${fmtDur(weekSecsTask(t))}</b></span>`}</div>`:''}
   ${TE.kind==='rec'?recEditor():''}`}
   ${TE.kind==='ongoing'?(TE.done?`<button type="button" class="btn ghost sm" data-a="og-resume" style="margin-top:8px">↻ ${tr('Wieder aufnehmen','Resume')}</button>`:`<button type="button" class="btn ghost sm" data-a="og-end" style="margin-top:8px">■ ${tr('Beenden','End')}</button>`):''}
