@@ -722,6 +722,12 @@ html[data-theme="dark"] .seg .dfield.inseg.on .dtext,html[data-theme="dark"] .se
 .notelink{margin-top:10px;font-size:13px;color:var(--muted);padding:4px 2px}.notelink:hover{color:var(--text)}
 .slnote{font-size:12px;color:var(--muted);padding:0 0 4px 8px;font-style:italic;line-height:1.4}
 .fx-bnote{margin-top:6px;font-size:12.5px;color:#f3e3bf;opacity:.75;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 8px;border-radius:6px}.fx-bnote:hover{opacity:1;background:rgba(255,255,255,.1)}
+.tptext-wrap{position:relative}
+.tptext{width:100%;font-size:22px!important;font-weight:700;text-align:center;letter-spacing:.04em;padding:10px 12px!important;border-radius:12px;font-variant-numeric:tabular-nums}
+.tptext.bad{border-color:var(--danger)!important;color:var(--danger)}
+.tphint{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10.5px;color:var(--muted);opacity:0;transition:opacity .15s;pointer-events:none}
+.tptext:focus+input+.tphint{opacity:.8}
+.tphint{position:static;display:block;transform:none;text-align:center;margin-top:4px;height:14px}
 </style>
 </head>
 <body>
@@ -1283,7 +1289,11 @@ function sessionLog(t){
 // ================= Zeitauswahl als Drehrad =================
 const TP_H=40;
 const nowHM=(off)=>{const d=new Date(Date.now()+(off||0));const m=Math.floor(d.getMinutes()/5)*5;return pad(d.getHours())+':'+pad(m);};
-function timePick(name,val,label){val=val||nowHM();const [h,m]=val.split(':').map(Number);
+const finePtr=()=>{try{return matchMedia('(pointer:fine)').matches;}catch(e){return false;}};
+function parseHM(v){v=String(v||'').trim().replace(/[^\d:.]/g,'').replace('.',':');let h,m;if(/^\d{1,2}:\d{1,2}$/.test(v))[h,m]=v.split(':').map(Number);else if(/^\d{3,4}$/.test(v)){h=+v.slice(0,-2);m=+v.slice(-2);}else if(/^\d{1,2}:?$/.test(v)){h=parseInt(v);m=0;}else return null;if(h>23||m>59)return null;return pad(h)+':'+pad(m);}
+function timePick(name,val,label){val=val||nowHM();
+  if(finePtr())return `<div class="tpbox">${label?`<div class="tpl">${label}</div>`:''}<div class="tptext-wrap"><input type="text" class="tptext" inputmode="numeric" autocomplete="off" placeholder="HH:MM" value="${val}" data-tptext maxlength="5"><input type="hidden" name="${name}" value="${val}"><span class="tphint">${tr('↑↓ = 5 min','↑↓ = 5 min')}</span></div></div>`;
+  const [h,m]=val.split(':').map(Number);
   const col=(u,n,cur)=>`<div class="tpw" data-unit="${u}" data-cur="${cur}">${Array.from({length:n},(_,i)=>`<div class="tpi" data-v="${i}">${pad(i)}</div>`).join('')}</div>`;
   return `<div class="tpbox">${label?`<div class="tpl">${label}</div>`:''}<div class="tp"><input type="hidden" name="${name}" value="${pad(h)}:${pad(m)}"><div class="tpsel"></div>${col('h',24,h)}<span class="tpc">:</span>${col('m',60,m)}</div></div>`;}
 function tpInit(root){(root||document).querySelectorAll('.tpw:not([data-ok])').forEach(w=>{w.dataset.ok=1;w.scrollTop=(+w.dataset.cur)*TP_H;let tmr;
@@ -1294,6 +1304,14 @@ new MutationObserver(()=>tpInit($('#modal-root'))).observe(document.getElementBy
 
 function tmCalc(f){const c=f.querySelector('.tmcalc');if(!c)return;const a=f.querySelector('[name=from]'),b=f.querySelector('[name=to]');if(!a||!b)return;const m=v=>{const [h,mi]=v.split(':').map(Number);return h*60+mi;};let d=m(b.value)-m(a.value);if(d<=0)d+=1440;c.innerHTML=`= <b>${fmtDur(d*60)}</b>${m(b.value)<=m(a.value)?' <span class="small">('+tr('über Mitternacht','past midnight')+')</span>':''}`;}
 document.addEventListener('change',e=>{const f=e.target.closest&&e.target.closest('#tm-form,#se-form');if(f)tmCalc(f);});
+
+function tpTextSet(inp,v){const h=inp.parentNode.querySelector('input[type=hidden]');inp.value=v;if(h){h.value=v;h.dispatchEvent(new Event('change',{bubbles:true}));}inp.classList.remove('bad');}
+document.addEventListener('input',e=>{const t=e.target;if(!(t.matches&&t.matches('[data-tptext]')))return;let v=t.value.replace(/[^\d:.]/g,'');t.value=v;const n=parseHM(v);if(n&&(v.replace(/\D/g,'').length>=3||/:\d{2}$/.test(v))){const h=t.parentNode.querySelector('input[type=hidden]');h.value=n;h.dispatchEvent(new Event('change',{bubbles:true}));t.classList.remove('bad');}});
+document.addEventListener('focusout',e=>{const t=e.target;if(t.matches&&t.matches('[data-tptext]')){const n=parseHM(t.value);if(n)tpTextSet(t,n);else t.classList.add('bad');}});
+document.addEventListener('focusin',e=>{const t=e.target;if(t.matches&&t.matches('[data-tptext]')){t.dataset.fresh=1;setTimeout(()=>t.select(),0);}});
+document.addEventListener('mouseup',e=>{const t=e.target;if(t.matches&&t.matches('[data-tptext]')&&t.dataset.fresh){delete t.dataset.fresh;e.preventDefault();t.select();}});
+document.addEventListener('keydown',e=>{const t=e.target;if(!(t.matches&&t.matches('[data-tptext]')))return;if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();const cur=parseHM(t.value)||'00:00';let [h,m]=cur.split(':').map(Number);let tot=h*60+m+(e.key==='ArrowUp'?1:-1)*(e.shiftKey?60:5);if(!e.shiftKey)tot=Math.round(tot/5)*5;tot=(tot+1440)%1440;tpTextSet(t,pad(Math.floor(tot/60))+':'+pad(tot%60));}});
+
 // ================= Vergessen zu pausieren & Einträge ändern =================
 const LONG_RUN=3*3600000;let longNext=null;
 function timeOnOrAfter(startMs,hm){const [h,m]=hm.split(':').map(Number);const d=new Date(startMs);d.setHours(h,m,0,0);let v=d.getTime();if(v<startMs)v+=86400000;return v;}
