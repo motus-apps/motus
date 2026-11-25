@@ -680,6 +680,14 @@ body.nf-open #fab,body.nf-open nav{display:none}
 .sr-row.done{opacity:.7}.sr-row.done b{text-decoration:line-through}
 mark{background:rgba(253,189,74,.45);color:inherit;border-radius:3px;padding:0 1px}
 .sr-empty{padding:20px 4px;text-align:center}
+.dfield{position:relative;display:inline-flex;align-items:center;gap:2px;border-radius:8px}
+.dfield .dtext{width:112px;border:0!important;background:transparent!important;box-shadow:none!important;padding:6px 6px!important;font:inherit;font-size:14px;color:var(--text)}
+.dfield .dtext::placeholder{color:var(--muted)}
+.dfield.on{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.12)}.dfield.on .dtext{font-weight:600}
+.dfield.bad .dtext{color:var(--danger)}
+.dcal{width:32px;height:32px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted)}.dcal:hover{color:var(--text);background:rgba(127,127,127,.15)}
+.dhidden{position:absolute;right:0;bottom:0;width:1px;height:1px;opacity:0;pointer-events:none;border:0;padding:0}
+.dfield:not(.inseg){border:1px solid var(--line);background:var(--surface);padding:2px 4px;margin-top:4px}
 </style>
 </head>
 <body>
@@ -1056,6 +1064,18 @@ function weekCard(t,k){
 
 
 
+
+// ================= Datumsfeld: tippen oder auswählen =================
+const isoToDe=k=>{if(!k)return '';const [y,m,d]=k.split('-');return `${d}.${m}.${y}`;};
+function dateInput(attrs,val,o){o=o||{};return `<span class="dfield ${o.cls||''} ${val?'on':''}"><input type="text" class="dtext" inputmode="numeric" autocomplete="off" placeholder="${tr('TT.MM.JJJJ','DD.MM.YYYY')}" value="${isoToDe(val)}" data-dtext><button type="button" class="dcal" data-a="dpick" title="${tr('Kalender','Calendar')}" aria-label="${tr('Kalender','Calendar')}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></button><input type="date" class="dhidden" tabindex="-1" ${attrs} value="${val||''}" ${o.min?`min="${o.min}"`:''} ${o.max?`max="${o.max}"`:''}></span>`;}
+function parseDeDate(v){v=String(v||'').trim();if(!v)return null;let m=v.match(/^(\d{1,2})[.\/-](\d{1,2})(?:[.\/-](\d{2}|\d{4})?)?\.?$/);if(!m){const w=dayWord(v);return w||null;}let y=m[3]?+m[3]:new Date().getFullYear();if(y<100)y+=2000;const d=new Date(y,+m[2]-1,+m[1]);if(d.getMonth()!==+m[2]-1||d.getDate()!==+m[1])return null;return dkey(d);}
+function dtextCommit(inp){const box=inp.closest('.dfield'),h=box.querySelector('.dhidden');if(!inp.value.trim())return;const k=parseDeDate(inp.value);if(!k){box.classList.add('bad');toast(tr('Datum nicht erkannt, z. B. 03.12.2026','Date not recognised, e.g. 03.12.2026'));return;}box.classList.remove('bad');
+  let v=k;if(h.min&&v<h.min)v=h.min;if(h.max&&v>h.max)v=h.max;if(h.value===v&&inp.value===isoToDe(v))return;h.value=v;inp.value=isoToDe(v);h.dispatchEvent(new Event('change',{bubbles:true}));}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('[data-dtext]')){e.preventDefault();e.stopPropagation();dtextCommit(e.target);}},true);
+document.addEventListener('focusout',e=>{if(e.target.matches&&e.target.matches('[data-dtext]'))setTimeout(()=>{if(document.body.contains(e.target))dtextCommit(e.target);},0);});
+document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('[data-dtext]')){let v=e.target.value.replace(/[^\d.]/g,'');if(/^\d{2}$/.test(v)&&e.inputType==='insertText')v+='.';else if(/^\d{1,2}\.\d{2}$/.test(v)&&e.inputType==='insertText')v+='.';e.target.value=v;}});
+document.addEventListener('change',e=>{if(e.target.matches&&e.target.matches('.dhidden')){const t=e.target.closest('.dfield').querySelector('[data-dtext]');if(t)t.value=isoToDe(e.target.value);}},true);
+
 // ================= Erledigt-Datum =================
 function pastDrop(id,k){const t=S.tasks.find(x=>x.id===id);if(!t)return;
   modal(`<h3>${tr('Auf ','Move to ')}${dayLabel(k)}${tr(' verschieben?','?')}</h3><div class="small" style="line-height:1.5;margin-bottom:12px">„${esc(titleText(t))}“ ${tr('liegt dann in der Vergangenheit. Hast du sie an dem Tag erledigt?','would then be in the past. Did you finish it that day?')}</div><div class="movegrid"><button class="btn" data-a="done-on" data-t="${id}" data-v="${k}">✓ ${tr('Erledigt am ','Done on ')}${dayLabel(k)}</button><button class="btn ghost" data-a="past-open" data-t="${id}" data-v="${k}">${tr('Nur verschieben, bleibt offen','Just move, keep open')}</button></div><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button></div>`);}
@@ -1065,7 +1085,7 @@ function setDoneDay(id,k){const t=S.tasks.find(x=>x.id===id);if(!t)return;const 
 function doneWhen(id,after){const t=S.tasks.find(x=>x.id===id);if(!t)return;const tk=todayKey(),yk=shiftKey(tk,-1),d=t.date&&t.date<tk?t.date:yk;
   modal(`<h3>${tr('Wann erledigt?','When was it done?')}</h3><div class="small" style="margin-bottom:12px">${esc(titleText(t))}</div><div class="movegrid">
   <button class="btn" data-a="done-on" data-t="${id}" data-v="${tk}">${tr('Heute','Today')}</button><button class="btn ghost" data-a="done-on" data-t="${id}" data-v="${d}">${dayLabel(d)}</button></div>
-  <label>${tr('Anderer Tag','Other day')}</label><input type="date" data-done-date="${id}" max="${tk}">
+  <label>${tr('Anderer Tag','Other day')}</label>${dateInput(`data-done-date="${id}"`,"",{max:tk})}
   <div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button></div>`);}
 document.addEventListener('change',e=>{const id=e.target.dataset&&e.target.dataset.doneDate;if(id&&e.target.value){closeModal();if(S.tasks.find(x=>x.id===id&&x.done))setDoneDay(id,e.target.value>todayKey()?todayKey():e.target.value);else completeTask(id,false,e.target.value>todayKey()?todayKey():e.target.value);}});
 
@@ -1144,7 +1164,7 @@ function weekList(days){
   return h+'</div>';
 }
 function moveMenu(id){const t=S.tasks.find(x=>x.id===id);if(!t)return;const tk=todayKey();const opts=[[shiftKey(tk,-1),tr('Gestern','Yesterday')],[tk,tr('Heute','Today')],[shiftKey(tk,1),tr('Morgen','Tomorrow')],[shiftKey(tk,2),dayLabel(shiftKey(tk,2))],[shiftKey(tk,3),dayLabel(shiftKey(tk,3))],['',tr('Ablage','Backlog')]];
-  modal(`<h3>${tr('Verschieben','Move')}</h3><div class="small" style="margin-bottom:10px">${esc(titleText(t))}</div><div class="movegrid">${opts.map(([k,l])=>`<button class="btn ${((t.date||'')===k)?'':'ghost'}" data-a="move-to" data-t="${id}" data-v="${k}">${l}</button>`).join('')}</div><label>${tr('Anderer Tag','Other day')}</label><input type="date" data-move-date="${id}" value="${t.date||''}"><div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Schließen','Close')}</button></div>`);}
+  modal(`<h3>${tr('Verschieben','Move')}</h3><div class="small" style="margin-bottom:10px">${esc(titleText(t))}</div><div class="movegrid">${opts.map(([k,l])=>`<button class="btn ${((t.date||'')===k)?'':'ghost'}" data-a="move-to" data-t="${id}" data-v="${k}">${l}</button>`).join('')}</div><label>${tr('Anderer Tag','Other day')}</label>${dateInput(`data-move-date="${id}"`,t.date||"")}<div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Schließen','Close')}</button></div>`);}
 function moveTask(id,k){const t=S.tasks.find(x=>x.id===id);if(!t)return;k=k||null;if(k&&k<todayKey()){closeModal();pastDrop(id,k);return;}if(k===null&&S.running&&S.running.taskId===id)stopTimer(true);t.date=k;t.order=nextOrder(k);closeModal();save();render();toast(k?tr('Eingeplant für ','Planned for ')+dayLabel(k):tr('In die Ablage gelegt','Moved to backlog'));}
 document.addEventListener('change',e=>{const d=e.target.dataset&&e.target.dataset.moveDate;if(d&&e.target.value)moveTask(d,e.target.value);});
 
@@ -1266,7 +1286,7 @@ function renderTM(){
   const known=[tk,yk].includes(TM.day);
   modal(`${TM.back||TM.gf?'':`<div class="seg qctabs"><button type="button" data-a="qc-open">${tr('Aufgabe','Task')}</button><button type="button" class="on">${tr('Zeit nachtragen','Add time')}</button></div>`}<h3>${tr('Zeit nachtragen','Add time')}${TM.gf?' · '+esc((goal(TM.gf)||{}).name||''):''}</h3><form id="tm-form">
   <label>${tr('Wofür?','For what?')}</label>${who}
-  ${ready?`<label>${tr('Tag','Day')}</label><div class="seg wrapseg"><button type="button" class="${TM.day===tk?'on':''}" data-a="tm-day" data-v="${tk}">${tr('Heute','Today')}</button><button type="button" class="${TM.day===yk?'on':''}" data-a="tm-day" data-v="${yk}">${tr('Gestern','Yesterday')}</button><input type="date" class="segdate ${known?'':'on'}" data-tm-date value="${known?'':TM.day}" max="${tk}"></div>
+  ${ready?`<label>${tr('Tag','Day')}</label><div class="seg wrapseg"><button type="button" class="${TM.day===tk?'on':''}" data-a="tm-day" data-v="${tk}">${tr('Heute','Today')}</button><button type="button" class="${TM.day===yk?'on':''}" data-a="tm-day" data-v="${yk}">${tr('Gestern','Yesterday')}</button>${dateInput("data-tm-date",known?"":TM.day,{max:tk,cls:"inseg"})}</div>
   <label>${tr('Wie?','How?')}</label><div class="seg"><button type="button" class="${TM.mode==='dur'?'on':''}" data-a="tm-mode" data-v="dur">${tr('Dauer','Duration')}</button><button type="button" class="${TM.mode==='range'?'on':''}" data-a="tm-mode" data-v="range">${tr('Von – bis','From – to')}</button></div>
   ${TM.mode==='dur'?`<div class="movegrid bd" style="margin-top:10px">${[15,30,45,60,90,120].map(m=>`<button type="button" class="btn ${TM.mins===m?'':'ghost'}" data-a="tm-mins" data-v="${m}">${m<60?m+' min':m/60+' h'}</button>`).join('')}</div><input name="mins" type="number" min="1" max="1440" inputmode="numeric" style="margin-top:8px" placeholder="${tr('oder Minuten eintippen','or type minutes')}" value="${[15,30,45,60,90,120].includes(TM.mins)?'':TM.mins||''}">`
   :`<div class="tprow" style="margin-top:10px">${timePick('from',TM.from||nowHM(-3600000),tr('Von','From'))}${timePick('to',TM.to||nowHM(),tr('Bis','To'))}</div><div class="tmcalc"></div>`}`:''}
@@ -1934,7 +1954,7 @@ function readQC(){const f=$('#qc-form');if(!f)return '';const n=f.querySelector(
 function dayLabel(k){if(k===null)return tr('Ablage','Backlog');const tk=todayKey();if(k===tk)return tr('heute','today');if(k===shiftKey(tk,1))return tr('morgen','tomorrow');return parseKey(k).toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'numeric'});}
 function goalSeg(cur,act){return `<div class="seg wrapseg">${[...activeGoals(),NONE()].map(g=>`<button type="button" class="${cur===g.id?'on':''}" data-a="${act}" data-v="${g.id}"><i class="dot" style="background:${g.color};display:inline-block;margin-right:6px"></i>${esc(g.name)}</button>`).join('')}</div>`;}
 function daySeg(cur,act){const tk=todayKey();const o=[['',tr('Ablage','Backlog')],[tk,tr('Heute','Today')],[shiftKey(tk,1),tr('Morgen','Tomorrow')]];const known=o.some(x=>x[0]===(cur||''));
-  return `<div class="seg wrapseg">${o.map(([k,l])=>`<button type="button" class="${(cur||'')===k?'on':''}" data-a="${act}" data-v="${k}">${l}</button>`).join('')}<input type="date" class="segdate ${known?'':'on'}" data-a-date="${act}" value="${known?'':cur}" ${act==='qc-day'?`min="${tk}"`:''}></div>`;}
+  return `<div class="seg wrapseg">${o.map(([k,l])=>`<button type="button" class="${(cur||'')===k?'on':''}" data-a="${act}" data-v="${k}">${l}</button>`).join('')}${dateInput(`data-a-date="${act}"`,known?"":(cur||""),{min:act==="qc-day"?tk:"",cls:"inseg"})}</div>`;}
 function renderQC(text){
   const n=text.split('\n').filter(l=>l.trim()).length;
   modal(`<div class="seg qctabs"><button type="button" class="on">${tr('Aufgabe','Task')}</button><button type="button" data-a="tm-open">${tr('Zeit nachtragen','Add time')}</button></div><h3>${tr('Schnell erfassen','Quick capture')}</h3><form id="qc-form">
@@ -2035,7 +2055,7 @@ Object.assign(EXTRA_ACTIONS,{
   'ned'(el){nedCmd(el);},
   'ck-toggle'(el){ckToggle(el.dataset.k,+el.dataset.i);},
 });
-Object.assign(EXTRA_ACTIONS,{'se-mode'(el){if(!SE)return;editSession(SE.t,SE.s,el.dataset.v);},'te-kind'(el){readTE();TE.kind=el.dataset.v;if(TE.kind==='rec'&&!TE.rec.type)TE.rec={type:'weekly',days:[new Date().getDay()],every:1};renderTE();},
+Object.assign(EXTRA_ACTIONS,{'dpick'(el){const h=el.parentNode.querySelector('.dhidden');try{h.showPicker();}catch(e){h.focus();h.click();}},'se-mode'(el){if(!SE)return;editSession(SE.t,SE.s,el.dataset.v);},'te-kind'(el){readTE();TE.kind=el.dataset.v;if(TE.kind==='rec'&&!TE.rec.type)TE.rec={type:'weekly',days:[new Date().getDay()],every:1};renderTE();},
 'rec-type'(el){readTE();const v=el.dataset.v,now=new Date();TE.rec=Object.assign({type:v},v==='weekly'?{days:TE.rec.days&&TE.rec.days.length?TE.rec.days:[now.getDay()],every:TE.rec.every||1}:v==='monthDay'?{day:now.getDate()}:v==='monthNth'?{nth:-1,wd:5}:{});renderTE();},
 'rec-day'(el){readTE();const d=+el.dataset.v;const ds=TE.rec.days||[];TE.rec.days=ds.includes(d)?ds.filter(x=>x!==d):[...ds,d];if(!TE.rec.days.length)TE.rec.days=[d];renderTE();},
 'rec-every'(el){readTE();TE.rec.every=+el.dataset.v;renderTE();},
