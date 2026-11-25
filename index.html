@@ -828,6 +828,17 @@ html[data-theme=dark] .pres2:not(.done) .pres2-det{background:rgba(255,255,255,.
 .pres-sky{position:absolute;inset:0;z-index:0}
 .pres-bg{top:auto;bottom:0;height:130px}
 .pres2-in{padding-bottom:72px}
+/* Szene nach Tageszeit, dezent */
+.pres2.done .pres2-in,.pres2.done .pres2-st,.pres2.done .pres2-sub span,.pres2.done .pres-line,.pres2.done .pres2-more{color:inherit}
+.pres2.done .pbtn{color:inherit;border-color:rgba(0,0,0,.08);background:rgba(255,255,255,.55)}
+.pres2.done .pres2-det{background:rgba(255,255,255,.7);color:inherit}.pres2.done .prow{background:rgba(127,127,127,.06)}.pres2.done .prow-main,.pres2.done .prow-t{color:inherit}
+.pres2.ph-night .pres2-in{color:#eef0ea}.pres2.ph-night .pres2-st,.pres2.ph-night .pres2-sub span,.pres2.ph-night .pres-line,.pres2.ph-night .pres2-more{color:rgba(238,240,234,.72)}
+.pres2.ph-night .pbtn{color:#eef0ea;border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.08)}
+.pres2.ph-night .pres2-det{background:rgba(15,28,38,.55);color:#eef0ea}.pres2.ph-night .prow{background:rgba(255,255,255,.07)}.pres2.ph-night .prow-main,.pres2.ph-night .prow-t{color:#eef0ea}
+html[data-theme=dark] .pres2.ph-night .pres2-in{color:#eef0ea}html[data-theme=dark] .pres2.ph-night .pbtn{color:#eef0ea;background:rgba(255,255,255,.08)}
+html[data-theme=dark] .pres2.ph-night .pres2-st,html[data-theme=dark] .pres2.ph-night .pres2-sub span,html[data-theme=dark] .pres2.ph-night .pres-line,html[data-theme=dark] .pres2.ph-night .pres2-more{color:rgba(238,240,234,.72)}
+html[data-theme=dark] .pres2.ph-night .pres2-det{background:rgba(15,28,38,.55);color:#eef0ea}html[data-theme=dark] .pres2.ph-night .prow-main,html[data-theme=dark] .pres2.ph-night .prow-t{color:#eef0ea}
+.pres2 .pres-line .pbar i{background:#5fae80}
 </style>
 </head>
 <body>
@@ -1330,17 +1341,21 @@ function presTimeline(k){const iv=presOfDay(k);if(!iv.length)return '';const a=d
   const ticks=[];for(let h=Math.ceil(lo/2)*2;h<=hi;h+=2)ticks.push(`<span style="left:${(h-lo)/span*100}%">${pad(h%24)}</span>`);
   return `<div class="ptl"><div class="ptl-bar">${iv.map(x=>{const s=(x.s-a)/36e5,e=((x.e||Date.now())-a)/36e5;return `<i class="${x.e?'':'run'}" style="left:${(s-lo)/span*100}%;width:${Math.max(.6,(e-s)/span*100)}%" title="${fmtTime(x.s)}–${x.e?fmtTime(x.e):tr('jetzt','now')}"></i>`;}).join('')}</div><div class="ptl-ticks">${ticks.join('')}</div></div>`;}
 function presRows(k){return presOfDay(k).map(x=>`<div class="prow ${x.e?'':'run'}"><button class="prow-main" data-a="pres-edit" data-s="${x.s}"><span class="prow-t">${fmtTime(x.s)} – ${x.e?fmtTime(x.e):tr('läuft','running')}</span><b ${x.e?'':'data-live-prow="'+x.s+'"'}>${fmtDur(((x.e||Date.now())-x.s)/1000)}</b></button><button class="prow-x" data-a="pres-rm" data-s="${x.s}" title="${tr('Löschen','Delete')}">✕</button></div>`).join('');}
+function tzHour(){const tz=(S.prefs&&S.prefs.tz)||undefined;try{const parts=new Intl.DateTimeFormat('en-GB',{hour:'numeric',minute:'numeric',hourCycle:'h23',timeZone:tz}).formatToParts(new Date());const h=+parts.find(x=>x.type==='hour').value,m=+parts.find(x=>x.type==='minute').value;return h+m/60;}catch(e){const d=new Date();return d.getHours()+d.getMinutes()/60;}}
+function scenePhase(h){return h<5.5||h>=21.5?'night':h<8?'dawn':h<17?'day':'dusk';}
 function presArt(st){
-  const sky={idle:['#fbe3c4','#fdf3e6'],work:['#bfe0ee','#eaf5f8'],pause:['#d9e3e8','#eef2f3'],done:['#16304a','#2c4f63']}[st];
-  const sun=st==='work'?'<circle cx="300" cy="86" r="28" fill="#fdbd4a" opacity=".18"/><circle cx="300" cy="86" r="14" fill="#fdbd4a"/>'
-    :st==='pause'?'<circle cx="300" cy="84" r="13" fill="#fdbd4a" opacity=".9"/><path d="M272 94a13 13 0 0 1 24-6 11 11 0 0 1 19 4 9 9 0 0 1-2 17h-38a8 8 0 0 1-3-15z" fill="#fff" opacity=".92"/>'
-    :st==='done'?'<circle cx="300" cy="80" r="11" fill="#f3e3bf"/><circle cx="305" cy="76" r="9.5" fill="'+sky[1]+'"/>'+[[60,72],[120,80],[190,68],[230,86],[340,70],[370,84],[30,84],[160,88]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.3" fill="#f3e3bf" opacity=".8"/>`).join('')
-    :'<circle cx="300" cy="100" r="28" fill="#fdbd4a" opacity=".22"/><circle cx="300" cy="100" r="15" fill="#fdbd4a" opacity=".95"/>';
-  return `<i class="pres-sky" style="background:linear-gradient(${sky[0]},${sky[1]})"></i><svg class="pres-bg" viewBox="0 0 400 130" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs><linearGradient id="psky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient></defs>
-    <rect width="400" height="130" fill="url(#psky)"/>${sun}
-    <path d="M0 100 C60 82 110 88 170 98 S300 84 400 76 V130 H0Z" fill="#2f8f5b" opacity="${st==='done'?.75:.85}"/>
-    <path d="M0 114 C70 100 140 108 210 114 S340 102 400 98 V130 H0Z" fill="#1d5c3c"/>
-    <path d="M150 130 C175 118 215 109 270 104" stroke="#fdbd4a" stroke-width="3" fill="none" stroke-linecap="round" opacity=".9"/></svg>`;}
+  const h=tzHour(),ph=scenePhase(h);
+  const sky={night:['#24384a','#3a5163'],dawn:['#f3dfcf','#f7eee4'],day:['#d6e8ee','#eef4f3'],dusk:['#efd3c2','#f4e6d8']}[ph];
+  let body='';
+  if(ph==='night'){body='<circle cx="300" cy="76" r="10" fill="#ece3cc" opacity=".9"/><circle cx="305" cy="72" r="9" fill="'+sky[1]+'"/>'+[[60,30],[120,52],[190,24],[230,60],[350,40],[372,70],[30,64],[160,72],[260,34]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.2" fill="#ece3cc" opacity=".7"/>`).join('');}
+  else{const t=Math.max(0,Math.min(1,(h-6)/15));const x=40+t*320,y=100-Math.sin(t*Math.PI)*24;
+    body=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="20" fill="#f6c96b" opacity=".16"/><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="10" fill="#f3c25f" opacity=".85"/>`;
+    if(st==='pause')body+=`<path d="M${x-30} ${y+10}a11 11 0 0 1 20-5 9 9 0 0 1 16 3 8 8 0 0 1-2 14h-31a7 7 0 0 1-3-12z" fill="#fff" opacity=".85"/>`;}
+  const dark=ph==='night';
+  return `<i class="pres-sky" style="background:linear-gradient(${sky[0]},${sky[1]})"></i><svg class="pres-bg" viewBox="0 0 400 130" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${body}
+    <path d="M0 100 C60 84 110 90 170 99 S300 86 400 79 V130 H0Z" fill="#6fa88a" opacity="${dark?.45:.55}"/>
+    <path d="M0 114 C70 102 140 109 210 114 S340 104 400 100 V130 H0Z" fill="#3f7a5c" opacity="${dark?.6:.6}"/>
+    <path d="M150 130 C175 119 215 111 270 106" stroke="#e8c26a" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".7"/></svg>`;}
 function presCard(){
   const tk=todayKey(),r=presRun(),pz=presPaused(),p=presOn(tk),bk=allSecs(tk),iv=presOfDay(tk);
   const st=r?'work':pz?'pause':p?'done':'idle';
@@ -1350,7 +1365,7 @@ function presCard(){
   const btns=r?`<button class="pbtn" data-a="pres-pause" title="${tr('Pause','Pause')}">${I.pause()}<span>${tr('Pause','Pause')}</span></button><button class="pbtn" data-a="pres-stop" title="${tr('Stopp','Stop')}"><i class="sq"></i><span>${tr('Stopp','Stop')}</span></button>`:pz?`<button class="pbtn go" data-a="pres-start">${I.play()}<span>${tr('Weiter','Resume')}</span></button><button class="pbtn" data-a="pres-stop"><i class="sq"></i><span>${tr('Stopp','Stop')}</span></button>`:`<button class="pbtn go" data-a="pres-start">${I.play()}<span>${p?tr('Weiter','Resume'):tr('Start','Start')}</span></button>`;
   const cmp=p>=60?`<div class="pres-line"><div class="pbar"><i style="width:${Math.min(100,bk/p*100)}%"></i></div><span>${tr('gebucht','booked')} <b>${fmtShort(bk)}</b> ${tr('von','of')} ${fmtShort(p)}${gap>60?` · <em class="pg-gap">${fmtShort(gap)} ${tr('offen','open')}</em>`:gap<-60?` · <em class="pg-over">+${fmtShort(-gap)}</em>`:` · <em class="pg-ok">✓</em>`}</span></div>`:'';
   const open=!!S.meta.presOpen;
-  return `<section class="pres2 ${st}">${presArt(st)}<div class="pres2-in">
+  return `<section class="pres2 ${st} ph-${scenePhase(tzHour())}">${presArt(st)}<div class="pres2-in">
     <div class="pres2-row">
       <div class="pres2-tx"><div class="pres2-st"><span class="pres-dot"></span>${state}</div><div class="pres2-sub"><b data-live-pres>${fmtClock(p)}</b><span>${sub}</span></div></div>
       <div class="pres2-btns">${btns}</div></div>
@@ -1790,6 +1805,7 @@ function viewSettings(){
   h+=`<div class="card set"><h3>${tr('Woche & Tag','Week & day')}</h3>
     <div class="row2"><div class="l"><b>${tr('Woche beginnt am','Week starts on')}</b></div>${seg('weekStart',[[1,wdName(1)],[0,wdName(0)]],p.weekStart)}</div>
     <div class="row2"><div class="l"><b>${tr('Neuer Tag beginnt um','New day starts at')}</b><span>${tr('Arbeitest du oft nach Mitternacht? Dann zählt die Zeit bis zu dieser Uhrzeit noch zum Vortag.','Often working past midnight? Time until this hour still counts for the previous day.')}</span></div><select data-pref="dayStart">${hours}</select></div>
+    <div class="row2"><div class="l"><b>${tr('Zeitzone','Time zone')}</b><span>${tr('Bestimmt die Tageszeit der Landschaft unter Heute, also Morgen, Tag, Abend oder Nacht.','Sets the time of day of the landscape under Today: morning, day, evening or night.')}</span></div><select data-pref-s="tz">${(()=>{const dev=(()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone;}catch(e){return '';}})();let zones=[];try{zones=Intl.supportedValuesOf('timeZone');}catch(e){zones=['Europe/Berlin','Europe/Vienna','Europe/Zurich','Europe/London','Europe/Paris','Europe/Madrid','Europe/Rome','America/New_York','America/Los_Angeles','Asia/Tokyo','Australia/Sydney'];}const cur=S.prefs.tz||'';return `<option value="" ${cur?'':'selected'}>${tr('Gerät','Device')}${dev?' ('+dev+')':''}</option>`+zones.map(z=>`<option value="${z}" ${cur===z?'selected':''}>${z.replace(/_/g,' ')}</option>`).join('');})()}</select></div>
     <div class="row2"><div class="l"><b>${tr('Feiertage','Public holidays')}</b><span>${tr('Deutsche Feiertage im Anwesenheits-Rückblick grau anzeigen, statt als leeren Tag.','Show German public holidays in grey in the attendance review instead of as empty days.')}</span></div>${seg('holidays',[['true',tr('An','On')],['false',tr('Aus','Off')]],String(holOn()))}</div>
     ${holOn()?`<div class="row2"><div class="l"><b>${tr('Bundesland','State')}</b><span>${tr('Für regionale Feiertage wie Fronleichnam oder Reformationstag.','For regional holidays such as Corpus Christi or Reformation Day.')}</span></div><select data-pref-s="holState">${BL.map(([k,n])=>`<option value="${k}" ${(S.prefs.holState||'')===k?'selected':''}>${n}</option>`).join('')}</select></div>`:''}</div>`;
   h+=`<div class="card set"><h3>${tr('Wochenrückblick','Weekly review')}</h3>
@@ -2384,6 +2400,7 @@ function takeShared(){
 let lastDay=todayKey();
 function tick(){
   if(todayKey()!==lastDay){lastDay=todayKey();touchSeen();softRender();return;}
+  if(new Date().getSeconds()===0){const sec=document.querySelector('.pres2');if(sec){const st=[...sec.classList].find(c=>['idle','work','pause','done'].includes(c))||'idle';sec.querySelectorAll('.pres-sky,.pres-bg').forEach(x=>x.remove());sec.insertAdjacentHTML('afterbegin',presArt(st));sec.className=sec.className.replace(/ph-\w+/,'ph-'+scenePhase(tzHour()));}}
   if(presRun()){document.querySelectorAll('[data-live-pres]').forEach(el=>el.textContent=fmtClock(presOn(todayKey())));document.querySelectorAll('[data-live-prow]').forEach(el=>el.textContent=fmtDur((Date.now()-(+el.dataset.liveProw))/1000));}
   if(!S.running)return;
   document.querySelectorAll('[data-clock]').forEach(c=>c.textContent=fmtClock(runningSecs()));
