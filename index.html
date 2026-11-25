@@ -713,6 +713,10 @@ html[data-theme="dark"] .seg .dfield.inseg.on .dtext,html[data-theme="dark"] .se
 .tcard .title{word-break:normal;overflow-wrap:anywhere;hyphens:auto}
 #wrap.wide{max-width:min(1900px,calc(100vw - 32px))}
 .board .daycol.ablage{position:sticky;left:0;z-index:2;box-shadow:6px 0 12px -8px rgba(0,0,0,.25)}
+.viewsw{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.bdnav{display:inline-flex;align-items:center;gap:6px}.bdnav .small{color:var(--muted)}
+.bdnav button{width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;color:var(--text)}
+.bdnav button:hover{border-color:var(--gold)}
 </style>
 </head>
 <body>
@@ -1057,7 +1061,7 @@ function viewWeek(){
   const days=weekOf(weekOff),tk=todayKey();
   let h=`<div class="pagehead"><h1>${tr('Woche planen','Plan the week')}</h1><div class="navbtns"><span class="lbl">${rangeLabel(days)}</span><button class="icon" data-a="week" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="week" data-d="0">${tr('Heute','Today')}</button><button class="icon" data-a="week" data-d="1">${I.chev(1)}</button></div></div>`;
   if(!activeGoals().length&&!S.tasks.length)return h+noGoals();
-  h+=`<div class="viewsw">${seg('weekView',[['board','▦ '+tr('Board','Board')],['list','☰ '+tr('Liste','List')]],P().weekView||'board')}</div>`;
+  h+=`<div class="viewsw">${seg('weekView',[['board','▦ '+tr('Board','Board')],['list','☰ '+tr('Liste','List')]],P().weekView||'board')}${(P().weekView||'board')==='board'?`<div class="bdnav"><button data-a="bd-step" data-v="-1" title="${tr('Einen Tag zurück (←)','One day back (←)')}">${I.chev(-1)}</button><span class="small">${tr('Tag','Day')}</span><button data-a="bd-step" data-v="1" title="${tr('Einen Tag vor (→)','One day forward (→)')}">${I.chev(1)}</button></div>`:''}</div>`;
   if((P().weekView||'board')==='list')return h+tagBar()+weekList(days);
   h+=`<div class="hint">${tr('Plane nach Tagen, nicht nach Uhrzeiten. Die Reihenfolge in einer Spalte ist deine Reihenfolge für den Tag. Was noch keinen Tag hat, kommt in die Ablage. Am Computer kannst du Karten ziehen.','Plan by day, not by hour. The order in a column is your order for that day. Anything without a day goes to the backlog. On a computer you can drag cards.')}</div><div class="board" id="board">`;
   const bl=backlog().filter(tagOk);
@@ -1172,6 +1176,13 @@ function renderSearch(){const el=$('#search');if(!el)return;const terms=srNorm(S
   res.innerHTML=h||`<div class="small sr-empty">${tr('Nichts gefunden.','Nothing found.')}</div>`;}
 document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('[data-sr]')){SQ.q=e.target.value;renderSearch();}});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openSearch();return;}if(e.key==='Escape'&&$('#search')){e.preventDefault();closeSearch();}if(e.key==='Enter'&&e.target.matches&&e.target.matches('[data-sr]')){const f=$('#search .sr-row');if(f)f.click();}});
+
+
+function bdStep(dir){const bd=document.getElementById('board');if(!bd)return;const cols=[...bd.querySelectorAll('.daycol:not(.ablage)')];const abl=bd.querySelector('.daycol.ablage');const off=abl?abl.offsetWidth+10:0;
+  const cur=bd.scrollLeft+off+2;let idx=cols.findIndex(c=>c.offsetLeft-bd.offsetLeft+c.offsetWidth>cur);if(idx<0)idx=cols.length-1;
+  const first=cols[idx];const atStart=Math.abs((first.offsetLeft-bd.offsetLeft)-off-bd.scrollLeft)<4;let t=dir<0?(atStart?idx-1:idx):idx+1;t=Math.max(0,Math.min(cols.length-1,t));
+  bd.scrollTo({left:Math.max(0,cols[t].offsetLeft-bd.offsetLeft-off),behavior:'smooth'});}
+document.addEventListener('keydown',e=>{if(tab!=='woche'||typing()||$('#modal-root').innerHTML||$('#search')||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){if(!document.getElementById('board'))return;e.preventDefault();bdStep(e.key==='ArrowLeft'?-1:1);}});
 
 // ================= Woche als Liste =================
 function dateChip(t){if(!t.date)return `<span class="dchip">${tr('Ablage','Backlog')}</span>`;const tk=todayKey();if(t.date<tk)return `<span class="dchip">${tr('übernommen','carried over')}</span>`;return `<span class="dchip">${dayLabel(t.date)}</span>`;}
@@ -2088,7 +2099,7 @@ Object.assign(EXTRA_ACTIONS,{
   'ned'(el){nedCmd(el);},
   'ck-toggle'(el){ckToggle(el.dataset.k,+el.dataset.i);},
 });
-Object.assign(EXTRA_ACTIONS,{'pull-today'(){pullToday();},'pull-take'(el){const t=S.tasks.find(x=>x.id===el.dataset.t);if(!t)return;const tk=todayKey();t.date=tk;const mx=Math.max(0,...dayTasks(tk).filter(x=>x.id!==t.id).map(x=>x.order||0));t.order=mx+1;save();closeModal();render();toast(tr('Für heute eingeplant','Planned for today'));},'dpick'(el){const h=el.parentNode.querySelector('.dhidden');try{h.showPicker();}catch(e){h.focus();h.click();}},'se-mode'(el){if(!SE)return;editSession(SE.t,SE.s,el.dataset.v);},'te-kind'(el){readTE();TE.kind=el.dataset.v;if(TE.kind==='rec'&&!TE.rec.type)TE.rec={type:'weekly',days:[new Date().getDay()],every:1};renderTE();},
+Object.assign(EXTRA_ACTIONS,{'bd-step'(el){bdStep(+el.dataset.v);},'pull-today'(){pullToday();},'pull-take'(el){const t=S.tasks.find(x=>x.id===el.dataset.t);if(!t)return;const tk=todayKey();t.date=tk;const mx=Math.max(0,...dayTasks(tk).filter(x=>x.id!==t.id).map(x=>x.order||0));t.order=mx+1;save();closeModal();render();toast(tr('Für heute eingeplant','Planned for today'));},'dpick'(el){const h=el.parentNode.querySelector('.dhidden');try{h.showPicker();}catch(e){h.focus();h.click();}},'se-mode'(el){if(!SE)return;editSession(SE.t,SE.s,el.dataset.v);},'te-kind'(el){readTE();TE.kind=el.dataset.v;if(TE.kind==='rec'&&!TE.rec.type)TE.rec={type:'weekly',days:[new Date().getDay()],every:1};renderTE();},
 'rec-type'(el){readTE();const v=el.dataset.v,now=new Date();TE.rec=Object.assign({type:v},v==='weekly'?{days:TE.rec.days&&TE.rec.days.length?TE.rec.days:[now.getDay()],every:TE.rec.every||1}:v==='monthDay'?{day:now.getDate()}:v==='monthNth'?{nth:-1,wd:5}:{});renderTE();},
 'rec-day'(el){readTE();const d=+el.dataset.v;const ds=TE.rec.days||[];TE.rec.days=ds.includes(d)?ds.filter(x=>x!==d):[...ds,d];if(!TE.rec.days.length)TE.rec.days=[d];renderTE();},
 'rec-every'(el){readTE();TE.rec.every=+el.dataset.v;renderTE();},
