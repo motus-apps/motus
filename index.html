@@ -728,6 +728,62 @@ html[data-theme="dark"] .seg .dfield.inseg.on .dtext,html[data-theme="dark"] .se
 .tphint{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10.5px;color:var(--muted);opacity:0;transition:opacity .15s;pointer-events:none}
 .tptext:focus+input+.tphint{opacity:.8}
 .tphint{position:static;display:block;transform:none;text-align:center;margin-top:4px;height:14px}
+/* Anwesenheit */
+.card.pres{padding:14px 16px;margin-bottom:12px}
+.pres-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pres-st{display:flex;align-items:center;gap:10px;flex:1;min-width:150px}.pres-st b{display:block;font-size:15px}.pres-st .small{display:block}
+.pres-dot{width:12px;height:12px;border-radius:50%;background:var(--muted);opacity:.5;flex:none}
+.pres.on .pres-dot{background:#3fb36b;opacity:1;box-shadow:0 0 0 4px rgba(63,179,107,.2);animation:pdot 2.4s ease-in-out infinite}
+@keyframes pdot{50%{box-shadow:0 0 0 7px rgba(63,179,107,.08)}}
+.pres-num{text-align:right}.pres-num b{display:block;font-size:24px;font-variant-numeric:tabular-nums;line-height:1.1}.pres-num .small{font-size:11px}
+.pres-btn{min-width:110px}
+.pres-cmp{margin-top:12px}
+.pbar{height:10px;border-radius:6px;background:rgba(253,189,74,.35);overflow:hidden}.pbar i{display:block;height:100%;background:#3fb36b;border-radius:6px;transition:width .4s}
+.pres-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:7px;font-size:12.5px;color:var(--muted);align-items:center}
+.lg{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:0}.lg.b{background:#3fb36b}.lg.p{background:rgba(253,189,74,.6)}
+.pg-gap{color:#c98a12;font-weight:600}.pg-over{color:var(--danger);font-weight:600}.pg-ok{color:#2f9a5b;font-weight:600}
+.pres-hint{margin-top:8px}.linkbtn{color:var(--gold);text-decoration:underline;font-weight:600}
+.pres-foot{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pchip{font-size:12px;padding:3px 9px;border-radius:999px;background:rgba(127,127,127,.1);color:var(--text);font-variant-numeric:tabular-nums}.pchip:hover{background:rgba(127,127,127,.2)}.pchip.add{color:var(--muted);background:transparent;border:1px dashed var(--line)}
+/* Jahresmatrix */
+.pmatrix{display:flex;gap:6px;margin-top:6px}
+.pwd{display:flex;flex-direction:column;gap:3px;padding-top:18px}.pwd span{height:12px;font-size:9.5px;color:var(--muted);line-height:12px}
+.pscroll{overflow-x:auto;flex:1;padding-bottom:6px;scrollbar-width:thin}
+.pmonths{position:relative;height:16px;min-width:800px}.pmonths span{position:absolute;font-size:10px;color:var(--muted);text-transform:capitalize}
+.pgrid{display:flex;gap:3px}.pcol{display:flex;flex-direction:column;gap:3px}
+.pd{display:block;width:12px;height:12px;border-radius:50%;background:rgba(127,127,127,.12);cursor:pointer;flex:none}
+.pd.off{background:#f0c64a}.pd.on{background:#8fd3a5}.pd.on.full{background:#2f9a5b}.pd.we{background:rgba(127,127,127,.14)}.pd.fut{background:rgba(127,127,127,.07);cursor:default}.pd.out{visibility:hidden}
+.pd.today{outline:2px solid var(--text);outline-offset:1px}
+.pd:not(.fut):not(.out):hover{transform:scale(1.35)}
+.pleg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:11.5px;color:var(--muted)}.pleg span{display:inline-flex;align-items:center;gap:5px}.pleg .pd{cursor:default}
+.ptable{margin-top:14px;border-top:1px solid var(--line);padding-top:8px}
+.pth,.ptr{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:6px;font-size:13px;padding:6px 4px;width:100%;text-align:left;font-variant-numeric:tabular-nums}
+.pth{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}.ptr{color:var(--text);border-radius:8px}.ptr:hover{background:rgba(127,127,127,.08)}
+.presyr .ystats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 14px}
+@media(max-width:420px){.presyr .ystats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:420px){.pres-btn{flex:1}}
+.pres.pz .pres-dot{background:#f0c64a;opacity:1}
+.pres-btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}.pres-b{flex:1;min-width:110px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.ptl{margin-top:14px}.ptl-bar{position:relative;height:10px;border-radius:5px;background:rgba(127,127,127,.1)}
+.ptl-bar i{position:absolute;top:0;bottom:0;border-radius:5px;background:#5b7fd6}.ptl-bar i.run{background:linear-gradient(90deg,#5b7fd6,#8aa6ea);animation:ptlp 2s ease-in-out infinite}
+@keyframes ptlp{50%{opacity:.7}}
+.ptl-ticks{position:relative;height:14px;margin-top:3px}.ptl-ticks span{position:absolute;transform:translateX(-50%);font-size:9.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pres-det{margin-top:10px}.pres-det summary{cursor:pointer;font-size:13px;color:var(--muted);padding:4px 0}
+.plist2{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.prow{display:flex;align-items:stretch;border-left:3px solid #5b7fd6;background:rgba(127,127,127,.06);border-radius:8px;overflow:hidden}
+.prow.run{background:rgba(91,127,214,.12)}
+.prow-main{flex:1;display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:9px 10px;text-align:left;color:var(--text);font-size:13.5px}
+.prow-t{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}.prow-main b{font-weight:600;font-variant-numeric:tabular-nums;min-width:64px;text-align:right}
+.prow-x{padding:0 12px;color:var(--muted);font-size:12px}.prow-x:hover{color:var(--danger);background:rgba(184,92,92,.08)}
+.plog{margin-top:16px;border-top:1px solid var(--line);padding-top:10px}
+.plog-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.pday{border:1px solid var(--line);border-radius:12px;padding:0 12px;margin-bottom:8px;background:var(--surface)}
+.pday summary{display:flex;justify-content:space-between;align-items:center;padding:11px 0;cursor:pointer;list-style:none}.pday summary::-webkit-details-marker{display:none}
+.pday summary::before{content:"›";display:inline-block;margin-right:8px;color:var(--muted);transition:transform .15s}.pday[open] summary::before{transform:rotate(90deg)}
+.pday-d{flex:1;font-weight:600;font-size:14px}.pday-r{display:flex;gap:12px;align-items:center}.pday-r b{font-variant-numeric:tabular-nums}
+.pday[open]{padding-bottom:10px}
+.prow-main{grid-template-columns:1fr auto}.prow-t{font-size:13.5px;color:var(--text)}
+.pday-r{gap:10px}.pday-r .small{white-space:nowrap}.pday-r b{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -750,7 +806,7 @@ const COLORS=['#fdbd4a','#2f8f5b','#2b8aa6','#8aa65a','#c77d4a','#b85c5c','#8a6b
 const MILESTONES=[5,10,25,50,100,250,500,1000,2500,5000];
 const TABS=['heute','woche','fokus','ziele','rueckblick','einstellungen','hilfe'];
 const CLIENT=Math.random().toString(36).slice(2,9);
-const EMPTY=()=>({goals:[],tasks:[],log:{},running:null,sessions:[],reviews:{},compass:{},prefs:{},profile:{},meta:{},manual:[]});
+const EMPTY=()=>({pres:[],goals:[],tasks:[],log:{},running:null,sessions:[],reviews:{},compass:{},prefs:{},profile:{},meta:{},manual:[]});
 const DEF_PREFS={weekView:'board',lang:null,theme:'system',weekStart:1,dayStart:0,review:true,reviewDay:0,favicons:true,dismissed:{}};
 let S=EMPTY();
 let tab='heute';
@@ -872,7 +928,7 @@ function placeTask(id,dropKey,beforeId){
 
 // ================= Speichern =================
 let ref=null,saveTimer=null,writing=Promise.resolve(),lastRev=null;
-function normalize(o){const s=Object.assign(EMPTY(),o||{});if(!Array.isArray(s.manual))s.manual=[];['prefs','profile','meta','compass','reviews','log'].forEach(k=>{if(!s[k]||typeof s[k]!=='object')s[k]={};});s.tasks.forEach((t,i)=>{if(!t.goalId)t.goalId='_none';if(t.order==null)t.order=i;});return s;}
+function normalize(o){const s=Object.assign(EMPTY(),o||{});if(!Array.isArray(s.manual))s.manual=[];if(!Array.isArray(s.pres))s.pres=[];['prefs','profile','meta','compass','reviews','log'].forEach(k=>{if(!s[k]||typeof s[k]!=='object')s[k]={};});s.tasks.forEach((t,i)=>{if(!t.goalId)t.goalId='_none';if(t.order==null)t.order=i;});return s;}
 function localLoad(){try{const v=localStorage.getItem('motus');if(v)S=normalize(JSON.parse(v));}catch(e){}}
 function localSave(){try{localStorage.setItem('motus',JSON.stringify(S));}catch(e){}}
 function save(){
@@ -1011,6 +1067,7 @@ function postRender(){
   document.querySelectorAll('[data-pathp]').forEach(el=>{const p=el.querySelector('.track'),d=el.querySelector('.pdot');if(!p||!d)return;try{const L=p.getTotalLength();const pt=p.getPointAtLength(L*Math.max(0,Math.min(1,+el.dataset.pathp)));d.setAttribute('cx',pt.x);d.setAttribute('cy',pt.y);}catch(e){}});
   document.querySelectorAll('[data-timef]').forEach(el=>{const p=el.querySelector('.track'),m=el.querySelector('.tmark');if(!p||!m)return;try{const L=p.getTotalLength(),f=+el.dataset.timef,pt=p.getPointAtLength(L*f),p2=p.getPointAtLength(Math.min(L,L*f+1)),dx=p2.x-pt.x,dy=p2.y-pt.y,n=Math.hypot(dx,dy)||1;const ln=m.querySelector('line'),c=m.querySelector('text');ln.setAttribute('x1',pt.x+dy/n*7);ln.setAttribute('y1',pt.y-dx/n*7);ln.setAttribute('x2',pt.x-dy/n*7);ln.setAttribute('y2',pt.y+dx/n*7);const up=(-dy/n)*0+pt.y>20;c.setAttribute('x',pt.x-dy/n*13);c.setAttribute('y',pt.y+dx/n*13);}catch(e){}});
   {const bd=document.getElementById('board');const key=tab+weekOff;if(bd&&window._bdKey!==key){window._bdKey=key;const now=bd.querySelector('.daycol.now'),abl=bd.querySelector('.daycol.ablage');if(now&&bd.scrollWidth>bd.clientWidth)bd.scrollLeft=Math.max(0,now.offsetLeft-(abl?abl.offsetWidth+10:0)-bd.offsetLeft);}if(!bd)window._bdKey=null;}
+  document.querySelectorAll('.pscroll:not([data-sc])').forEach(el=>{el.dataset.sc=1;const t=el.querySelector('.pd.today');el.scrollLeft=t?Math.max(0,t.parentNode.offsetLeft-el.clientWidth+60):el.scrollWidth;});
   lastDoneId=null;
   if(celebrateQueue&&!$('#modal-root').innerHTML){const h=celebrateQueue;celebrateQueue=null;modal(h);}
 }
@@ -1050,6 +1107,7 @@ function viewToday(){
   let h='';
   const due=reviewDue();
   if(due)h+=`<div class="banner"><div style="font-size:22px">🌄</div><div class="tx"><b>${tr('Zeit für deinen Wochenrückblick','Time for your weekly review')}</b><span>${tr('20 Minuten, um auf die Woche zu schauen. Nur wenn es dir passt.','20 minutes to look back on your week. Only if it suits you.')}</span></div><button class="btn gold sm" data-a="review-go" data-w="${due}">${tr('Los','Start')}</button><button class="icon xs" data-a="review-dismiss" data-w="${due}" title="${tr('Diese Woche nicht','Not this week')}">${I.x()}</button></div>`;
+  h+=presCard();
   h+=timerCard();
   h+=tagBar();
   const hideNG=!!S.meta.hideNoGoal,list=hideNG?all.filter(isGoalTask):all;
@@ -1196,6 +1254,85 @@ function bdStep(dir){const bd=document.getElementById('board');if(!bd)return;con
   bd.scrollTo({left:Math.max(0,cols[t].offsetLeft-bd.offsetLeft-off),behavior:'smooth'});}
 document.addEventListener('keydown',e=>{if(tab!=='woche'||typing()||$('#modal-root').innerHTML||$('#search')||e.ctrlKey||e.metaKey||e.altKey)return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){if(!document.getElementById('board'))return;e.preventDefault();bdStep(e.key==='ArrowLeft'?-1:1);}});
 
+// ================= Anwesenheit =================
+const presList=()=>{if(!Array.isArray(S.pres))S.pres=[];return S.pres;};
+const presRun=()=>presList().find(x=>!x.e);
+function presOn(k){const a=dayStartMs(k),b=dayStartMs(shiftKey(k,1)),now=Date.now();return presList().reduce((sum,x)=>{const s=Math.max(x.s,a),e=Math.min(x.e||now,b);return e>s?sum+(e-s)/1000:sum;},0);}
+const presOfDay=k=>{const a=dayStartMs(k),b=dayStartMs(shiftKey(k,1));return presList().filter(x=>x.s<b&&(x.e||Date.now())>a).sort((p,q)=>p.s-q.s);};
+function presAct(kind){const r=presRun(),now=Date.now();
+  if(kind==='start'){if(r)return;presList().push({s:now,e:null});delete S.meta.presPause;save();render();toast(tr('Arbeit gestartet um ','Work started at ')+fmtTime(now));return;}
+  if(!r&&kind!=='stop')return;
+  if(r){r.e=now;if(r.e-r.s<30000)S.pres=presList().filter(x=>x!==r);}
+  if(kind==='pause'){S.meta.presPause=now;save();render();toast(tr('Pause','Break'));}
+  else{delete S.meta.presPause;save();render();toast(tr('Arbeit gestoppt · heute ','Work stopped · today ')+fmtDur(presOn(todayKey())));}}
+const presToggle=()=>presAct(presRun()?'stop':'start');
+const presPaused=()=>!presRun()&&S.meta.presPause&&dayOf(S.meta.presPause)===todayKey();
+function presTimeline(k){const iv=presOfDay(k);if(!iv.length)return '';const a=dayStartMs(k);let lo=6,hi=20;iv.forEach(x=>{const s=(x.s-a)/36e5,e=((x.e||Date.now())-a)/36e5;lo=Math.min(lo,Math.floor(s));hi=Math.max(hi,Math.ceil(e));});lo=Math.max(0,lo);hi=Math.min(24+DS()/36e5,hi);const span=hi-lo;
+  const ticks=[];for(let h=Math.ceil(lo/2)*2;h<=hi;h+=2)ticks.push(`<span style="left:${(h-lo)/span*100}%">${pad(h%24)}</span>`);
+  return `<div class="ptl"><div class="ptl-bar">${iv.map(x=>{const s=(x.s-a)/36e5,e=((x.e||Date.now())-a)/36e5;return `<i class="${x.e?'':'run'}" style="left:${(s-lo)/span*100}%;width:${Math.max(.6,(e-s)/span*100)}%" title="${fmtTime(x.s)}–${x.e?fmtTime(x.e):tr('jetzt','now')}"></i>`;}).join('')}</div><div class="ptl-ticks">${ticks.join('')}</div></div>`;}
+function presRows(k){return presOfDay(k).map(x=>`<div class="prow ${x.e?'':'run'}"><button class="prow-main" data-a="pres-edit" data-s="${x.s}"><span class="prow-t">${fmtTime(x.s)} – ${x.e?fmtTime(x.e):tr('läuft','running')}</span><b ${x.e?'':'data-live-prow="'+x.s+'"'}>${fmtDur(((x.e||Date.now())-x.s)/1000)}</b></button><button class="prow-x" data-a="pres-rm" data-s="${x.s}" title="${tr('Löschen','Delete')}">✕</button></div>`).join('');}
+function presCard(){
+  const tk=todayKey(),r=presRun(),pz=presPaused(),p=presOn(tk),bk=allSecs(tk),iv=presOfDay(tk);
+  const timerOnly=!r&&S.running&&!p;const pct=p>0?Math.min(100,bk/p*100):0,gap=p-bk;
+  const rel=p>=60?(gap>60?`<span class="pg-gap">${fmtDur(gap)} ${tr('nicht zugeordnet','unassigned')}</span>`:gap<-60?`<span class="pg-over">${fmtDur(-gap)} ${tr('mehr gebucht als anwesend','more booked than present')}</span>`:`<span class="pg-ok">✓ ${tr('alles zugeordnet','all assigned')}</span>`):'';
+  const state=r?tr('Bei der Arbeit','At work'):pz?tr('Pause','On break'):p?tr('Feierabend','Done for today'):tr('Noch nicht gestartet','Not started');
+  const sub=r?tr('seit ','since ')+fmtTime(r.s):pz?tr('seit ','since ')+fmtTime(S.meta.presPause):p?tr('bis ','until ')+fmtTime(iv[iv.length-1].e):tr('Starte deinen Arbeitstag','Start your workday');
+  const btns=r?`<button class="btn ghost pres-b" data-a="pres-pause">${I.pause()} ${tr('Pause','Pause')}</button><button class="btn ghost pres-b" data-a="pres-stop">■ ${tr('Stopp','Stop')}</button>`:pz?`<button class="btn gold pres-b" data-a="pres-start">${I.play()} ${tr('Weiter','Resume')}</button><button class="btn ghost pres-b" data-a="pres-stop">■ ${tr('Stopp','Stop')}</button>`:`<button class="btn gold pres-b" data-a="pres-start">${I.play()} ${p?tr('Wieder starten','Start again'):tr('Arbeit starten','Start work')}</button>`;
+  return `<div class="card pres ${r?'on':pz?'pz':''}">
+    <div class="pres-top"><div class="pres-st"><span class="pres-dot"></span><div><b>${state}</b><span class="small">${sub}</span></div></div><div class="pres-num"><b data-live-pres>${fmtClock(p)}</b><span class="small">${tr('Anwesenheit heute','present today')}</span></div></div>
+    <div class="pres-btns">${btns}</div>
+    ${presTimeline(tk)}
+    ${p>=60||bk>=60?`<div class="pres-cmp"><div class="pbar"><i style="width:${pct}%"></i></div><div class="pres-leg"><span><i class="lg b"></i>${tr('gebucht','booked')} <b>${fmtShort(bk)}</b></span><span><i class="lg p"></i>${tr('anwesend','present')} <b>${fmtShort(p)}</b></span>${rel}</div></div>`:''}
+    ${timerOnly?`<div class="small pres-hint">${tr('Der Timer läuft, die Arbeitszeit aber nicht.','The timer is running, but work time is not.')} <button class="linkbtn" data-a="pres-start">${tr('Arbeit starten','Start work')}</button></div>`:''}
+    ${iv.length?`<details class="pres-det" ${S.meta.presOpen?'open':''} data-presdet><summary>${iv.length} ${iv.length===1?tr('Eintrag','entry'):tr('Einträge','entries')} ${tr('heute','today')}</summary><div class="plist2">${presRows(tk)}</div></details>`:''}
+    <button class="pchip add" data-a="pres-add" data-v="${tk}" style="margin-top:8px">+ ${tr('Arbeitseinheit hinzufügen','Add work unit')}</button></div>`;
+}
+document.addEventListener('toggle',e=>{if(e.target.matches&&e.target.matches('[data-presdet]')){S.meta.presOpen=e.target.open;save();}},true);
+// Bearbeiten / Nachtragen
+let PE=null;
+function presModal(day,start){const x=start!=null?presList().find(y=>y.s===start):null;PE={day:day||(x?dayOf(x.s):todayKey()),x};
+  const from=x?fmtTime(x.s):'08:00',to=x&&x.e?fmtTime(x.e):(x?nowHM():'16:30');
+  modal(`<h3>${x?tr('Anwesenheit ändern','Edit attendance'):tr('Anwesenheit nachtragen','Add attendance')}</h3><div class="small" style="margin-bottom:6px">${parseKey(PE.day).toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'})}</div>
+  <form id="pe-form">${x?'':`<label>${tr('Tag','Day')}</label>${dateInput('data-pe-date',PE.day,{max:todayKey()})}`}
+  <div class="tprow" style="margin-top:6px">${timePick('from',from,tr('Kommen','In'))}${x&&!x.e?`<div class="tpbox"><div class="tpl">${tr('Gehen','Out')}</div><div class="small" style="padding:14px 4px">${tr('läuft noch','still running')}</div></div>`:timePick('to',to,tr('Gehen','Out'))}</div><div class="tmcalc"></div>
+  <div class="actions">${x?`<button type="button" class="btn danger" data-a="pres-del">${tr('Löschen','Delete')}</button>`:''}<span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn" type="submit">${tr('Speichern','Save')}</button></div></form>`);
+  setTimeout(()=>{const f=$('#pe-form');if(f)tmCalc(f);},50);}
+function presSave(f){const fd=new FormData(f);const base=parseKey(PE.day);const mk=hm=>{const [h,m]=hm.split(':').map(Number);const d=new Date(base);d.setHours(h,m,0,0);return d.getTime();};
+  const s0=mk(fd.get('from'));let e0=null;if(fd.get('to')){e0=timeOnOrAfter(s0,fd.get('to'));if(e0>Date.now()+60000){toast(tr('Das Ende liegt in der Zukunft','The end is in the future'));return;}}
+  if(PE.x){PE.x.s=s0;if(PE.x.e!==null||e0)PE.x.e=e0;}else presList().push({s:s0,e:e0||s0+3600000});
+  S.pres.sort((a,b)=>a.s-b.s);save();closeModal();render();toast(tr('Gespeichert','Saved'));}
+document.addEventListener('change',e=>{if(e.target.matches&&e.target.matches('[data-pe-date]')&&e.target.value&&PE){PE.day=e.target.value;}if(e.target.closest&&e.target.closest('#pe-form'))tmCalc(e.target.closest('#pe-form'));});
+// Rückblick: Jahresmatrix
+let presYearOff=0;
+function presYear(){
+  const y=new Date(Date.now()-DS()).getFullYear()+presYearOff,tk=todayKey();
+  const first=new Date(y,0,1),last=new Date(y,11,31);const start=new Date(first);start.setDate(start.getDate()-((start.getDay()+6)%7));
+  let cols='',totP=0,totB=0,daysP=0,cur=new Date(start);const months=[];
+  while(cur<=last){let col='';for(let i=0;i<7;i++){const d=new Date(cur);d.setDate(cur.getDate()+i);const k=dkey(d);const inY=d.getFullYear()===y;
+      if(!inY){col+='<i class="pd out"></i>';continue;}
+      if(d.getDate()===1)months.push({m:d.getMonth(),c:Math.round((cur-start)/(7*864e5))});
+      const p=k<=tk?presOn(k):0,b=k<=tk?allSecs(k):0,we=d.getDay()===0||d.getDay()===6;
+      let cls=k>tk?'fut':p>=60?'on':we?'we':'off';if(p>=60){totP+=p;totB+=b;daysP++;if(b>=p*0.9)cls+=' full';}
+      col+=`<i class="pd ${cls} ${k===tk?'today':''}" data-a="pres-day" data-v="${k}" title="${d.toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'short'})}${p>=60?' · '+tr('anwesend ','present ')+fmtShort(p)+' · '+tr('gebucht ','booked ')+fmtShort(b):''}"></i>`;}
+    cols+=`<div class="pcol">${col}</div>`;cur.setDate(cur.getDate()+7);}
+  const W=lang()==='en'?['M','T','W','T','F','S','S']:['M','D','M','D','F','S','S'];
+  const recent=[];for(let i=0;i<14;i++){const k=shiftKey(tk,-i);const p=presOn(k);if(p>=60)recent.push(k);}
+  return `<div class="card presyr"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><b style="font-size:15px">${tr('Anwesenheit','Attendance')} ${y}</b><div class="row" style="gap:6px"><button class="icon xs" data-a="pres-yr" data-v="-1">${I.chev(-1)}</button><button class="icon xs" data-a="pres-yr" data-v="1" ${presYearOff>=0?'disabled':''}>${I.chev(1)}</button></div></div>
+  <div class="ystats"><div><b>${daysP}</b><span>${tr('Tage anwesend','days present')}</span></div><div><b>${fmtShort(totP)}</b><span>${tr('Anwesenheit','attendance')}</span></div><div><b>${daysP?fmtShort(totP/daysP):'–'}</b><span>${tr('⌀ pro Tag','⌀ per day')}</span></div><div><b>${totP?Math.round(totB/totP*100)+' %':'–'}</b><span>${tr('zugeordnet','assigned')}</span></div></div>
+  <div class="pmatrix"><div class="pwd">${W.map((w,i)=>`<span>${i%2===0?w:''}</span>`).join('')}</div><div class="pscroll"><div class="pmonths">${months.map(m=>`<span style="left:${m.c*15}px">${new Date(y,m.m,1).toLocaleDateString(LOC(),{month:'short'}).replace('.','')}</span>`).join('')}</div><div class="pgrid">${cols}</div></div></div>
+  <div class="pleg"><span><i class="pd on full"></i>${tr('anwesend, zugeordnet','present, assigned')}</span><span><i class="pd on"></i>${tr('anwesend, Lücken','present, gaps')}</span><span><i class="pd off"></i>${tr('leer','empty')}</span><span><i class="pd we"></i>${tr('Wochenende','weekend')}</span></div>
+  ${presYearOff===0?presLog():''}</div>`;
+}
+let presLogN=14;
+function presLog(){const tk=todayKey();const days=[];let k=tk;for(let i=0;i<400&&days.length<presLogN;i++){if(presOn(k)>=60)days.push(k);k=shiftKey(k,-1);}
+  if(!days.length)return '';const more=(()=>{let k2=shiftKey(days[days.length-1],-1);for(let i=0;i<400;i++){if(presOn(k2)>=60)return true;k2=shiftKey(k2,-1);}return false;})();
+  return `<div class="plog"><div class="plog-h"><b>${tr('Zeiten','Times')}</b><button class="pchip add" data-a="pres-add" data-v="${tk}">+ ${tr('Arbeitseinheit hinzufügen','Add work unit')}</button></div>${days.map(k=>{const p=presOn(k),b=allSecs(k),d=p-b;return `<details class="pday" ${k===tk?'open':''}><summary><span class="pday-d">${parseKey(k).toLocaleDateString(LOC(),Object.assign({weekday:'short',day:'2-digit',month:'2-digit'},parseKey(k).getFullYear()!==new Date().getFullYear()?{year:'2-digit'}:{}))}</span><span class="pday-r"><span class="small ${d>600?'pg-gap':d<-600?'pg-over':'pg-ok'}">${d>60?fmtShort(d)+' '+tr('offen','open'):d<-60?'+'+fmtShort(-d):'✓'}</span><b>${fmtDur(p)}</b></span></summary>${presTimeline(k)}<div class="plist2">${presRows(k)}</div><button class="pchip add" data-a="pres-add" data-v="${k}" style="margin:6px 0 4px">+ ${tr('Eintrag','Entry')}</button></details>`;}).join('')}${more?`<button class="btn ghost sm" data-a="pres-more" style="margin-top:8px">${tr('Ältere anzeigen','Show older')}</button>`:''}</div>`;}
+function presDay(k){const iv=presOfDay(k),p=presOn(k),b=allSecs(k),d=p-b;
+  modal(`<h3>${parseKey(k).toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'})}</h3>
+  <div class="ystats" style="grid-template-columns:repeat(3,1fr)"><div><b>${fmtShort(p)}</b><span>${tr('anwesend','present')}</span></div><div><b>${fmtShort(b)}</b><span>${tr('gebucht','booked')}</span></div><div><b class="${d>600?'pg-gap':d<-600?'pg-over':'pg-ok'}">${d>60?fmtShort(d):d<-60?'+'+fmtShort(-d):'✓'}</b><span>${d<-60?tr('mehr gebucht','over-booked'):tr('nicht zugeordnet','unassigned')}</span></div></div>
+  <label>${tr('Anwesenheit','Attendance')}</label><div class="pres-foot" style="margin-top:4px">${iv.map(x=>`<button class="pchip" data-a="pres-edit" data-s="${x.s}">${fmtTime(x.s)}–${x.e?fmtTime(x.e):tr('jetzt','now')}</button>`).join('')||`<span class="small">${tr('Keine Anwesenheit erfasst.','No attendance recorded.')}</span>`}<button class="pchip add" data-a="pres-add" data-v="${k}">+ ${tr('nachtragen','add')}</button></div>
+  <div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Schließen','Close')}</button></div>`);}
+
 // ================= Woche als Liste =================
 function dateChip(t){if(!t.date)return `<span class="dchip">${tr('Ablage','Backlog')}</span>`;const tk=todayKey();if(t.date<tk)return `<span class="dchip">${tr('übernommen','carried over')}</span>`;return `<span class="dchip">${dayLabel(t.date)}</span>`;}
 function listRow(t,opts={}){
@@ -1303,7 +1440,7 @@ function tpInit(root){(root||document).querySelectorAll('.tpw:not([data-ok])').f
 new MutationObserver(()=>tpInit($('#modal-root'))).observe(document.getElementById('modal-root'),{childList:true,subtree:true});
 
 function tmCalc(f){const c=f.querySelector('.tmcalc');if(!c)return;const a=f.querySelector('[name=from]'),b=f.querySelector('[name=to]');if(!a||!b)return;const m=v=>{const [h,mi]=v.split(':').map(Number);return h*60+mi;};let d=m(b.value)-m(a.value);if(d<=0)d+=1440;c.innerHTML=`= <b>${fmtDur(d*60)}</b>${m(b.value)<=m(a.value)?' <span class="small">('+tr('über Mitternacht','past midnight')+')</span>':''}`;}
-document.addEventListener('change',e=>{const f=e.target.closest&&e.target.closest('#tm-form,#se-form');if(f)tmCalc(f);});
+document.addEventListener('change',e=>{const f=e.target.closest&&e.target.closest('#tm-form,#se-form,#pe-form');if(f)tmCalc(f);});
 
 function tpTextSet(inp,v){const h=inp.parentNode.querySelector('input[type=hidden]');inp.value=v;if(h){h.value=v;h.dispatchEvent(new Event('change',{bubbles:true}));}inp.classList.remove('bad');}
 document.addEventListener('input',e=>{const t=e.target;if(!(t.matches&&t.matches('[data-tptext]')))return;let v=t.value.replace(/[^\d:.]/g,'');t.value=v;const n=parseHM(v);if(n&&(v.replace(/\D/g,'').length>=3||/:\d{2}$/.test(v))){const h=t.parentNode.querySelector('input[type=hidden]');h.value=n;h.dispatchEvent(new Event('change',{bubbles:true}));t.classList.remove('bad');}});
@@ -1547,6 +1684,7 @@ function viewReview(){
     <label>${tr('Was lief nicht gut, und warum?','What didn’t go well, and why?')}</label><textarea data-review="hard" data-w="${wk}" placeholder="${tr('Was hat dich gebremst?','What held you back?')}">${esc(r.hard||'')}</textarea>
     <label>${tr('Passt dein Alltag noch zu deinen Zielen?','Does your everyday life still fit your goals?')}</label><textarea data-review="fit" data-w="${wk}" placeholder="${tr('Musst du deine Ziele ändern oder deinen Alltag?','Do you need to change your goals or your routine?')}">${esc(r.fit||'')}</textarea>
     <label>${tr('Was verbesserst du nächste Woche?','What will you improve next week?')}</label><textarea data-review="next" data-w="${wk}" placeholder="${tr('Ein, zwei konkrete Änderungen','One or two concrete changes')}">${esc(r.next||'')}</textarea></div>`;
+  h+=presYear();
   h+=yearGrid();
   return h;
 }
@@ -2126,7 +2264,7 @@ Object.assign(EXTRA_ACTIONS,{
   'ned'(el){nedCmd(el);},
   'ck-toggle'(el){ckToggle(el.dataset.k,+el.dataset.i);},
 });
-Object.assign(EXTRA_ACTIONS,{'tm-note'(){readTM();TM.noteOpen=true;renderTM();setTimeout(()=>{const i=$('#tm-form [name=tmnote]');if(i)i.focus();},40);},'run-note'(){if(!S.running)return;modal(`<h3>${tr('Notiz zur Buchung','Note for this session')}</h3><div class="small" style="margin-bottom:8px">${tr('Wird mit dieser Zeitbuchung im Verlauf gespeichert.','Saved with this time entry in the history.')}</div><form id="rn-form"><input name="n" maxlength="300" autocomplete="off" value="${esc(S.running.note||'')}" placeholder="${tr('z. B. Abstimmung mit Team','e.g. sync with team')}"><div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn" type="submit">${tr('Speichern','Save')}</button></div></form>`);setTimeout(()=>{const i=$('#rn-form input');if(i)i.focus();},50);},'bd-step'(el){bdStep(+el.dataset.v);},'pull-today'(){pullToday();},'pull-take'(el){const t=S.tasks.find(x=>x.id===el.dataset.t);if(!t)return;const tk=todayKey();t.date=tk;const mx=Math.max(0,...dayTasks(tk).filter(x=>x.id!==t.id).map(x=>x.order||0));t.order=mx+1;save();closeModal();render();toast(tr('Für heute eingeplant','Planned for today'));},'dpick'(el){const h=el.parentNode.querySelector('.dhidden');try{h.showPicker();}catch(e){h.focus();h.click();}},'se-mode'(el){if(!SE)return;editSession(SE.t,SE.s,el.dataset.v);},'te-kind'(el){readTE();TE.kind=el.dataset.v;if(TE.kind==='rec'&&!TE.rec.type)TE.rec={type:'weekly',days:[new Date().getDay()],every:1};renderTE();},
+Object.assign(EXTRA_ACTIONS,{'pres-toggle'(){presToggle();},'pres-start'(){presAct('start');},'pres-pause'(){presAct('pause');},'pres-stop'(){presAct('stop');},'pres-more'(){presLogN+=14;render();},'pres-rm'(el){const x=presList().find(y=>y.s===+el.dataset.s);if(!x)return;S.pres=presList().filter(y=>y!==x);window._presUndo=x;save();render();toast(`${tr('Eintrag gelöscht','Entry deleted')} · <button data-a=\"pres-undo\" style=\"text-decoration:underline;color:inherit;font-weight:600\">${tr('Rückgängig','Undo')}</button>`);},'pres-edit'(el){presModal(null,+el.dataset.s);},'pres-add'(el){presModal(el.dataset.v,null);},'pres-del'(){if(PE&&PE.x){const x=PE.x;S.pres=presList().filter(y=>y!==x);save();closeModal();render();toast(`${tr('Gelöscht','Deleted')} · <button data-a="pres-undo" style="text-decoration:underline;color:inherit;font-weight:600">${tr('Rückgängig','Undo')}</button>`);window._presUndo=x;}},'pres-undo'(){if(window._presUndo){presList().push(window._presUndo);S.pres.sort((a,b)=>a.s-b.s);window._presUndo=null;save();render();}$('#toast-root').innerHTML='';},'pres-day'(el){presDay(el.dataset.v);},'pres-yr'(el){presYearOff=Math.min(0,presYearOff+(+el.dataset.v));render();},'tm-note'(){readTM();TM.noteOpen=true;renderTM();setTimeout(()=>{const i=$('#tm-form [name=tmnote]');if(i)i.focus();},40);},'run-note'(){if(!S.running)return;modal(`<h3>${tr('Notiz zur Buchung','Note for this session')}</h3><div class="small" style="margin-bottom:8px">${tr('Wird mit dieser Zeitbuchung im Verlauf gespeichert.','Saved with this time entry in the history.')}</div><form id="rn-form"><input name="n" maxlength="300" autocomplete="off" value="${esc(S.running.note||'')}" placeholder="${tr('z. B. Abstimmung mit Team','e.g. sync with team')}"><div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn" type="submit">${tr('Speichern','Save')}</button></div></form>`);setTimeout(()=>{const i=$('#rn-form input');if(i)i.focus();},50);},'bd-step'(el){bdStep(+el.dataset.v);},'pull-today'(){pullToday();},'pull-take'(el){const t=S.tasks.find(x=>x.id===el.dataset.t);if(!t)return;const tk=todayKey();t.date=tk;const mx=Math.max(0,...dayTasks(tk).filter(x=>x.id!==t.id).map(x=>x.order||0));t.order=mx+1;save();closeModal();render();toast(tr('Für heute eingeplant','Planned for today'));},'dpick'(el){const h=el.parentNode.querySelector('.dhidden');try{h.showPicker();}catch(e){h.focus();h.click();}},'se-mode'(el){if(!SE)return;editSession(SE.t,SE.s,el.dataset.v);},'te-kind'(el){readTE();TE.kind=el.dataset.v;if(TE.kind==='rec'&&!TE.rec.type)TE.rec={type:'weekly',days:[new Date().getDay()],every:1};renderTE();},
 'rec-type'(el){readTE();const v=el.dataset.v,now=new Date();TE.rec=Object.assign({type:v},v==='weekly'?{days:TE.rec.days&&TE.rec.days.length?TE.rec.days:[now.getDay()],every:TE.rec.every||1}:v==='monthDay'?{day:now.getDate()}:v==='monthNth'?{nth:-1,wd:5}:{});renderTE();},
 'rec-day'(el){readTE();const d=+el.dataset.v;const ds=TE.rec.days||[];TE.rec.days=ds.includes(d)?ds.filter(x=>x!==d):[...ds,d];if(!TE.rec.days.length)TE.rec.days=[d];renderTE();},
 'rec-every'(el){readTE();TE.rec.every=+el.dataset.v;renderTE();},
@@ -2140,7 +2278,7 @@ Object.assign(EXTRA_ACTIONS,{'tm-note'(){readTM();TM.noteOpen=true;renderTM();se
 'sr-task'(el){closeSearch();taskModal(el.dataset.t);},
 'sr-goal'(el){closeSearch();const g=goal(el.dataset.g);if(!g)return;if(isProj(g)){openProj=g.id;projNoteEdit=false;if(tab!=='ziele')setTab('ziele');else render();window.scrollTo(0,0);}else{if(tab!=='ziele')setTab('ziele');goalModal(g);}},'hash-pick'(el){hashPick(el);},'done-on'(el){closeModal();const t=S.tasks.find(x=>x.id===el.dataset.t);if(t&&t.done)setDoneDay(t.id,el.dataset.v);else completeTask(el.dataset.t,false,el.dataset.v);},'past-open'(el){closeModal();const t=S.tasks.find(x=>x.id===el.dataset.t);if(!t)return;t.date=el.dataset.v;t.order=nextOrder(el.dataset.v);save();render();toast(tr('Verschoben, erscheint als übernommen unter Heute','Moved, shows as carried over under Today'));},'done-move'(el){doneWhen(el.dataset.t);},'te-doneday'(el){readTE();closeModal();doneWhen(TE.id);},'lr-keep'(){const nx=longNext;longNext=null;closeModal();if(nx)nx();},'ses-edit'(el){editSession(el.dataset.t,+el.dataset.s);},'tm-open'(){timeModal(null,false);},'te-time'(){readTE();timeModal(TE.id,true);},'tm-task'(el){readTM();TM.t=el.dataset.t;renderTM();},'tm-goalopen'(el){timeModal(null,false,el.dataset.g);},'tm-newtask'(){readTM();const x=parseLine(TM.q);if(!x.title)return;const nt={id:uid(),goalId:x.g||TM.gf||'_none',title:x.title,date:null,done:false,secs:0,order:nextOrder(null)};if(x.tags.length)nt.tags=x.tags;if(x.prio)nt.prio=x.prio;S.tasks.push(nt);TM.t=nt.id;TM.q='';save();renderTM();},'tm-clear'(){readTM();TM.t=null;TM.g=null;renderTM();},'tm-day'(el){readTM();TM.day=el.dataset.v;renderTM();},'tm-mode'(el){readTM();TM.mode=el.dataset.v;renderTM();},'tm-mins'(el){readTM();TM.mins=+el.dataset.v;renderTM();},'ses-del'(el){delSession(el.dataset.t,+el.dataset.s);},'ses-undo'(){const x=lastSesDel;if(!x)return;lastSesDel=null;addTime(x.g,x.s,x.e);const t=x.t&&S.tasks.find(y=>y.id===x.t);if(t)t.secs=Math.round((t.secs||0)+(x.e-x.s)/1000);S.sessions.push(x);save();if($('#te-form'))renderTE();else render();$('#toast-root').innerHTML='';},'fp-goal'(el){el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));const i=$('#fp-new input');if(i)i.focus();},'backdate-open'(){backdateModal();},'backdate'(el){backdate(+el.dataset.v);},'focus-pick'(el){focusPick(el.dataset.t);},'focus-take'(el){focusTake(el.dataset.t,el.dataset.cur);}});
 document.addEventListener('change',e=>{const d=e.target.closest&&e.target.closest('[data-a-date]');if(!d||!d.value)return;const act=d.dataset.aDate;if(act==='qc-day'){const t=readQC();QC.day=d.value<todayKey()?todayKey():d.value;renderQC(t);}else if(act==='te-day'){readTE();TE.date=d.value;renderTE();}});
-document.addEventListener('submit',e=>{const f=e.target;if(f.id==='fp-new'){e.preventDefault();e.stopImmediatePropagation();const on=f.querySelector('.fp-goals .on');focusNew(f.querySelector('input').value,f.dataset.cur,on?on.dataset.v:'_none');return;}if(f.id==='rn-form'){e.preventDefault();e.stopImmediatePropagation();if(S.running){const v=(new FormData(f).get('n')||'').trim();if(v)S.running.note=v.slice(0,300);else delete S.running.note;save();}closeModal();render();return;}if(f.id==='rt-form'){e.preventDefault();e.stopImmediatePropagation();TE.recTime=new FormData(f).get('rt');renderTE();return;}if(f.id==='lr-form'){e.preventDefault();e.stopImmediatePropagation();lrApply(new FormData(f).get('end'));return;}if(f.id==='se-form'){e.preventDefault();e.stopImmediatePropagation();saveSession(f);return;}if(f.id==='tm-form'){e.preventDefault();e.stopImmediatePropagation();saveTM();return;}if(f.id==='bd-form'){e.preventDefault();e.stopImmediatePropagation();backdate(+new FormData(f).get('m')||0);return;}if(f.dataset&&f.dataset.padd){e.preventDefault();e.stopImmediatePropagation();const inp=f.querySelector('input');const lines=inp.value.split('\n').map(parseLine).filter(x=>x.title);for(const x of lines){const k=x.day!==undefined?x.day:null;const t={id:uid(),goalId:f.dataset.padd,title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);}save();render();const n=document.querySelector(`[data-padd="${f.dataset.padd}"] input`);if(n)n.focus();return;}if(f.id==='qc-form'){e.preventDefault();e.stopImmediatePropagation();saveQC();}else if(f.id==='te-form'){e.preventDefault();e.stopImmediatePropagation();saveTE();}},true);
+document.addEventListener('submit',e=>{const f=e.target;if(f.id==='fp-new'){e.preventDefault();e.stopImmediatePropagation();const on=f.querySelector('.fp-goals .on');focusNew(f.querySelector('input').value,f.dataset.cur,on?on.dataset.v:'_none');return;}if(f.id==='pe-form'){e.preventDefault();e.stopImmediatePropagation();presSave(f);return;}if(f.id==='rn-form'){e.preventDefault();e.stopImmediatePropagation();if(S.running){const v=(new FormData(f).get('n')||'').trim();if(v)S.running.note=v.slice(0,300);else delete S.running.note;save();}closeModal();render();return;}if(f.id==='rt-form'){e.preventDefault();e.stopImmediatePropagation();TE.recTime=new FormData(f).get('rt');renderTE();return;}if(f.id==='lr-form'){e.preventDefault();e.stopImmediatePropagation();lrApply(new FormData(f).get('end'));return;}if(f.id==='se-form'){e.preventDefault();e.stopImmediatePropagation();saveSession(f);return;}if(f.id==='tm-form'){e.preventDefault();e.stopImmediatePropagation();saveTM();return;}if(f.id==='bd-form'){e.preventDefault();e.stopImmediatePropagation();backdate(+new FormData(f).get('m')||0);return;}if(f.dataset&&f.dataset.padd){e.preventDefault();e.stopImmediatePropagation();const inp=f.querySelector('input');const lines=inp.value.split('\n').map(parseLine).filter(x=>x.title);for(const x of lines){const k=x.day!==undefined?x.day:null;const t={id:uid(),goalId:f.dataset.padd,title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);}save();render();const n=document.querySelector(`[data-padd="${f.dataset.padd}"] input`);if(n)n.focus();return;}if(f.id==='qc-form'){e.preventDefault();e.stopImmediatePropagation();saveQC();}else if(f.id==='te-form'){e.preventDefault();e.stopImmediatePropagation();saveTE();}},true);
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.name==='tagin'&&e.target.closest('#te-form')){e.preventDefault();if(e.target.value.trim()){readTE();renderTE();setTimeout(()=>{const i=$('#te-form [name=tagin]');if(i)i.focus();},30);}return;}
   const qt=e.target.closest&&e.target.closest('#qc-form [name=t]');
@@ -2167,6 +2305,7 @@ function tick(){
   if(!S.running)return;
   document.querySelectorAll('[data-clock]').forEach(c=>c.textContent=fmtClock(runningSecs()));
   document.querySelectorAll('[data-live-task]').forEach(tl=>{const t=S.tasks.find(x=>x.id===tl.dataset.liveTask);if(t)tl.textContent=(tl.classList.contains('tm')?fmtShort:fmtDur)(taskSecs(t));});
+  document.querySelectorAll('[data-live-pres]').forEach(el=>el.textContent=fmtClock(presOn(todayKey())));document.querySelectorAll('[data-live-prow]').forEach(el=>el.textContent=fmtDur((Date.now()-(+el.dataset.liveProw))/1000));
   document.querySelectorAll('[data-live-ring]').forEach(sv=>{const t=S.tasks.find(x=>x.id===sv.dataset.liveRing);updRing(sv,t?taskSecs(t):runningSecs());});
   document.querySelectorAll('[data-live-focus]').forEach(tl=>{const t=S.tasks.find(x=>x.id===tl.dataset.liveFocus);if(t)tl.textContent=fmtClock(taskSecs(t));});
 }
