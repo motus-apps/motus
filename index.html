@@ -2384,10 +2384,10 @@ function takeShared(){
 let lastDay=todayKey();
 function tick(){
   if(todayKey()!==lastDay){lastDay=todayKey();touchSeen();softRender();return;}
+  if(presRun()){document.querySelectorAll('[data-live-pres]').forEach(el=>el.textContent=fmtClock(presOn(todayKey())));document.querySelectorAll('[data-live-prow]').forEach(el=>el.textContent=fmtDur((Date.now()-(+el.dataset.liveProw))/1000));}
   if(!S.running)return;
   document.querySelectorAll('[data-clock]').forEach(c=>c.textContent=fmtClock(runningSecs()));
   document.querySelectorAll('[data-live-task]').forEach(tl=>{const t=S.tasks.find(x=>x.id===tl.dataset.liveTask);if(t)tl.textContent=(tl.classList.contains('tm')?fmtShort:fmtDur)(taskSecs(t));});
-  document.querySelectorAll('[data-live-pres]').forEach(el=>el.textContent=fmtClock(presOn(todayKey())));document.querySelectorAll('[data-live-prow]').forEach(el=>el.textContent=fmtDur((Date.now()-(+el.dataset.liveProw))/1000));
   document.querySelectorAll('[data-live-ring]').forEach(sv=>{const t=S.tasks.find(x=>x.id===sv.dataset.liveRing);updRing(sv,t?taskSecs(t):runningSecs());});
   document.querySelectorAll('[data-live-focus]').forEach(tl=>{const t=S.tasks.find(x=>x.id===tl.dataset.liveFocus);if(t)tl.textContent=fmtClock(taskSecs(t));});
 }
