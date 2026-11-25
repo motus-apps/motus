@@ -1237,15 +1237,16 @@ function lrApply(hm){const r=S.running;if(!r)return closeModal();const end=timeO
   stopTimer(true,end);const nx=longNext;longNext=null;closeModal();if(nx)nx();else{save();render();}toast(tr(`Gestoppt um ${fmtTime(end)}`,`Stopped at ${fmtTime(end)}`));}
 // Eintrag im Verlauf ändern
 let SE=null;
-function editSession(tid,start){const x=S.sessions.find(y=>(y.t||'')===(tid||'')&&y.s===start);if(!x)return;SE=x;const fromTE=!!$('#te-form');SE._back=fromTE;
+function editSession(tid,start,mode){const x=S.sessions.find(y=>(y.t||'')===(tid||'')&&y.s===start);if(!x)return;SE=x;const fromTE=mode?!!x._back:!!$('#te-form');SE._back=fromTE;const md=mode||(x.dur?'dur':'range');SE._mode=md;
   modal(`<h3>${tr('Eintrag ändern','Edit entry')}</h3><div class="small" style="margin-bottom:6px">${parseKey(dayOf(x.s)).toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'})}</div><form id="se-form">
-  ${x.dur?`<label>${tr('Dauer in Minuten','Duration in minutes')}</label><input name="mins" type="number" min="1" max="1440" inputmode="numeric" value="${Math.round((x.e-x.s)/60000)}">`:`<div class="tprow">${timePick('from',fmtTime(x.s),tr('Von','From'))}${timePick('to',fmtTime(x.e),tr('Bis','To'))}</div><div class="tmcalc"></div>`}
+  <div class="seg" style="margin-bottom:8px"><button type="button" class="${md==='dur'?'on':''}" data-a="se-mode" data-v="dur">${tr('Dauer','Duration')}</button><button type="button" class="${md==='range'?'on':''}" data-a="se-mode" data-v="range">${tr('Von – bis','From – to')}</button></div>
+  ${md==='dur'?`<label>${tr('Dauer in Minuten','Duration in minutes')}</label><input name="mins" type="number" min="1" max="1440" inputmode="numeric" value="${Math.round((x.e-x.s)/60000)}">`:`<div class="tprow">${timePick('from',fmtTime(x.s),tr('Von','From'))}${timePick('to',fmtTime(x.e),tr('Bis','To'))}</div><div class="tmcalc"></div>`}
   <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="${fromTE?'te-back':'close'}">${tr('Abbrechen','Cancel')}</button><button class="btn gold" type="submit">${tr('Speichern','Save')}</button></div></form>`);}
 function saveSession(f){const x=SE;if(!x)return;const fd=new FormData(f);let s0,e0;
-  if(x.dur){const m=+fd.get('mins');if(!m)return;s0=x.s;e0=x.s+m*60000;}
+  if(SE._mode==='dur'){const m=+fd.get('mins');if(!m)return;s0=x.s;e0=x.s+m*60000;}
   else{const a=fd.get('from'),b=fd.get('to');if(!a||!b)return;const day=new Date(x.s);const [h,mi]=a.split(':').map(Number);day.setHours(h,mi,0,0);s0=day.getTime();e0=timeOnOrAfter(s0,b);if(e0<=s0)return;}
   if(e0>Date.now()+60000){toast(tr('Das Ende liegt in der Zukunft','The end is in the future'));return;}
-  subTime(x.g,x.s,x.e);addTime(x.g,s0,e0);const t=x.t&&S.tasks.find(y=>y.id===x.t);if(t)t.secs=Math.max(0,Math.round((t.secs||0)+((e0-s0)-(x.e-x.s))/1000));x.s=s0;x.e=e0;if(!x.dur)x.man=x.man||1;
+  subTime(x.g,x.s,x.e);addTime(x.g,s0,e0);const t=x.t&&S.tasks.find(y=>y.id===x.t);if(t)t.secs=Math.max(0,Math.round((t.secs||0)+((e0-s0)-(x.e-x.s))/1000));x.s=s0;x.e=e0;if(SE._mode==='range'){delete x.dur;x.man=x.man||1;}else x.dur=1;
   const back=x._back;delete x._back;SE=null;save();closeModal();if(back&&t)taskModal(t.id);else render();toast(tr('Eintrag geändert','Entry updated'));}
 
 // ================= Zeit nachtragen (Aufgabe) =================
@@ -2034,7 +2035,7 @@ Object.assign(EXTRA_ACTIONS,{
   'ned'(el){nedCmd(el);},
   'ck-toggle'(el){ckToggle(el.dataset.k,+el.dataset.i);},
 });
-Object.assign(EXTRA_ACTIONS,{'te-kind'(el){readTE();TE.kind=el.dataset.v;if(TE.kind==='rec'&&!TE.rec.type)TE.rec={type:'weekly',days:[new Date().getDay()],every:1};renderTE();},
+Object.assign(EXTRA_ACTIONS,{'se-mode'(el){if(!SE)return;editSession(SE.t,SE.s,el.dataset.v);},'te-kind'(el){readTE();TE.kind=el.dataset.v;if(TE.kind==='rec'&&!TE.rec.type)TE.rec={type:'weekly',days:[new Date().getDay()],every:1};renderTE();},
 'rec-type'(el){readTE();const v=el.dataset.v,now=new Date();TE.rec=Object.assign({type:v},v==='weekly'?{days:TE.rec.days&&TE.rec.days.length?TE.rec.days:[now.getDay()],every:TE.rec.every||1}:v==='monthDay'?{day:now.getDate()}:v==='monthNth'?{nth:-1,wd:5}:{});renderTE();},
 'rec-day'(el){readTE();const d=+el.dataset.v;const ds=TE.rec.days||[];TE.rec.days=ds.includes(d)?ds.filter(x=>x!==d):[...ds,d];if(!TE.rec.days.length)TE.rec.days=[d];renderTE();},
 'rec-every'(el){readTE();TE.rec.every=+el.dataset.v;renderTE();},
