@@ -651,6 +651,12 @@ body.nf-open #fab,body.nf-open nav{display:none}
 .modal .actions .btn:not(.ghost):not(.danger):hover{filter:brightness(1.05)}
 .prio{color:#d64545}html[data-theme=dark] .prio{color:#ff7a6b}.hero .prio{color:#ff8f80}
 @media(prefers-color-scheme:dark){html:not([data-theme=light]) .prio{color:#ff7a6b}}
+.hashsug{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;background:var(--surface);margin-top:6px;overflow:hidden;box-shadow:var(--shadow)}
+.hashsug button{display:flex;align-items:center;gap:8px;padding:10px 12px;text-align:left;font-size:14.5px;color:var(--text);border-bottom:1px solid var(--line)}.hashsug button:last-child{border-bottom:0}
+.hashsug button:hover,.hashsug button:first-child{background:rgba(212,160,23,.08)}.hashsug .dot{width:9px;height:9px;border-radius:50%;flex:none}.hashsug small{margin-left:auto;color:var(--muted);font-size:11.5px}
+.fp-new+.hashsug,.fp-new .hashsug{margin:-8px 0 12px}
+.qcpv{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:12.5px}.qcpv:empty{display:none}
+.qcpv b{font-weight:600;margin-right:2px}.qcpv span{padding:2px 8px;border-radius:999px;background:rgba(127,127,127,.12);display:inline-flex;align-items:center;gap:5px}.qcpv .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
 </style>
 </head>
 <body>
@@ -1203,7 +1209,7 @@ function focusPick(curId){
   const tk=todayKey(),q=focusQueue().filter(t=>t.id!==curId),bl=backlog().filter(t=>!t.done);
   const row=t=>{const g=goal(t.goalId)||NONE();return `<button class="pickrow" data-a="focus-take" data-t="${t.id}" data-cur="${curId}"><span class="dot" style="background:${g.color}"></span><span class="pt">${prioMark(t)}${esc(titleText(t))}</span><span class="small">${taskSecs(t)>=60?fmtShort(taskSecs(t)):''}</span></button>`;};
   modal(`<h3>${tr('Andere Aufgabe vorziehen','Pull another task forward')}</h3><div class="small" style="margin-bottom:10px">${tr('Die aktuelle Aufgabe wird pausiert und kommt direkt danach dran.','The current task is paused and comes right after.')}</div>
-  <form id="fp-new" data-cur="${curId}"><div class="fp-new"><input name="t" placeholder="${tr('Neue Aufgabe, die jetzt dran ist…','New task to do now…')}" maxlength="200" autocomplete="off" enterkeyhint="go"><button class="btn gold" type="submit">${tr('Los','Go')}</button></div>
+  <form id="fp-new" data-cur="${curId}"><div class="fp-new"><input name="t" data-hashsug placeholder="${tr('Neue Aufgabe, die jetzt dran ist…','New task to do now…')}" maxlength="200" autocomplete="off" enterkeyhint="go"><button class="btn gold" type="submit">${tr('Los','Go')}</button></div>
   <div class="seg wrapseg fp-goals">${[...activeGoals(),NONE()].map(g=>`<button type="button" class="${g.id==='_none'?'on':''}" data-a="fp-goal" data-v="${g.id}"><i class="dot" style="background:${g.color};display:inline-block;margin-right:6px"></i>${esc(g.name)}</button>`).join('')}</div></form>
   ${q.length?`<div class="picklbl">${tr('Heute','Today')}</div>${q.map(row).join('')}`:`<div class="small" style="margin:6px 0">${tr('Heute ist sonst nichts geplant.','Nothing else is planned for today.')}</div>`}
   ${bl.length?`<details class="pickbl" ${q.length?'':'open'}><summary>${tr('Aus der Ablage','From the backlog')} (${bl.length})</summary>${bl.map(row).join('')}</details>`:''}
@@ -1801,11 +1807,12 @@ function doDelTask(id){const t=S.tasks.find(x=>x.id===id);if(!t)return closeModa
 // ================= Schnell erfassen & Aufgabe bearbeiten =================
 const WD_NAMES=[['sonntag','sunday','so','sun'],['montag','monday','mo','mon'],['dienstag','tuesday','di','tue'],['mittwoch','wednesday','mi','wed'],['donnerstag','thursday','do','thu'],['freitag','friday','fr','fri'],['samstag','saturday','sa','sat']];
 function dayWord(w){
-  w=w.toLowerCase().replace(/[.,;!]+$/,'');const tk=todayKey();
+  const raw=String(w).trim();w=w.toLowerCase().replace(/[.,;!]+$/,'');const tk=todayKey();
   if(w==='heute'||w==='today')return tk;
   if(w==='morgen'||w==='tomorrow')return shiftKey(tk,1);
   if(w==='übermorgen'||w==='uebermorgen')return shiftKey(tk,2);
   if(w==='ablage'||w==='backlog'||w==='später'||w==='later')return null;
+  const dm=raw.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2}|\d{4})?$/);if(dm){let y=dm[3]?+dm[3]:new Date().getFullYear();if(y<100)y+=2000;const d=new Date(y,+dm[2]-1,+dm[1]);if(d.getMonth()!==+dm[2]-1||d.getDate()!==+dm[1])return undefined;return dkey(d);}
   const i=WD_NAMES.findIndex(n=>n.includes(w));
   if(i<0)return undefined;
   const now=parseKey(tk).getDay();return shiftKey(tk,(i-now+7)%7);
@@ -1814,14 +1821,30 @@ function goalWord(w){const n=w.toLowerCase().replace(/[^\p{L}\p{N}]/gu,'');if(!n
 // Zeile zerlegen: Aufzählungszeichen weg, #Ziel irgendwo, Tag nur am Zeilenende
 function parseLine(line){
   let s=line.replace(/^\s*(?:[-*•–]\s*)?(?:\[[ xX]?\]\s*)?/,'').trim();let day,g,prio=0;const tags=[];
+  // #Ziel/Projekt mit vollem Namen (auch mit Leerzeichen), längste Namen zuerst
+  const gs=[...activeGoals()].sort((a,b)=>b.name.length-a.name.length);
+  s=s.replace(/(^|\s)#(\S[^#]*)/gu,(m,sp,rest)=>{if(g)return m;const low=rest.toLowerCase();const hit=gs.find(x=>{const n=x.name.toLowerCase();return low.startsWith(n)&&(low.length===n.length||/[\s,;!]/.test(low[n.length]));});if(!hit)return m;g=hit.id;return sp+' '+rest.slice(hit.name.length);});
   s=s.replace(/(^|\s)#([\p{L}\p{N}_-]+)/gu,(m,sp,w)=>{const x=goalWord(w);if(x&&!g){g=x.id;return sp;}const tg=normTag(w);if(tg&&!tags.includes(tg))tags.push(tg);return sp;}).replace(/\s{2,}/g,' ').trim();
-  for(let k=0;k<3;k++){
-    let m=s.match(/(?:^|\s)(!{1,3})$/);if(m&&!prio){prio=m[1].length;s=s.slice(0,s.length-m[0].length).trim();continue;}
-    m=s.match(/\S(!{2,3})$/);if(m&&!prio){prio=m[1].length;s=s.slice(0,s.length-m[1].length).trim();continue;}
-    m=s.match(/\s(\S+)$/);if(!m)break;const d=dayWord(m[1]);if(d===undefined||day!==undefined)break;day=d;s=s.slice(0,m.index).trim();
-  }
+  const take=(tok)=>{if(!prio&&/^!{1,3}$/.test(tok)){prio=tok.length;return true;}const d=dayWord(tok);if(d!==undefined&&day===undefined){day=d;return true;}return false;};
+  for(let k=0;k<4;k++){ // Ende
+    let m=s.match(/\S(!{2,3})$/);if(m&&!prio){prio=m[1].length;s=s.slice(0,s.length-m[1].length).trim();continue;}
+    m=s.match(/(?:^|\s)(\S+)$/);if(!m||m.index===0&&!/\s/.test(s))break;if(!take(m[1]))break;s=s.slice(0,s.length-m[1].length).trim();}
+  for(let k=0;k<4;k++){ // Anfang
+    const m=s.match(/^(\S+)\s+/);if(!m)break;if(!take(m[1]))break;s=s.slice(m[0].length).trim();}
   return {title:s.slice(0,140),day,g,tags,prio};
 }
+// Vorschläge für #Ziel/Projekt beim Tippen
+function hashSugUpdate(el){let box=el.parentNode.querySelector('.hashsug');const pos=el.selectionStart||0,before=el.value.slice(0,pos);const m=before.match(/(^|\s)#([^#\n]*)$/);
+  const q=m?m[2].toLowerCase().replace(/[^\p{L}\p{N}]/gu,''):null;const list=m?activeGoals().filter(g=>!q||g.name.toLowerCase().replace(/[^\p{L}\p{N}]/gu,'').includes(q)).slice(0,6):[];
+  if(!m||!list.length||(m[2].length>0&&list.some(g=>m[2].toLowerCase()===g.name.toLowerCase()))){if(box)box.remove();return;}
+  if(!box){box=document.createElement('div');box.className='hashsug';el.after(box);}
+  box.innerHTML=list.map(g=>`<button type="button" data-a="hash-pick" data-g="${g.id}"><span class="dot" style="background:${g.color}"></span>${esc(g.name)}<small>${isProj(g)?tr('Projekt','Project'):tr('Ziel','Goal')}</small></button>`).join('');}
+function hashPick(btn){const box=btn.closest('.hashsug'),el=box.previousElementSibling;const g=goal(btn.dataset.g);if(!el||!g)return;const pos=el.selectionStart||el.value.length,before=el.value.slice(0,pos),after=el.value.slice(pos);const nb=before.replace(/(^|\s)#([^#\n]*)$/,(m,sp)=>sp+'#'+g.name+' ');el.value=nb+after.replace(/^\s+/,'');el.focus();el.setSelectionRange(nb.length,nb.length);box.remove();qcPreview(el);}
+function qcPreview(el){const pv=el.closest('form')&&el.closest('form').querySelector('.qcpv');if(!pv)return;const lines=el.value.split('\n').filter(l=>l.trim());if(lines.length!==1){pv.innerHTML='';return;}const x=parseLine(lines[0]);const bits=[];
+  if(x.day!==undefined&&x.day!==null)bits.push(`<span>📅 ${dayLabel(x.day)}</span>`);if(x.prio)bits.push(`<span class="prio">${'!'.repeat(x.prio)}</span>`);if(x.g){const gg=goal(x.g);bits.push(`<span><i class="dot" style="background:${gg.color}"></i>${esc(gg.name)}</span>`);}x.tags.forEach(t=>bits.push(`<span>#${esc(t)}</span>`));
+  pv.innerHTML=bits.length?`<b>${esc(x.title)}</b>${bits.join('')}`:'';}
+document.addEventListener('input',e=>{const el=e.target;if(el.matches&&el.matches('[data-hashsug]')){hashSugUpdate(el);qcPreview(el);}});
+document.addEventListener('click',e=>{if(!(e.target.closest&&(e.target.closest('.hashsug')||e.target.closest('[data-hashsug]'))))document.querySelectorAll('.hashsug').forEach(b=>b.remove());},true);
 const QC={day:null,g:'_none',notes:''};
 function quickAdd(text,notes){QC.day=null;QC.g='_none';QC.notes=notes||'';renderQC(text||'');}
 function readQC(){const f=$('#qc-form');if(!f)return '';const n=f.querySelector('[name=n]');if(n)QC.notes=n.value;return f.querySelector('[name=t]').value;}
@@ -1832,12 +1855,13 @@ function daySeg(cur,act){const tk=todayKey();const o=[['',tr('Ablage','Backlog')
 function renderQC(text){
   const n=text.split('\n').filter(l=>l.trim()).length;
   modal(`<div class="seg qctabs"><button type="button" class="on">${tr('Aufgabe','Task')}</button><button type="button" data-a="tm-open">${tr('Zeit nachtragen','Add time')}</button></div><h3>${tr('Schnell erfassen','Quick capture')}</h3><form id="qc-form">
-  <textarea name="t" rows="3" enterkeyhint="done" placeholder="${tr('Was ist zu tun? Eine Zeile pro Aufgabe.','What needs doing? One line per task.')}">${esc(text)}</textarea>
+  <textarea name="t" rows="3" data-hashsug enterkeyhint="done" placeholder="${tr('Was ist zu tun? Eine Zeile pro Aufgabe.','What needs doing? One line per task.')}">${esc(text)}</textarea>
   <div class="row" style="margin-top:6px;gap:8px;flex-wrap:wrap"><button type="button" class="btn ghost sm" data-a="qc-paste">${tr('Aus Zwischenablage','From clipboard')}</button>${QC.notes?'':`<button type="button" class="btn ghost sm" data-a="qc-note">+ ${tr('Notiz','Note')}</button>`}</div>
+  <div class="qcpv"></div>
   ${QC.notes!==''?`<label>${tr('Notiz','Note')}</label><textarea name="n" rows="3">${esc(QC.notes)}</textarea>`:''}
   <label>${tr('Wann','When')}</label>${daySeg(QC.day,'qc-day')}
   <label>${tr('Ziel','Goal')}</label>${goalSeg(QC.g,'qc-goal')}
-  <div class="small" style="margin-top:10px;line-height:1.45;color:var(--muted)">${tr('Tipp: „morgen“ oder „fr“ plant ein, „#Ziel“ ordnet zu, „#wort“ wird ein Tag, „!“ bis „!!!“ setzt die Priorität. Gilt jeweils für die Zeile.','Tip: “tomorrow” or “fri” schedules, “#goal” assigns, “#word” becomes a tag, “!” to “!!!” sets priority. Applies per line.')}</div>
+  <div class="small" style="margin-top:10px;line-height:1.45;color:var(--muted)">${tr('Tipp: „heute“, „morgen“, „fr“ oder ein Datum wie „3.12.“ plant ein, „#“ zeigt deine Ziele und Projekte, „#wort“ wird ein Tag, „!“ bis „!!!“ setzt die Priorität. Am Anfang oder Ende der Zeile.','Tip: “today”, “tomorrow”, “fri” or a date like “3.12.” schedules, “#” shows your goals and projects, “#word” becomes a tag, “!” to “!!!” sets priority. At the start or end of the line.')}</div>
   <div class="actions"><span class="sp"></span><button type="button" class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn gold" type="submit">${tr('Speichern','Save')}</button></div></form>`);
   const ta=$('#qc-form [name=t]');if(ta){setTimeout(()=>{ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);},60);}
 }
@@ -1910,13 +1934,13 @@ Object.assign(EXTRA_ACTIONS,{
   'ned'(el){nedCmd(el);},
   'ck-toggle'(el){ckToggle(el.dataset.k,+el.dataset.i);},
 });
-Object.assign(EXTRA_ACTIONS,{'done-on'(el){closeModal();const t=S.tasks.find(x=>x.id===el.dataset.t);if(t&&t.done)setDoneDay(t.id,el.dataset.v);else completeTask(el.dataset.t,false,el.dataset.v);},'past-open'(el){closeModal();const t=S.tasks.find(x=>x.id===el.dataset.t);if(!t)return;t.date=el.dataset.v;t.order=nextOrder(el.dataset.v);save();render();toast(tr('Verschoben, erscheint als übernommen unter Heute','Moved, shows as carried over under Today'));},'done-move'(el){doneWhen(el.dataset.t);},'te-doneday'(el){readTE();closeModal();doneWhen(TE.id);},'lr-keep'(){const nx=longNext;longNext=null;closeModal();if(nx)nx();},'ses-edit'(el){editSession(el.dataset.t,+el.dataset.s);},'tm-open'(){timeModal(null,false);},'te-time'(){readTE();timeModal(TE.id,true);},'tm-task'(el){readTM();TM.t=el.dataset.t;renderTM();},'tm-goalopen'(el){timeModal(null,false,el.dataset.g);},'tm-newtask'(){readTM();const x=parseLine(TM.q);if(!x.title)return;const nt={id:uid(),goalId:x.g||TM.gf||'_none',title:x.title,date:null,done:false,secs:0,order:nextOrder(null)};if(x.tags.length)nt.tags=x.tags;if(x.prio)nt.prio=x.prio;S.tasks.push(nt);TM.t=nt.id;TM.q='';save();renderTM();},'tm-clear'(){readTM();TM.t=null;TM.g=null;renderTM();},'tm-day'(el){readTM();TM.day=el.dataset.v;renderTM();},'tm-mode'(el){readTM();TM.mode=el.dataset.v;renderTM();},'tm-mins'(el){readTM();TM.mins=+el.dataset.v;renderTM();},'ses-del'(el){delSession(el.dataset.t,+el.dataset.s);},'ses-undo'(){const x=lastSesDel;if(!x)return;lastSesDel=null;addTime(x.g,x.s,x.e);const t=x.t&&S.tasks.find(y=>y.id===x.t);if(t)t.secs=Math.round((t.secs||0)+(x.e-x.s)/1000);S.sessions.push(x);save();if($('#te-form'))renderTE();else render();$('#toast-root').innerHTML='';},'fp-goal'(el){el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));const i=$('#fp-new input');if(i)i.focus();},'backdate-open'(){backdateModal();},'backdate'(el){backdate(+el.dataset.v);},'focus-pick'(el){focusPick(el.dataset.t);},'focus-take'(el){focusTake(el.dataset.t,el.dataset.cur);}});
+Object.assign(EXTRA_ACTIONS,{'hash-pick'(el){hashPick(el);},'done-on'(el){closeModal();const t=S.tasks.find(x=>x.id===el.dataset.t);if(t&&t.done)setDoneDay(t.id,el.dataset.v);else completeTask(el.dataset.t,false,el.dataset.v);},'past-open'(el){closeModal();const t=S.tasks.find(x=>x.id===el.dataset.t);if(!t)return;t.date=el.dataset.v;t.order=nextOrder(el.dataset.v);save();render();toast(tr('Verschoben, erscheint als übernommen unter Heute','Moved, shows as carried over under Today'));},'done-move'(el){doneWhen(el.dataset.t);},'te-doneday'(el){readTE();closeModal();doneWhen(TE.id);},'lr-keep'(){const nx=longNext;longNext=null;closeModal();if(nx)nx();},'ses-edit'(el){editSession(el.dataset.t,+el.dataset.s);},'tm-open'(){timeModal(null,false);},'te-time'(){readTE();timeModal(TE.id,true);},'tm-task'(el){readTM();TM.t=el.dataset.t;renderTM();},'tm-goalopen'(el){timeModal(null,false,el.dataset.g);},'tm-newtask'(){readTM();const x=parseLine(TM.q);if(!x.title)return;const nt={id:uid(),goalId:x.g||TM.gf||'_none',title:x.title,date:null,done:false,secs:0,order:nextOrder(null)};if(x.tags.length)nt.tags=x.tags;if(x.prio)nt.prio=x.prio;S.tasks.push(nt);TM.t=nt.id;TM.q='';save();renderTM();},'tm-clear'(){readTM();TM.t=null;TM.g=null;renderTM();},'tm-day'(el){readTM();TM.day=el.dataset.v;renderTM();},'tm-mode'(el){readTM();TM.mode=el.dataset.v;renderTM();},'tm-mins'(el){readTM();TM.mins=+el.dataset.v;renderTM();},'ses-del'(el){delSession(el.dataset.t,+el.dataset.s);},'ses-undo'(){const x=lastSesDel;if(!x)return;lastSesDel=null;addTime(x.g,x.s,x.e);const t=x.t&&S.tasks.find(y=>y.id===x.t);if(t)t.secs=Math.round((t.secs||0)+(x.e-x.s)/1000);S.sessions.push(x);save();if($('#te-form'))renderTE();else render();$('#toast-root').innerHTML='';},'fp-goal'(el){el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));const i=$('#fp-new input');if(i)i.focus();},'backdate-open'(){backdateModal();},'backdate'(el){backdate(+el.dataset.v);},'focus-pick'(el){focusPick(el.dataset.t);},'focus-take'(el){focusTake(el.dataset.t,el.dataset.cur);}});
 document.addEventListener('change',e=>{const d=e.target.closest&&e.target.closest('[data-a-date]');if(!d||!d.value)return;const act=d.dataset.aDate;if(act==='qc-day'){const t=readQC();QC.day=d.value<todayKey()?todayKey():d.value;renderQC(t);}else if(act==='te-day'){readTE();TE.date=d.value;renderTE();}});
 document.addEventListener('submit',e=>{const f=e.target;if(f.id==='fp-new'){e.preventDefault();e.stopImmediatePropagation();const on=f.querySelector('.fp-goals .on');focusNew(f.querySelector('input').value,f.dataset.cur,on?on.dataset.v:'_none');return;}if(f.id==='lr-form'){e.preventDefault();e.stopImmediatePropagation();lrApply(new FormData(f).get('end'));return;}if(f.id==='se-form'){e.preventDefault();e.stopImmediatePropagation();saveSession(f);return;}if(f.id==='tm-form'){e.preventDefault();e.stopImmediatePropagation();saveTM();return;}if(f.id==='bd-form'){e.preventDefault();e.stopImmediatePropagation();backdate(+new FormData(f).get('m')||0);return;}if(f.dataset&&f.dataset.padd){e.preventDefault();e.stopImmediatePropagation();const inp=f.querySelector('input');const lines=inp.value.split('\n').map(parseLine).filter(x=>x.title);for(const x of lines){const k=x.day!==undefined?x.day:null;const t={id:uid(),goalId:f.dataset.padd,title:x.title,date:k,done:false,secs:0,order:nextOrder(k)};if(x.tags.length)t.tags=x.tags;if(x.prio)t.prio=x.prio;S.tasks.push(t);}save();render();const n=document.querySelector(`[data-padd="${f.dataset.padd}"] input`);if(n)n.focus();return;}if(f.id==='qc-form'){e.preventDefault();e.stopImmediatePropagation();saveQC();}else if(f.id==='te-form'){e.preventDefault();e.stopImmediatePropagation();saveTE();}},true);
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.name==='tagin'&&e.target.closest('#te-form')){e.preventDefault();if(e.target.value.trim()){readTE();renderTE();setTimeout(()=>{const i=$('#te-form [name=tagin]');if(i)i.focus();},30);}return;}
   const qt=e.target.closest&&e.target.closest('#qc-form [name=t]');
-  if(qt&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();saveQC();return;}
+  if(qt&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();const sb=document.querySelector('#qc-form .hashsug button');if(sb){hashPick(sb);return;}saveQC();return;}
   if((e.key==='n'||e.key==='N')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!typing()&&!$('#modal-root').innerHTML){e.preventDefault();quickAdd('');}
 });
 // Geteilte Inhalte und Links: ?add=… (Lesezeichen, Kurzbefehl) oder Teilen-Menü (title/text/url)
