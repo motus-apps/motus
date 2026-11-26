@@ -964,6 +964,56 @@ header{position:relative}
 .pres2-date{font-weight:500;text-transform:none;letter-spacing:0;opacity:.7;margin-left:6px;font-size:12.5px}
 .pres2-sub{margin-top:8px}
 .fokbtn.run:not(.on){box-shadow:0 0 0 3px #f5c451,0 6px 18px rgba(15,63,48,.3),inset 0 1px 0 rgba(255,255,255,.25)}
+/* Zen */
+.zhead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.zenbtn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-size:13.5px;font-weight:600;color:var(--text);transition:border-color .15s,transform .15s}
+.zenbtn:hover{border-color:var(--gold);transform:translateY(-1px)}
+body.zen nav,body.zen header,body.zen #fab{display:none!important}
+body.zen{overflow:hidden}
+#zen{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;color:#f4f1e6;background:radial-gradient(ellipse at 50% 110%,rgba(245,196,81,.16),transparent 55%),linear-gradient(170deg,#0e3c4a 0%,#0b2f2c 55%,#0a2419 100%)}
+.zen-bar{display:flex;align-items:center;gap:10px;padding:14px 18px;opacity:0;transition:opacity .5s}
+#zen.awake .zen-bar,#zen.notes .zen-bar,#zen.zen-empty .zen-x{opacity:1}
+.zen-bar .sp{flex:1}
+.zen-lbl{display:inline-flex;align-items:center;gap:6px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.55}
+.zen-nb{padding:7px 14px;border-radius:99px;border:1px solid rgba(255,255,255,.22);color:#f4f1e6;font-size:13.5px;font-weight:600;background:rgba(255,255,255,.06)}
+.zen-nb.on,.zen-nb:hover{background:rgba(255,255,255,.14)}
+.zen-nb small{opacity:.7;font-weight:500;margin-left:4px}
+.zen-x{width:36px;height:36px;border-radius:50%;color:#f4f1e6;background:rgba(255,255,255,.08);font-size:15px}
+.zen-x:hover{background:rgba(255,255,255,.18)}.zen-x.sm{width:30px;height:30px;font-size:13px}
+#zen.zen-empty .zen-x{position:absolute;top:14px;right:18px}
+.zen-main{flex:1;display:flex;min-height:0}
+.zen-c{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 20px 40px;text-align:center;min-width:0}
+.zen-goal{display:inline-flex;align-items:center;gap:7px;font-size:13px;opacity:.6;margin-bottom:8px}.zen-goal i{width:8px;height:8px;border-radius:50%}
+.zen-title{font-size:clamp(20px,3.2vw,28px);font-weight:700;letter-spacing:-.01em;max-width:640px;line-height:1.25;margin-bottom:26px}
+.zen-ring{position:relative;width:min(300px,72vw);aspect-ratio:1}
+.zen-ring svg{width:100%;height:100%}
+.zen-ring svg circle:first-child{stroke:rgba(255,255,255,.1)!important}
+.zen-ring-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.zen-clock{font-size:clamp(40px,8vw,58px);font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.zen-sub{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.5;margin-top:4px}
+#zen.run .zen-sub{color:#f5c451;opacity:.9}
+.zen-btns{display:flex;align-items:center;gap:18px;margin-top:30px}
+.zen-big{width:66px;height:66px;border-radius:50%;background:#f5c451;color:#1d1a10;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(245,196,81,.25);transition:transform .15s}
+.zen-big:hover{transform:scale(1.05)}.zen-big svg{width:24px;height:24px}
+#zen.run .zen-big{background:rgba(255,255,255,.1);color:#f4f1e6;box-shadow:none;border:1px solid rgba(255,255,255,.2)}
+.zen-done-b{padding:11px 20px;border-radius:99px;border:1px solid rgba(255,255,255,.22);color:#f4f1e6;font-weight:600;font-size:14.5px}
+.zen-done-b:hover{background:rgba(255,255,255,.1)}
+.zen-hint{margin-top:28px;font-size:13px;opacity:.65;max-width:420px;line-height:1.5;transition:opacity 1.2s}.zen-hint.gone{opacity:0}
+.zen-done{font-size:24px;font-weight:700;margin-bottom:18px}
+.zen-notes{width:min(460px,46vw);display:flex;flex-direction:column;padding:0 18px 18px;min-height:0;animation:zenin .25s ease}
+@keyframes zenin{from{transform:translateX(30px);opacity:0}}
+.zen-nh{display:flex;align-items:center;gap:8px;padding:4px 2px 10px}.zen-nh .sp{flex:1}
+.zen-notes .ned{flex:1;display:flex;flex-direction:column;min-height:0;background:rgba(255,255,255,.95);color:#1f2a24;border:0}
+.zen-notes .nedit{flex:1;overflow:auto;min-height:0}
+[data-theme=dark] .zen-notes .ned{background:#12241c;color:#ecebe4}
+@media (max-width:760px){
+  .zen-main{flex-direction:column}
+  #zen.notes .zen-c{flex:none;padding:0 16px 8px}#zen.notes .zen-title,#zen.notes .zen-goal,#zen.notes .zen-hint{display:none}
+  #zen.notes .zen-ring{width:120px}#zen.notes .zen-clock{font-size:24px}#zen.notes .zen-sub{display:none}#zen.notes .zen-btns{margin-top:10px}#zen.notes .zen-big{width:48px;height:48px}
+  .zen-notes{width:auto;flex:1;padding:0 12px 12px}
+  .zen-bar{opacity:1}
+}
+.ntbb[hidden],.nout-pop[hidden],.nout-side[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -1156,7 +1206,7 @@ function applyTheme(){
   const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',dark?'#08150e':'#f3f1ea');
   if(!mq&&window.matchMedia){mq=matchMedia('(prefers-color-scheme: light)');try{mq.addEventListener('change',()=>{if(P().theme==='system'){applyTheme();}});}catch(e){}}
 }
-function toast(msg,ms){const r=$('#toast-root');r.innerHTML=`<div class="toast">${msg}</div>`;clearTimeout(toast.t);toast.t=setTimeout(()=>r.innerHTML='',ms||(msg.includes('<button')?6000:2600));}
+function toast(msg,ms){if(zenOn&&tab==='fokus'&&!String(msg).includes('<button'))return;const r=$('#toast-root');r.innerHTML=`<div class="toast">${msg}</div>`;clearTimeout(toast.t);toast.t=setTimeout(()=>r.innerHTML='',ms||(msg.includes('<button')?6000:2600));}
 
 // ================= Pause & Neustart =================
 let pauseChecked=false;
@@ -1239,6 +1289,7 @@ function render(){
   window._todayLbl=new Date(Date.now()-DS()).toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'});
   $('#navin').innerHTML=NAV().map(([k,l,ic])=>`<button data-tab="${k}" class="${k===tab?'on':''}"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>${l}</button>`).join('');
   $('#wrap').classList.toggle('wide',(tab==='woche'&&(P().weekView||'board')!=='list')||tab==='rueckblick');
+  if(zenOn&&tab!=='fokus'){zenOn=false;document.body.classList.remove('zen');try{document.fullscreenElement&&document.exitFullscreen();}catch(e){}}
   const V={heute:viewToday,woche:viewWeek,fokus:viewFocus,notizen:viewNotes,ziele:viewGoals,rueckblick:viewReview,einstellungen:viewSettings,hilfe:viewHelp};
   $('#view').innerHTML=V[tab]();
   updateAvatar();
@@ -1858,13 +1909,44 @@ function focusTake(id,curId){
   toast(tr('Vorgezogen','Pulled forward'));
 }
 
+
+// ================= Zen-Modus =================
+let zenOn=false,zenNotes=false,zenLock=null,zenHideT=null;
+const ZEN_IC='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4"/><circle cx="12" cy="12" r="2.2"/></svg>';
+function zenHint(){const ua=navigator.userAgent;if(/iPhone|iPad|iPod/.test(ua))return tr('Tipp: Im Kontrollzentrum <b>Fokus → Nicht stören</b> einschalten.','Tip: turn on <b>Focus → Do Not Disturb</b> in Control Centre.');if(/Android/.test(ua))return tr('Tipp: Von oben wischen und <b>Bitte nicht stören</b> antippen.','Tip: swipe down and tap <b>Do Not Disturb</b>.');if(/Mac/.test(ua))return tr('Tipp: Im Kontrollzentrum <b>Fokus → Nicht stören</b> einschalten.','Tip: turn on <b>Focus → Do Not Disturb</b> in Control Centre.');return tr('Tipp: <b>Win + N</b> → <b>Bitte nicht stören</b> stoppt Benachrichtigungen.','Tip: <b>Win + N</b> → <b>Do not disturb</b> silences notifications.');}
+async function zenWake(){try{if('wakeLock' in navigator&&document.visibilityState==='visible'){zenLock=await navigator.wakeLock.request('screen');}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(zenOn&&document.visibilityState==='visible')zenWake();});
+function zenStart(){zenOn=true;zenNotes=false;window._zenHint=true;document.body.classList.add('zen');try{const d=document.documentElement;(d.requestFullscreen||d.webkitRequestFullscreen||(()=>{})).call(d);}catch(e){}zenWake();render();setTimeout(()=>{window._zenHint=false;const h=$('.zen-hint');if(h)h.classList.add('gone');},7000);zenPoke();}
+function zenStop(){if(!zenOn)return;const b=document.querySelector('#zen [data-ned-body]');if(b)nedCommit(b);zenOn=false;zenNotes=false;document.body.classList.remove('zen');try{if(document.fullscreenElement)document.exitFullscreen();else if(document.webkitFullscreenElement)document.webkitExitFullscreen();}catch(e){}try{zenLock&&zenLock.release();}catch(e){}zenLock=null;render();}
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&zenOn&&!window._zenKeep)zenStop();});
+function zenPoke(){const z=$('#zen');if(!z)return;z.classList.add('awake');clearTimeout(zenHideT);zenHideT=setTimeout(()=>{const zz=$('#zen');zz&&zz.classList.remove('awake');},2600);}
+document.addEventListener('mousemove',()=>{if(zenOn)zenPoke();},{passive:true});
+document.addEventListener('touchstart',()=>{if(zenOn)zenPoke();},{passive:true});
+document.addEventListener('keydown',e=>{if(!zenOn||tab!=='fokus')return;if(e.key==='Escape'&&!$('#modal-root').innerHTML){if(zenNotes&&!e.target.closest('[data-ned-body]')){zenNotes=false;render();return;}if(!zenNotes){e.preventDefault();zenStop();}}});
+function viewZen(cur){
+  const r=S.running;
+  if(!cur)return `<div id="zen" class="zen-empty"><button class="zen-x" data-a="zen-off" aria-label="${tr('Zen beenden','Exit zen')}">✕</button><div class="zen-c"><div class="zen-done">${tr('Alles erledigt für heute','All done for today')}</div><button class="btn glass" data-a="zen-off">${tr('Zen beenden','Exit zen')}</button></div></div>`;
+  const g=goal(cur.goalId)||NONE(),run=r&&r.taskId===cur.id,secs=taskSecs(cur);const ck=ckStat(cur.notes);
+  return `<div id="zen" class="${run?'run':'paused'} ${zenNotes?'notes':''}">
+  <div class="zen-bar"><span class="zen-lbl">${ZEN_IC} Zen</span><span class="sp"></span><button class="zen-nb ${zenNotes?'on':''}" data-a="zen-notes">${tr('Notizen','Notes')}${ck?` <small>☑ ${ck.d}/${ck.n}</small>`:''}</button><button class="zen-x" data-a="zen-off" title="${tr('Zen beenden (Esc)','Exit zen (Esc)')}" aria-label="${tr('Zen beenden','Exit zen')}">✕</button></div>
+  <div class="zen-main"><div class="zen-c">
+    <div class="zen-goal"><i style="background:${g.color}"></i>${esc(g.name)}</div>
+    <div class="zen-title">${esc(titleText(cur))}</div>
+    <div class="zen-ring">${ringSvg(secs,300,6).replace('<svg ','<svg data-live-ring="'+cur.id+'" ')}<div class="zen-ring-in"><div class="zen-clock" data-live-focus="${cur.id}">${fmtClock(secs)}</div><div class="zen-sub">${run?tr('läuft','running'):secs?tr('pausiert','paused'):tr('bereit','ready')}</div></div></div>
+    <div class="zen-btns">${run?`<button class="zen-big" data-a="stop" title="${tr('Pause','Pause')}">${I.pause()}</button>`:`<button class="zen-big" data-a="play" data-t="${cur.id}" title="${tr('Start','Start')}">${I.play()}</button>`}${cur.ongoing?'':`<button class="zen-done-b" data-a="focus-done" data-t="${cur.id}">✓ ${tr('Erledigt','Done')}</button>`}</div>
+    ${window._zenHint?`<div class="zen-hint">${zenHint()}</div>`:''}
+  </div>
+  ${zenNotes?`<aside class="zen-notes"><div class="zen-nh"><b>${tr('Notizen','Notes')}</b><span class="sp"></span><button class="zen-x sm" data-a="zen-notes" aria-label="${tr('Schließen','Close')}">✕</button></div>${noteEditor('t:'+cur.id,cur.notes||'',tr('Gedanken, Checklisten, Links …','Thoughts, checklists, links …'))}</aside>`:''}
+  </div></div>`;}
+
 // ================= Fokus =================
 function viewFocus(){
   const q=focusQueue();
   const r=S.running;
   const pin=S.meta.focusPin&&q.find(t=>t.id===S.meta.focusPin);
   const cur=(r&&r.taskId&&S.tasks.find(t=>t.id===r.taskId&&!t.done))||pin||q[0];
-  let h=`<div class="pagehead"><h1>${tr('Fokus','Focus')}</h1><span class="small">${tr('Immer nur eine Aufgabe.','One task at a time.')}</span></div>`;
+  if(zenOn)return viewZen(cur);
+  let h=`<div class="pagehead zhead"><div><h1>${tr('Fokus','Focus')}</h1><span class="small">${tr('Immer nur eine Aufgabe.','One task at a time.')}</span></div><button class="zenbtn" data-a="zen-on" title="${tr('Zen-Modus: Vollbild, nur Timer','Zen mode: full screen, timer only')}">${ZEN_IC}<span>Zen</span></button></div>`;
   if(!cur){
     const n=S.tasks.filter(t=>t.done&&t.doneOn===todayKey()).length;
     return h+`<div class="card empty"><div style="font-size:40px">🌄</div><div style="font-size:18px;color:var(--text);font-weight:600;margin:8px 0 6px">${n?tr('Alles für heute erledigt','All done for today'):tr('Nichts geplant','Nothing planned')}</div>${n?tr(`Du hast heute ${n} ${n===1?'Aufgabe':'Aufgaben'} geschafft. Feierabend verdient.`,`You finished ${n} ${n===1?'task':'tasks'} today. Well earned rest.`):tr('Lege unter „Heute“ fest, woran du arbeiten willst, und in welcher Reihenfolge.','Decide under “Today” what you want to work on, and in which order.')}<br><button class="btn" data-a="tab" data-tab="heute">${tr('Zu Heute','Go to Today')}</button></div>`;
@@ -2638,7 +2720,7 @@ Object.assign(EXTRA_ACTIONS,{
   'ned'(el){nedCmd(el);},
   'ck-toggle'(el){ckToggle(el.dataset.k,+el.dataset.i);},
 });
-Object.assign(EXTRA_ACTIONS,{'note-pin-q'(el){const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.pin=!n.pin;if(!n.pin)delete n.pin;save();render();toast(n.pin?tr('Angepinnt','Pinned'):tr('Gelöst','Unpinned'));},'sr-note'(el){closeSearch();setTab('notizen');noteModal(el.dataset.n);},'note-open'(el,e){noteModal(el.dataset.n);},'nf-f'(el){NF.f=el.dataset.v;render();},
+Object.assign(EXTRA_ACTIONS,{'zen-on'(){zenStart();},'zen-off'(){zenStop();},'zen-notes'(){const b=document.querySelector('#zen [data-ned-body]');if(b)nedCommit(b);zenNotes=!zenNotes;render();if(zenNotes)setTimeout(()=>{const n=document.querySelector('#zen [data-ned-body]');n&&n.focus();},60);},'note-pin-q'(el){const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.pin=!n.pin;if(!n.pin)delete n.pin;save();render();toast(n.pin?tr('Angepinnt','Pinned'):tr('Gelöst','Unpinned'));},'sr-note'(el){closeSearch();setTab('notizen');noteModal(el.dataset.n);},'note-open'(el,e){noteModal(el.dataset.n);},'nf-f'(el){NF.f=el.dataset.v;render();},
   'note-close'(){noteFlush();closeModal();render();},
   'note-col'(el){noteFlush();const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.color=el.dataset.v;S.meta.lastNoteCol=n.color;save();noteModal(n.id);},
   'note-pin'(el){noteFlush();const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.pin=!n.pin;if(!n.pin)delete n.pin;save();noteModal(n.id);},
