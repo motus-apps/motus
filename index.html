@@ -937,6 +937,14 @@ html[data-theme=dark] .pres2.ph-night .pres2-det{background:rgba(15,28,38,.55);c
 .ned{overflow:visible}.ntb{border-radius:12px 12px 0 0}.nmodal .ntb{border-radius:10px 10px 0 0}
 .nedit:has(>p:only-child>br:only-child)::before{content:attr(data-ph);color:var(--muted);position:absolute;pointer-events:none}.nedit{position:relative}
 .nedit h1,.nedit h2,.nedit h3,.nrich h1,.nrich h2,.nrich h3{text-transform:none;letter-spacing:0;color:inherit;font-family:inherit}
+.npin{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:8px;border:0;background:transparent;display:inline-flex;align-items:center;justify-content:center;color:rgba(0,0,0,.45);cursor:pointer;opacity:0;transition:opacity .15s,background .15s}
+.ncard:hover .npin,.npin.on,.npin:focus-visible{opacity:1}
+.npin:hover{background:rgba(0,0,0,.08);color:rgba(0,0,0,.75)}
+.npin.on{color:rgba(0,0,0,.6)}.npin.on:hover::after{content:"";position:absolute;width:18px;height:2px;background:currentColor;transform:rotate(-45deg);border-radius:2px}
+.ncard .nc-body{padding-right:22px}
+@media (hover:none){.npin{opacity:.55}.npin.on{opacity:1}}
+[data-theme=dark] .npin{color:rgba(255,255,255,.5)}[data-theme=dark] .npin:hover{background:rgba(255,255,255,.1);color:#fff}[data-theme=dark] .npin.on{color:rgba(255,255,255,.75)}
+.npin{z-index:2}
 </style>
 </head>
 <body>
@@ -1566,7 +1574,7 @@ const NCOL=[['gelb','#fff1a8','#4a4220'],['gruen','#d9f0cf','#26402a'],['rosa','
 const ncol=k=>NCOL.find(c=>c[0]===k)||NCOL[0];
 let NF={f:'all'};
 function noteCard(n){const g=n.goalId&&goal(n.goalId);const empty=!notePlain(n.html).trim();
-  return `<div class="ncard nc-${ncol(n.color)[0]}" data-a="note-open" data-n="${n.id}">${n.pin?`<span class="npin" title="${tr('Angepinnt','Pinned')}">${NPIN}</span>`:''}<div class="nc-body">${empty?`<span class="small">${tr('Leerer Zettel','Empty note')}</span>`:renderNote(n.html,'n:'+n.id)}</div><div class="nc-foot">${g?`<span class="nc-g"><i style="background:${g.color}"></i>${esc(g.name)}</span>`:''}<span class="sp"></span><span>${noteDate(n.upd||n.created)}</span></div></div>`;}
+  return `<div class="ncard nc-${ncol(n.color)[0]}" data-a="note-open" data-n="${n.id}">${n.arch?'':`<button class="npin ${n.pin?'on':''}" data-a="note-pin-q" data-n="${n.id}" title="${n.pin?tr('Lösen','Unpin'):tr('Anpinnen','Pin')}" aria-label="${n.pin?tr('Lösen','Unpin'):tr('Anpinnen','Pin')}">${NPIN}</button>`}<div class="nc-body">${empty?`<span class="small">${tr('Leerer Zettel','Empty note')}</span>`:renderNote(n.html,'n:'+n.id)}</div><div class="nc-foot">${g?`<span class="nc-g"><i style="background:${g.color}"></i>${esc(g.name)}</span>`:''}<span class="sp"></span><span>${noteDate(n.upd||n.created)}</span></div></div>`;}
 const NPIN='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l-1 6 3 3H7l3-3z"/><path d="M12 13v7"/></svg>';
 function noteDate(ms){if(!ms)return '';const k=dkey(new Date(ms-DS()));const tk=todayKey();if(k===tk)return new Date(ms).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'});if(k===shiftKey(tk,-1))return tr('Gestern','Yesterday');return new Date(ms).toLocaleDateString(LOC(),{day:'numeric',month:'short'});}
 function viewNotes(){
@@ -2609,7 +2617,7 @@ Object.assign(EXTRA_ACTIONS,{
   'ned'(el){nedCmd(el);},
   'ck-toggle'(el){ckToggle(el.dataset.k,+el.dataset.i);},
 });
-Object.assign(EXTRA_ACTIONS,{'sr-note'(el){closeSearch();setTab('notizen');noteModal(el.dataset.n);},'note-open'(el,e){noteModal(el.dataset.n);},'nf-f'(el){NF.f=el.dataset.v;render();},
+Object.assign(EXTRA_ACTIONS,{'note-pin-q'(el){const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.pin=!n.pin;if(!n.pin)delete n.pin;save();render();toast(n.pin?tr('Angepinnt','Pinned'):tr('Gelöst','Unpinned'));},'sr-note'(el){closeSearch();setTab('notizen');noteModal(el.dataset.n);},'note-open'(el,e){noteModal(el.dataset.n);},'nf-f'(el){NF.f=el.dataset.v;render();},
   'note-close'(){noteFlush();closeModal();render();},
   'note-col'(el){noteFlush();const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.color=el.dataset.v;S.meta.lastNoteCol=n.color;save();noteModal(n.id);},
   'note-pin'(el){noteFlush();const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.pin=!n.pin;if(!n.pin)delete n.pin;save();noteModal(n.id);},
