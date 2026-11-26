@@ -1067,6 +1067,16 @@ html{scrollbar-gutter:stable}
 .abl-in{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;padding:6px 0 4px;min-height:40px;border-radius:12px}
 .abl-in .abl-hint{grid-column:1/-1;padding:0 4px 2px}
 .abl-in .dropline{grid-column:1/-1}
+.h2sub{font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted);font-size:12.5px;margin-left:4px}
+.msec-h{align-items:center;margin-top:8px}.msec-h h2{margin-bottom:8px}
+.mchart{display:flex;align-items:flex-end;gap:2px;height:120px;margin-top:14px}
+.mc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px;min-width:0}
+.mcb{width:100%;max-width:16px;border-radius:4px 4px 2px 2px;overflow:hidden;display:flex;flex-direction:column-reverse;background:var(--surface2)}
+.mcb i{display:block;width:100%}
+.mc span{font-size:10px;color:var(--muted);height:12px}
+.mc.we .mcb{opacity:.75}.mc.fut .mcb{background:transparent}
+.mc.cur span{color:var(--gold);font-weight:700}
+.ystats em{display:block;font-style:normal;font-size:11px;margin-top:2px}.ystats em.up{color:#2f8f5b}.ystats em.down{color:#c0392b}
 </style>
 </head>
 <body>
@@ -2073,7 +2083,7 @@ function viewFocus(){
 }
 
 // ================= Logbuch =================
-function logSection(days){
+function logSection(days,part){
   const tk=todayKey(),keys=days.map(dkey);
   const now=Date.now();
   const ses=[...S.sessions];
@@ -2082,7 +2092,7 @@ function logSection(days){
   let h0=8,h1=20;
   perDay.flat().forEach(x=>{const a=(x.a-x.s0)/3600000,b=(x.b-x.s0)/3600000;h0=Math.min(h0,Math.floor(a));h1=Math.max(h1,Math.ceil(b));});
   const PX=36,H=(h1-h0)*PX,ds=+P().dayStart||0;
-  let h=`<h2>${tr('So lief deine Woche','How your week went')}</h2><div class="small" style="margin:-4px 0 10px">${tr('Kein Plan, sondern ein Protokoll: wann du wirklich woran gearbeitet hast.','Not a plan but a record: when you actually worked on what.')}</div>`;
+  let h=`<div class="small" style="margin:14px 0 10px">${tr('Kein Plan, sondern ein Protokoll: wann du wirklich woran gearbeitet hast.','Not a plan but a record: when you actually worked on what.')}</div>`;
   if(!perDay.flat().length){h+=`<div class="card small">${tr('Diese Woche lief noch kein Timer. Sobald du mit ▶ an einer Aufgabe arbeitest, siehst du hier, wann du woran gearbeitet hast.','No timer ran this week yet. Once you work on a task with ▶, you’ll see here when you worked on what.')}</div>`;}
   else{
   h+=`<div class="card tl-wrap"><div class="tl"><div></div>`;
@@ -2099,11 +2109,10 @@ function logSection(days){
   const used=[...new Set(perDay.flat().map(x=>x.g))].map(goal).filter(Boolean);
   if(used.length)h+=`<div class="legend">${used.map(g=>`<span><i class="dot" style="background:${g.color}"></i>${esc(g.name)}</span>`).join('')}</div>`;
   }
-  // Nachgetragen
-  const man=(S.manual||[]).filter(e=>keys.includes(e.day)&&goal(e.g)).sort((a,b)=>a.day<b.day?-1:a.day>b.day?1:(a.at||0)-(b.at||0));
-  h+=`<h2>${tr('Nachgetragen','Added manually')}${man.length?' · '+fmtShort(man.reduce((a,e)=>a+e.secs,0)):''}</h2><div class="card">${man.length?`<div class="donelog">${man.map(e=>{const g=goal(e.g);return `<div class="d"><span class="dot" style="background:${g.color}"></span><div class="tt">${esc(g.name)}${e.note?` <span class="small">· ${esc(e.note)}</span>`:''}<div class="small">${parseKey(e.day).toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'short'})}</div></div><span class="tm">${fmtShort(e.secs)}</span><button class="icon xs" data-a="mn-edit" data-id="${e.id}" title="${tr('Bearbeiten','Edit')}">✎</button></div>`;}).join('')}</div>`:`<div class="small">${tr('Zeit ohne Timer, z. B. fürs Training. Hier kannst du sie später auch korrigieren.','Time without a timer, e.g. for training. You can correct it here later too.')}</div>`}<div style="margin-top:10px"><button class="btn ghost sm" data-a="mn-new">+ ${tr('Zeit nachtragen','Add time')}</button></div></div>`;
+  if(part==='tl')return h;
+  h='';
   const done=S.tasks.filter(t=>t.done&&keys.includes(t.doneOn)).sort((a,b)=>(a.doneAt||0)-(b.doneAt||0));
-  h+=`<h2>${tr('Erledigt','Done')} · ${done.length}</h2><div class="card">${done.length?`<div class="donelog">${done.map(t=>{const g=goal(t.goalId)||NONE();return `<div class="d"><span class="chk done" style="width:20px;height:20px;border-radius:6px">${I.check(11)}</span><div class="tt">${esc(t.title)} <span class="small">· ${wdShort(parseKey(t.doneOn))}</span></div><span class="dot" style="background:${g.color}"></span><span class="tm">${t.secs>=60?fmtShort(t.secs):''}</span></div>`;}).join('')}</div>`:`<div class="small">${tr('In dieser Woche noch nichts abgehakt.','Nothing checked off this week yet.')}</div>`}</div>`;
+  h+=`<h2>${tr('Erledigt','Done')} · ${done.length} <span class="h2sub">${revOff===0?tr('diese Woche','this week'):revOff===-1?tr('letzte Woche','last week'):rangeLabel(days)}</span></h2><div class="card">${done.length?`<div class="donelog">${done.map(t=>{const g=goal(t.goalId)||NONE();return `<div class="d"><span class="chk done" style="width:20px;height:20px;border-radius:6px">${I.check(11)}</span><div class="tt">${esc(t.title)} <span class="small">· ${wdShort(parseKey(t.doneOn))}</span></div><span class="dot" style="background:${g.color}"></span><span class="tm">${t.secs>=60?fmtShort(t.secs):''}</span></div>`;}).join('')}</div>`:`<div class="small">${tr('In dieser Woche noch nichts abgehakt.','Nothing checked off this week yet.')}</div>`}</div>`;
   return h;
 }
 
@@ -2145,6 +2154,23 @@ function goalCard(g){
 }
 
 // ================= Rückblick =================
+
+let revMonOff=0;
+function monthSection(){const now=new Date(Date.now()-DS());const ms=new Date(now.getFullYear(),now.getMonth()+revMonOff,1),me=new Date(ms.getFullYear(),ms.getMonth()+1,0);const tk=todayKey();
+  const gs=S.goals.filter(g=>g.id!=='_none');const days=[];for(let d=1;d<=me.getDate();d++)days.push(dkey(new Date(ms.getFullYear(),ms.getMonth(),d)));
+  const per=days.map(k=>{const by={};let tot=0;if(k<=tk)gs.forEach(g=>{const v=secsOn(g.id,k);if(v){by[g.id]=v;tot+=v;}});return {k,by,tot,pres:k<=tk?presOn(k):0};});
+  const tot=per.reduce((a,x)=>a+x.tot,0),act=per.filter(x=>x.tot>=60).length,presT=per.reduce((a,x)=>a+x.pres,0);
+  const done=S.tasks.filter(t=>t.done&&t.doneOn&&t.doneOn.slice(0,7)===days[0].slice(0,7)).length;
+  const gt={};per.forEach(x=>{for(const id in x.by)gt[id]=(gt[id]||0)+x.by[id];});const order=gs.filter(g=>gt[g.id]).sort((a,b)=>gt[b.id]-gt[a.id]);
+  const max=Math.max(3600,...per.map(x=>x.tot));
+  const pm=new Date(ms.getFullYear(),ms.getMonth()-1,1);const pd=[];for(let d=1;d<=new Date(pm.getFullYear(),pm.getMonth()+1,0).getDate();d++)pd.push(dkey(new Date(pm.getFullYear(),pm.getMonth(),d)));
+  const prevTot=pd.reduce((a,k)=>a+gs.reduce((b,g)=>b+secsOn(g.id,k),0),0);const diff=tot-prevTot;
+  const label=ms.toLocaleDateString(LOC(),{month:'long',year:'numeric'});
+  let h=`<div class="row msec-h"><h2>${tr('So lief dein Monat','How your month went')}</h2><span class="sp"></span><div class="yrnav"><button class="icon xs" data-a="rev-mon" data-d="-1" aria-label="${tr('Vormonat','Previous month')}">${I.chev(-1)}</button><span>${label}</span><button class="icon xs" data-a="rev-mon" data-d="1" ${revMonOff>=0?'disabled':''} aria-label="${tr('Nächster Monat','Next month')}">${I.chev(1)}</button></div></div>`;
+  h+=`<div class="card yr"><div class="ystats"><div><b>${fmtShort(tot)}</b><span>${tr('Ziel-Stunden','goal hours')}</span>${prevTot||tot?`<em class="${diff>=0?'up':'down'}">${diff>=0?'▲':'▼'} ${fmtShort(Math.abs(diff))}</em>`:''}</div><div><b>${act}</b><span>${tr('aktive Tage','active days')}</span></div><div><b>${done}</b><span>${tr('erledigt','done')}</span></div><div><b>${presT?fmtShort(presT):'–'}</b><span>${tr('anwesend','present')}</span></div></div>`;
+  h+=`<div class="mchart">${per.map(x=>{const d=parseKey(x.k);const we=d.getDay()===0||d.getDay()===6;const fut=x.k>tk;return `<div class="mc ${x.k===tk?'cur':''} ${we?'we':''} ${fut?'fut':''}" title="${d.toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'short'})}: ${fmtShort(x.tot)}"><div class="mcb" style="height:${x.tot?Math.max(3,x.tot/max*100):0}%">${order.filter(g=>x.by[g.id]).map(g=>`<i style="height:${x.by[g.id]/x.tot*100}%;background:${g.color}"></i>`).join('')}</div><span>${d.getDate()===1||d.getDate()%5===0?d.getDate():''}</span></div>`;}).join('')}</div>`;
+  h+=order.length?`<div class="ygoals">${order.map(g=>`<div class="yg"><span class="dot" style="background:${g.color}"></span><span class="ygn">${esc(g.name)}</span><span class="ygb"><i style="width:${gt[g.id]/gt[order[0].id]*100}%;background:${g.color}"></i></span><b>${fmtShort(gt[g.id])}</b><span class="ygp">${Math.round(gt[g.id]/tot*100)}%</span></div>`).join('')}</div>`:`<div class="small" style="margin-top:10px">${tr('In diesem Monat wurde noch keine Zeit erfasst.','No time tracked this month yet.')}</div>`;
+  return h+'</div>';}
 function yearGrid(){
   const y=new Date(Date.now()-DS()).getFullYear(),tk=todayKey(),curM=new Date(Date.now()-DS()).getMonth();
   const gs=S.goals.filter(g=>g.id!=='_none');const months=Array.from({length:12},()=>({tot:0,by:{}}));const gtot={};let tot=0,act=0;
@@ -2170,25 +2196,21 @@ function viewReview(){
   const tgtSum=goals.filter(g=>!g.archived).reduce((a,g)=>a+(g.target||0),0)*3600;
   const diff=qW-qP;
   let h=`<div class="pagehead"><h1>${tr('Rückblick','Review')}</h1><div class="navbtns"><span class="lbl">${revOff===0?tr('Diese Woche','This week'):revOff===-1?tr('Letzte Woche','Last week'):rangeLabel(days)}</span><button class="icon" data-a="rev" data-d="-1">${I.chev(-1)}</button><button class="btn ghost sm" data-a="rev" data-d="0">${tr('Aktuell','Current')}</button><button class="icon" data-a="rev" data-d="1">${I.chev(1)}</button></div></div>`;
-  h+=`<div class="hint">${tr('Dein festes Ritual: Nimm dir jede Woche 20 Minuten. Was lief gut, was nicht, und warum? Gemessen wird nur die Zeit, die in deine Ziele geflossen ist, also dein Input, nicht das Ergebnis.','Your weekly ritual: take 20 minutes each week. What went well, what didn’t, and why? Only time that went into your goals is counted, your input, not the outcome.')}</div>`;
+  h+=presYear();
+  h+=logSection(days,'done');
+  h+=`<h2>${tr('So lief deine Woche','How your week went')}</h2>`;
   h+=`<div class="stats"><div class="card stat"><div class="v" style="color:var(--gold)">${fmtShort(qW)}</div><div class="k">${tr('Ziel-Stunden','Goal hours')}${tgtSum?tr(' von ',' of ')+fmtShort(tgtSum):''}</div>${qP||qW?`<div class="trend ${diff>=0?'up':'down'}">${diff>=0?'▲':'▼'} ${fmtShort(Math.abs(diff))} ${tr('zur Vorwoche','vs last week')}</div>`:''}</div><div class="card stat"><div class="v">${doneT.length}</div><div class="k">${tr('erledigt','done')}</div></div><div class="card stat"><div class="v">${fmtShort(oW)}</div><div class="k">${tr('Sonstiges','Other')}</div></div></div>`;
   const per=days.map(d=>goals.map(g=>({g,s:secsOn(g.id,dkey(d))})));
   const max=Math.max(3600,...per.map(p=>p.reduce((a,x)=>a+x.s,0)));
   h+=`<div class="card"><div class="small">${tr('Ziel-Stunden pro Tag','Goal hours per day')} · ${rangeLabel(days)}</div><div class="weekchart">${days.map((d,i)=>{const tot=per[i].reduce((a,x)=>a+x.s,0);return `<div class="col"><div class="stack" style="height:${Math.max(3,tot/max*80)}px" title="${fmtDur(tot)}">${per[i].filter(x=>x.s>0).map(x=>`<i style="display:block;height:${x.s/tot*100}%;background:${x.g.color}"></i>`).join('')}</div><div class="d ${dkey(d)===tk?'now':''}">${wdShort(d)}</div></div>`;}).join('')}</div></div>`;
-  h+=`<h2>${tr('Input-Ziele','Input goals')}</h2>`;
-  if(!goals.length)h+=`<div class="card empty">${tr('Noch keine Ziele.','No goals yet.')}</div>`;
-  for(const g of goals){const w=keys.reduce((a,k)=>a+secsOn(g.id,k),0);const tgt=(g.target||0)*3600;const dn=doneT.filter(t=>t.goalId===g.id).length;
-    h+=`<div class="card"><div class="goal-h"><span class="dot" style="background:${g.color}"></span><span class="name">${esc(g.name)}</span><span class="today">${fmtDur(w)}${tgt?' / '+g.target+' h':''}</span></div>
-    <div class="bar"><i style="width:${tgt?Math.min(100,w/tgt*100):(qW?w/qW*100:0)}%;background:${g.color}"></i></div>
-    <div class="small" style="margin-top:8px">${tgt?(w>=tgt?tr('Input-Ziel erreicht 🎉','Input goal reached 🎉'):tr('Noch '+fmtDur(tgt-w)+' bis zum Input-Ziel',fmtDur(tgt-w)+' left to your input goal')):tr('Kein Input-Ziel gesetzt','No input goal set')} · ${dn} ${tr('erledigt','done')}</div></div>`;}
-  h+=logSection(days);
+  h+=logSection(days,'tl');
+  h+=monthSection();
+  h+=yearGrid();
   const r=S.reviews[wk]||{};
   h+=`<h2>${tr('Reflexion','Reflection')}</h2><div class="card review"><label>${tr('Was lief gut?','What went well?')}</label><textarea data-review="good" data-w="${wk}" placeholder="${tr('Worauf bist du stolz?','What are you proud of?')}">${esc(r.good||'')}</textarea>
     <label>${tr('Was lief nicht gut, und warum?','What didn’t go well, and why?')}</label><textarea data-review="hard" data-w="${wk}" placeholder="${tr('Was hat dich gebremst?','What held you back?')}">${esc(r.hard||'')}</textarea>
     <label>${tr('Passt dein Alltag noch zu deinen Zielen?','Does your everyday life still fit your goals?')}</label><textarea data-review="fit" data-w="${wk}" placeholder="${tr('Musst du deine Ziele ändern oder deinen Alltag?','Do you need to change your goals or your routine?')}">${esc(r.fit||'')}</textarea>
     <label>${tr('Was verbesserst du nächste Woche?','What will you improve next week?')}</label><textarea data-review="next" data-w="${wk}" placeholder="${tr('Ein, zwei konkrete Änderungen','One or two concrete changes')}">${esc(r.next||'')}</textarea></div>`;
-  h+=presYear();
-  h+=yearGrid();
   return h;
 }
 
@@ -2821,7 +2843,7 @@ Object.assign(EXTRA_ACTIONS,{
   'ned'(el){nedCmd(el);},
   'ck-toggle'(el){ckToggle(el.dataset.k,+el.dataset.i);},
 });
-Object.assign(EXTRA_ACTIONS,{'m-day'(el){monthDayModal(el.dataset.v);},'m-step'(el){mStep(+el.dataset.v);},'m-more'(){window._mBack=(window._mBack||0)+1;render();},'zen-on'(){zenStart();},'zen-off'(){zenStop();},'zen-notes'(){const b=document.querySelector('#zen [data-ned-body]');if(b)nedCommit(b);zenNotes=!zenNotes;render();if(zenNotes)setTimeout(()=>{const n=document.querySelector('#zen [data-ned-body]');n&&n.focus();},60);},'note-pin-q'(el){const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.pin=!n.pin;if(!n.pin)delete n.pin;save();render();toast(n.pin?tr('Angepinnt','Pinned'):tr('Gelöst','Unpinned'));},'sr-note'(el){closeSearch();setTab('notizen');noteModal(el.dataset.n);},'note-open'(el,e){noteModal(el.dataset.n);},'nf-f'(el){NF.f=el.dataset.v;render();},
+Object.assign(EXTRA_ACTIONS,{'rev-mon'(el){revMonOff=Math.min(0,revMonOff+(+el.dataset.d));render();},'m-day'(el){monthDayModal(el.dataset.v);},'m-step'(el){mStep(+el.dataset.v);},'m-more'(){window._mBack=(window._mBack||0)+1;render();},'zen-on'(){zenStart();},'zen-off'(){zenStop();},'zen-notes'(){const b=document.querySelector('#zen [data-ned-body]');if(b)nedCommit(b);zenNotes=!zenNotes;render();if(zenNotes)setTimeout(()=>{const n=document.querySelector('#zen [data-ned-body]');n&&n.focus();},60);},'note-pin-q'(el){const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.pin=!n.pin;if(!n.pin)delete n.pin;save();render();toast(n.pin?tr('Angepinnt','Pinned'):tr('Gelöst','Unpinned'));},'sr-note'(el){closeSearch();setTab('notizen');noteModal(el.dataset.n);},'note-open'(el,e){noteModal(el.dataset.n);},'nf-f'(el){NF.f=el.dataset.v;render();},
   'note-close'(){noteFlush();closeModal();render();},
   'note-col'(el){noteFlush();const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.color=el.dataset.v;S.meta.lastNoteCol=n.color;save();noteModal(n.id);},
   'note-pin'(el){noteFlush();const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.pin=!n.pin;if(!n.pin)delete n.pin;save();noteModal(n.id);},
