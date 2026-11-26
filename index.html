@@ -1078,6 +1078,25 @@ html{scrollbar-gutter:stable}
 .mc.cur span{color:var(--gold);font-weight:700}
 .ystats em{display:block;font-style:normal;font-size:11px;margin-top:2px}.ystats em.up{color:#2f8f5b}.ystats em.down{color:#c0392b}
 .msec-h .sp{flex:1}
+/* Abwesenheit */
+.pd.abs{background:var(--ac)!important;opacity:.9}
+.abs-sum{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 2px;font-size:12.5px;color:var(--muted)}
+.abs-sum span{display:inline-flex;align-items:center;gap:5px}.abs-sum i{width:9px;height:9px;border-radius:3px;background:var(--ac)}.abs-sum b{color:var(--text)}
+.absb{display:inline-flex;align-items:center;font-size:11px;font-weight:700;letter-spacing:0;text-transform:none;padding:1px 7px;border-radius:99px;color:var(--ac);background:color-mix(in srgb,var(--ac) 15%,transparent);margin-left:6px}
+.absb.sm{font-size:10.5px}
+.abs-types{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.abs-t{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:99px;border:1px solid var(--line);font-size:13.5px;color:var(--text)}
+.abs-t i{width:9px;height:9px;border-radius:50%;background:var(--ac)}
+.abs-t.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,transparent);font-weight:600}
+.abs-range{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.abs-n{margin-top:6px}
+.abs-half{display:flex;align-items:center;gap:8px;margin-top:12px;font-weight:500}.abs-half input{width:auto}
+.absrow{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--ac) 12%,transparent);margin:2px 0 8px;color:var(--text)}
+.absrow i{width:9px;height:9px;border-radius:50%;background:var(--ac);flex:none}.absrow .sp{flex:1}
+.mabs{font-size:10.5px;font-weight:700;color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,transparent);border-radius:5px;padding:1px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.mabs{font-size:8.5px;padding:0 2px}}
+.abs-scope{margin-top:4px}
+.abs-h{display:flex;align-items:center;gap:10px;margin-top:10px}.abs-h label{margin:0}.abs-h input{width:90px}
 </style>
 </head>
 <body>
@@ -1101,7 +1120,7 @@ const COLORS=['#fdbd4a','#2f8f5b','#2b8aa6','#8aa65a','#c77d4a','#b85c5c','#8a6b
 const MILESTONES=[5,10,25,50,100,250,500,1000,2500,5000];
 const TABS=['heute','woche','notizen','fokus','ziele','rueckblick','einstellungen','hilfe'];
 const CLIENT=Math.random().toString(36).slice(2,9);
-const EMPTY=()=>({notes:[],pres:[],goals:[],tasks:[],log:{},running:null,sessions:[],reviews:{},compass:{},prefs:{},profile:{},meta:{},manual:[]});
+const EMPTY=()=>({absent:[],notes:[],pres:[],goals:[],tasks:[],log:{},running:null,sessions:[],reviews:{},compass:{},prefs:{},profile:{},meta:{},manual:[]});
 const DEF_PREFS={weekView:'board',lang:null,theme:'system',weekStart:1,dayStart:0,review:true,reviewDay:0,favicons:true,dismissed:{}};
 let S=EMPTY();
 let tab='heute';
@@ -1223,7 +1242,7 @@ function placeTask(id,dropKey,beforeId){
 
 // ================= Speichern =================
 let ref=null,saveTimer=null,writing=Promise.resolve(),lastRev=null;
-function normalize(o){const s=Object.assign(EMPTY(),o||{});if(!Array.isArray(s.manual))s.manual=[];if(!Array.isArray(s.pres))s.pres=[];if(!Array.isArray(s.notes))s.notes=[];['prefs','profile','meta','compass','reviews','log'].forEach(k=>{if(!s[k]||typeof s[k]!=='object')s[k]={};});s.tasks.forEach((t,i)=>{if(!t.goalId)t.goalId='_none';if(t.order==null)t.order=i;});return s;}
+function normalize(o){const s=Object.assign(EMPTY(),o||{});if(!Array.isArray(s.manual))s.manual=[];if(!Array.isArray(s.pres))s.pres=[];if(!Array.isArray(s.notes))s.notes=[];if(!Array.isArray(s.absent))s.absent=[];['prefs','profile','meta','compass','reviews','log'].forEach(k=>{if(!s[k]||typeof s[k]!=='object')s[k]={};});s.tasks.forEach((t,i)=>{if(!t.goalId)t.goalId='_none';if(t.order==null)t.order=i;});return s;}
 function localLoad(){try{const v=localStorage.getItem('motus');if(v)S=normalize(JSON.parse(v));}catch(e){}}
 function localSave(){try{localStorage.setItem('motus',JSON.stringify(S));}catch(e){}}
 function save(){
@@ -1645,7 +1664,7 @@ function presCard(){
   const open=!!S.meta.presOpen;
   return `<section class="pres2 ${st} ph-${scenePh()} ${r?'quiet':''}">${presArt(st)}<div class="pres2-in">
     <div class="pres2-row">
-      <div class="pres2-tx"><div class="pres2-st"><span class="pres-dot"></span>${state}<span class="pres2-date">${new Date(Date.now()-DS()).toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'})}</span></div><div class="pres2-sub"><b data-live-pres>${fmtClock(p)}</b><span>${sub}</span></div>${(()=>{const w=wxNow();return w?`<div class="pres2-wx">${Math.round(w.temp)}° · ${wxLabel(wxKind(w.code))} · ${esc(S.prefs.wxLoc.name)}</div>`:'';})()}</div>
+      <div class="pres2-tx"><div class="pres2-st"><span class="pres-dot"></span>${state}${absBadge(absOn(todayKey()),1)}<span class="pres2-date">${new Date(Date.now()-DS()).toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'})}</span></div><div class="pres2-sub"><b data-live-pres>${fmtClock(p)}</b><span>${sub}</span></div>${(()=>{const w=wxNow();return w?`<div class="pres2-wx">${Math.round(w.temp)}° · ${wxLabel(wxKind(w.code))} · ${esc(S.prefs.wxLoc.name)}</div>`:'';})()}</div>
       <div class="pres2-btns">${btns}</div></div>
     ${cmp}
     ${timerOnly?`<div class="small pres-hint">${tr('Der Timer läuft, die Arbeitszeit aber nicht.','The timer is running, but work time is not.')} <button class="linkbtn" data-a="pres-start">${tr('Starten','Start')}</button></div>`:''}
@@ -1678,15 +1697,16 @@ function presYear(){
       if(!inY){col+='<i class="pd out"></i>';continue;}
       if(d.getDate()===1)months.push({m:d.getMonth(),c:Math.round((cur-start)/(7*864e5))});
       const p=k<=tk?presOn(k):0,b=k<=tk?allSecs(k):0,we=d.getDay()===0||d.getDay()===6;
-      const hn=holidayName(k);let cls=k>tk||(k===tk&&p<60)?'fut':p>=60?'on':(we||hn)?'we':'off';if(hn)cls+=' hol';if(presSel===k)cls+=' sel';if(p>=60){totP+=p;totB+=b;daysP++;if(b>=p*0.9)cls+=' full';}
-      col+=`<i class="pd ${cls} ${k===tk?'today':''}" data-a="pres-day" data-v="${k}" title="${d.toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'short'})}${hn?' · '+hn:''}${p>=60?' · '+tr('anwesend ','present ')+fmtShort(p)+' · '+tr('gebucht ','booked ')+fmtShort(b):''}"></i>`;}
+      const hn=holidayName(k),ab=absOn(k);let cls=ab&&p<60?'abs':k>tk||(k===tk&&p<60)?'fut':p>=60?'on':(we||hn)?'we':'off';if(hn)cls+=' hol';if(presSel===k)cls+=' sel';if(p>=60){totP+=p;totB+=b;daysP++;if(b>=p*0.9)cls+=' full';}
+      col+=`<i class="pd ${cls} ${k===tk?'today':''}" ${ab&&p<60?`style="--ac:${absT(ab.type)[3]}"`:''} data-a="pres-day" data-v="${k}" title="${d.toLocaleDateString(LOC(),{weekday:'short',day:'numeric',month:'short'})}${hn?' · '+hn:''}${ab?' · '+absName(ab.type)+(ab.half?' ½':''):''}${p>=60?' · '+tr('anwesend ','present ')+fmtShort(p)+' · '+tr('gebucht ','booked ')+fmtShort(b):''}"></i>`;}
     cols+=`<div class="pcol">${col}</div>`;cur.setDate(cur.getDate()+7);}
   const W=lang()==='en'?['M','T','W','T','F','S','S']:['M','D','M','D','F','S','S'];
   const recent=[];for(let i=0;i<14;i++){const k=shiftKey(tk,-i);const p=presOn(k);if(p>=60)recent.push(k);}
   return `<div class="card presyr"><div class="row" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><b style="font-size:15px">${tr('Anwesenheit','Attendance')}</b><div class="yrnav"><button data-a="pres-yr" data-v="-1" title="${y-1}">${I.chev(-1)}</button><span>${y}</span><button data-a="pres-yr" data-v="1" title="${y+1}">${I.chev(1)}</button>${presYearOff?`<button class="yrnow" data-a="pres-yr0">${tr('Heute','Today')}</button>`:''}</div></div>
   <div class="ystats"><div><b>${daysP}</b><span>${tr('Tage anwesend','days present')}</span></div><div><b>${fmtShort(totP)}</b><span>${tr('Anwesenheit','attendance')}</span></div><div><b>${daysP?fmtShort(totP/daysP):'–'}</b><span>${tr('⌀ pro Tag','⌀ per day')}</span></div><div><b>${totP?Math.round(totB/totP*100)+' %':'–'}</b><span>${tr('zugeordnet','assigned')}</span></div></div>
   <div class="pmatrix"><div class="pwd">${W.map((w,i)=>`<span>${i%2===0?w:''}</span>`).join('')}</div><div class="pscroll"><div class="pmonths">${months.map(m=>`<span style="left:${m.c*15}px">${new Date(y,m.m,1).toLocaleDateString(LOC(),{month:'short'}).replace('.','')}</span>`).join('')}</div><div class="pgrid">${cols}</div></div></div>
-  <div class="pleg"><span><i class="pd on full"></i>${tr('anwesend, zugeordnet','present, assigned')}</span><span><i class="pd on"></i>${tr('anwesend, Lücken','present, gaps')}</span><span><i class="pd off"></i>${tr('leer','empty')}</span><span><i class="pd we"></i>${holOn()?tr('Wochenende & Feiertag','weekend & holiday'):tr('Wochenende','weekend')}</span></div>
+  <div class="pleg"><span><i class="pd on full"></i>${tr('anwesend, zugeordnet','present, assigned')}</span><span><i class="pd on"></i>${tr('anwesend, Lücken','present, gaps')}</span><span><i class="pd off"></i>${tr('leer','empty')}</span><span><i class="pd we"></i>${holOn()?tr('Wochenende & Feiertag','weekend & holiday'):tr('Wochenende','weekend')}</span><span><i class="pd abs" style="--ac:#4a8fd8"></i>${tr('abwesend','absent')}</span></div>
+  ${(()=>{const c=absYearSum(y);const ks=ABS.filter(t=>c[t[0]]);return ks.length?`<div class="abs-sum">${ks.map(t=>`<span style="--ac:${t[3]}"><i></i>${tr(t[1],t[2])} <b>${String(c[t[0]]).replace('.',',')}</b> ${c[t[0]]===1?tr('Tag','day'):tr('Tage','days')} · ${fmtShort(c['_h_'+t[0]]*3600)}</span>`).join('')}</div>`:'';})()}
   ${presLog()}</div>`;
 }
 let presLogN=14;
@@ -1694,12 +1714,12 @@ function presLog(){const tk=todayKey();
   if(presSel){const k=presSel,p=presOn(k),b=allSecs(k),d=p-b,hn=holidayName(k);
     return `<div class="plog" id="plog"><div class="plog-h"><b>${tr('Zeiten','Times')}</b><button class="pchip" data-a="pres-sel" data-v="">✕ ${tr('Alle Tage','All days')}</button></div>
     <div class="pday open1"><div class="pday-sum"><span class="pday-d">${parseKey(k).toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long',year:'numeric'})}${hn?` <span class="holb">${esc(hn)}</span>`:''}</span><span class="pday-r">${p>=60?`<span class="small ${d>600?'pg-gap':d<-600?'pg-over':'pg-ok'}">${d>60?fmtShort(d)+' '+tr('offen','open'):d<-60?'+'+fmtShort(-d):'✓'}</span>`:''}<b>${fmtDur(p)}</b></span></div>
-    ${p>=60?`<div class="small" style="margin:-4px 0 6px">${tr('gebucht','booked')} ${fmtShort(b)} ${tr('von','of')} ${fmtShort(p)}</div>`:''}${presTimeline(k)}<div class="plist2">${presRows(k)||`<div class="small" style="padding:6px 2px">${tr('Keine Anwesenheit an diesem Tag.','No attendance on this day.')}</div>`}</div>${k<=tk?`<button class="pchip add" data-a="pres-add" data-v="${k}" style="margin:8px 0 4px">+ ${tr('Arbeitseinheit hinzufügen','Add work unit')}</button>`:''}</div></div>`;}
+    ${(()=>{const ab=absOn(k);return ab?`<button class="absrow" data-a="abs-edit" data-v="${k}" style="--ac:${absT(ab.type)[3]}"><i></i><b>${esc(absName(ab.type))}${ab.half?' ½':''}</b><span class="small">${fmtShort(absH(ab)*3600)}</span>${ab.note?`<span class="small">${esc(ab.note)}</span>`:''}<span class="sp"></span><span class="small">${tr('bearbeiten','edit')}</span></button>`:'';})()}${p>=60?`<div class="small" style="margin:-4px 0 6px">${tr('gebucht','booked')} ${fmtShort(b)} ${tr('von','of')} ${fmtShort(p)}</div>`:''}${presTimeline(k)}<div class="plist2">${presRows(k)||`<div class="small" style="padding:6px 2px">${tr('Keine Anwesenheit an diesem Tag.','No attendance on this day.')}</div>`}</div><div class="row" style="gap:6px;margin:8px 0 4px;flex-wrap:wrap">${k<=tk?`<button class="pchip add" data-a="pres-add" data-v="${k}">+ ${tr('Arbeitseinheit hinzufügen','Add work unit')}</button>`:''}${absOn(k)?'':`<button class="pchip" data-a="abs-add" data-v="${k}">+ ${tr('Abwesenheit','Absence')}</button>`}</div></div></div>`;}
   const y=new Date(Date.now()-DS()).getFullYear()+presYearOff;const endK=y<new Date().getFullYear()?y+'-12-31':tk;
-  const days=[];let k=endK;for(let i=0;i<400&&days.length<presLogN&&k.startsWith(String(y));i++){if(presOn(k)>=60)days.push(k);k=shiftKey(k,-1);}
-  if(!days.length)return `<div class="plog" id="plog"><div class="plog-h"><b>${tr('Zeiten','Times')}</b><button class="pchip" data-a="pres-import">${tr('Import','Import')}</button><button class="pchip add" data-a="pres-add" data-v="${tk}">+ ${tr('Arbeitseinheit hinzufügen','Add work unit')}</button></div><div class="small">${tr('In diesem Jahr noch keine Anwesenheit erfasst.','No attendance recorded this year.')}</div></div>`;
+  const days=[];let k=endK;for(let i=0;i<400&&days.length<presLogN&&k.startsWith(String(y));i++){if(presOn(k)>=60||absOn(k))days.push(k);k=shiftKey(k,-1);}
+  if(!days.length)return `<div class="plog" id="plog"><div class="plog-h"><b>${tr('Zeiten','Times')}</b><button class="pchip" data-a="pres-import">${tr('Import','Import')}</button><button class="pchip" data-a="abs-add" data-v="${tk}">+ ${tr('Abwesenheit','Absence')}</button><button class="pchip add" data-a="pres-add" data-v="${tk}">+ ${tr('Arbeitseinheit hinzufügen','Add work unit')}</button></div><div class="small">${tr('In diesem Jahr noch keine Anwesenheit erfasst.','No attendance recorded this year.')}</div></div>`;
   const more=(()=>{let k2=shiftKey(days[days.length-1],-1);for(let i=0;i<400&&k2.startsWith(String(y));i++){if(presOn(k2)>=60)return true;k2=shiftKey(k2,-1);}return false;})();
-  return `<div class="plog" id="plog"><div class="plog-h"><b>${tr('Zeiten','Times')}</b><span class="row" style="gap:6px"><button class="pchip" data-a="pres-import">${tr('Import','Import')}</button><button class="pchip add" data-a="pres-add" data-v="${tk}">+ ${tr('Arbeitseinheit hinzufügen','Add work unit')}</button></span></div>${days.map(k=>{const p=presOn(k),b=allSecs(k),d=p-b;return `<details class="pday" ${k===tk?'open':''}><summary><span class="pday-d">${parseKey(k).toLocaleDateString(LOC(),Object.assign({weekday:'short',day:'2-digit',month:'2-digit'},parseKey(k).getFullYear()!==new Date().getFullYear()?{year:'2-digit'}:{}))}</span><span class="pday-r"><span class="small ${d>600?'pg-gap':d<-600?'pg-over':'pg-ok'}">${d>60?fmtShort(d)+' '+tr('offen','open'):d<-60?'+'+fmtShort(-d):'✓'}</span><b>${fmtDur(p)}</b></span></summary>${presTimeline(k)}<div class="plist2">${presRows(k)}</div><button class="pchip add" data-a="pres-add" data-v="${k}" style="margin:6px 0 4px">+ ${tr('Eintrag','Entry')}</button></details>`;}).join('')}${more?`<button class="btn ghost sm" data-a="pres-more" style="margin-top:8px">${tr('Ältere anzeigen','Show older')}</button>`:''}</div>`;}
+  return `<div class="plog" id="plog"><div class="plog-h"><b>${tr('Zeiten','Times')}</b><span class="row" style="gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="pchip" data-a="pres-import">${tr('Import','Import')}</button><button class="pchip" data-a="abs-add" data-v="${tk}">+ ${tr('Abwesenheit','Absence')}</button><button class="pchip add" data-a="pres-add" data-v="${tk}">+ ${tr('Arbeitseinheit hinzufügen','Add work unit')}</button></span></div>${days.map(k=>{const p=presOn(k),b=allSecs(k),d=p-b;return `<details class="pday" ${k===tk?'open':''}><summary><span class="pday-d">${parseKey(k).toLocaleDateString(LOC(),Object.assign({weekday:'short',day:'2-digit',month:'2-digit'},parseKey(k).getFullYear()!==new Date().getFullYear()?{year:'2-digit'}:{}))}</span><span class="pday-r">${absBadge(absOn(k),1)}${p>=60?`<span class="small ${d>600?'pg-gap':d<-600?'pg-over':'pg-ok'}">${d>60?fmtShort(d)+' '+tr('offen','open'):d<-60?'+'+fmtShort(-d):'✓'}</span><b>${fmtDur(p)}</b>`:''}</span></summary>${presTimeline(k)}<div class="plist2">${presRows(k)}</div><button class="pchip add" data-a="pres-add" data-v="${k}" style="margin:6px 0 4px">+ ${tr('Eintrag','Entry')}</button></details>`;}).join('')}${more?`<button class="btn ghost sm" data-a="pres-more" style="margin-top:8px">${tr('Ältere anzeigen','Show older')}</button>`:''}</div>`;}
 function presDay(k){const iv=presOfDay(k),p=presOn(k),b=allSecs(k),d=p-b;
   modal(`<h3>${parseKey(k).toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long'})}</h3>
   <div class="ystats" style="grid-template-columns:repeat(3,1fr)"><div><b>${fmtShort(p)}</b><span>${tr('anwesend','present')}</span></div><div><b>${fmtShort(b)}</b><span>${tr('gebucht','booked')}</span></div><div><b class="${d>600?'pg-gap':d<-600?'pg-over':'pg-ok'}">${d>60?fmtShort(d):d<-60?'+'+fmtShort(-d):'✓'}</b><span>${d<-60?tr('mehr gebucht','over-booked'):tr('nicht zugeordnet','unassigned')}</span></div></div>
@@ -1707,6 +1727,31 @@ function presDay(k){const iv=presOfDay(k),p=presOn(k),b=allSecs(k),d=p-b;
   <div class="actions"><span class="sp"></span><button class="btn ghost" data-a="close">${tr('Schließen','Close')}</button></div>`);}
 
 
+
+
+// ================= Abwesenheit =================
+const ABS=[['urlaub','Urlaub','Vacation','#4a8fd8'],['krank','Krank','Sick','#d9645a'],['sonder','Sonderurlaub','Special leave','#9a6fd6'],['za','Zeitausgleich','Time off in lieu','#2a9d8f'],['fortb','Fortbildung','Training','#e0973a'],['sonst','Sonstiges','Other','#8a94a0']];
+const absT=t=>ABS.find(a=>a[0]===t)||ABS[ABS.length-1];
+const absName=t=>{const a=absT(t);return tr(a[1],a[2]);};
+function absH(a){return a?(a.h!=null?a.h:(a.half?4:8)):0;}
+function absOn(k){return (S.absent||[]).find(a=>a.d===k)||null;}
+function absBadge(a,sm){if(!a)return '';const t=absT(a.type);return `<span class="absb ${sm?'sm':''}" style="--ac:${t[3]}">${esc(absName(a.type))}${a.half?' ½':''} · ${fmtShort(absH(a)*3600)}</span>`;}
+let AE=null;
+function absModal(day,edit){const ex=edit?absOn(day):null;AE={type:ex?ex.type:(S.meta.lastAbs||'urlaub'),from:day,to:day,half:ex?!!ex.half:false,hours:ex&&ex.h!=null?ex.h:(ex&&ex.half?4:8),note:ex?ex.note||'':'',edit:!!ex};absRender();}
+function absRender(){const a=AE;const n=absCount(a.from,a.to);
+  modal(`<h3>${a.edit?tr('Abwesenheit bearbeiten','Edit absence'):tr('Abwesenheit eintragen','Add absence')}</h3>
+  <label>${tr('Grund','Reason')}</label><div class="abs-types">${ABS.map(t=>`<button type="button" class="abs-t ${a.type===t[0]?'on':''}" style="--ac:${t[3]}" data-a="abs-type" data-v="${t[0]}"><i></i>${tr(t[1],t[2])}</button>`).join('')}</div>
+  ${a.edit?`<div class="small" style="margin-top:10px">${parseKey(a.from).toLocaleDateString(LOC(),{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>`:`<div class="abs-range"><div><label>${tr('Von','From')}</label>${dateInput('data-abs-from',a.from)}</div><div><label>${tr('Bis','To')}</label>${dateInput('data-abs-to',a.to,{min:a.from})}</div></div>
+  <div class="small abs-n">${n} ${n===1?tr('Arbeitstag','workday'):tr('Arbeitstage','workdays')}${holOn()?tr(' (ohne Wochenenden und Feiertage)',' (excluding weekends and holidays)'):tr(' (ohne Wochenenden)',' (excluding weekends)')}</div>`}
+  <label>${tr('Umfang','Scope')}</label><div class="seg abs-scope"><button type="button" class="${a.half?'':'on'}" data-a="abs-half" data-v="0">${tr('Ganzer Tag','Full day')}</button><button type="button" class="${a.half?'on':''}" data-a="abs-half" data-v="1">${tr('Halber Tag','Half day')}</button></div>
+  <div class="abs-h"><label>${tr('Stunden pro Tag','Hours per day')}</label><input type="number" data-abs-hours min="0" max="24" step="0.25" value="${String(a.hours)}"></div>
+  <label>${tr('Notiz (optional)','Note (optional)')}</label><input data-abs-note maxlength="120" value="${esc(a.note)}" placeholder="${tr('z. B. Sommerurlaub Italien','e.g. summer holiday')}">
+  <div class="actions">${a.edit?`<button class="btn ghost sm danger" data-a="abs-del" data-v="${a.from}">${tr('Löschen','Delete')}</button>`:''}<span class="sp"></span><button class="btn ghost" data-a="close">${tr('Abbrechen','Cancel')}</button><button class="btn" data-a="abs-save" ${!a.edit&&!n?'disabled':''}>${tr('Speichern','Save')}</button></div>`);}
+function absDays(from,to){const out=[];if(!from||!to||to<from)return out;let k=from,g=0;while(k<=to&&g++<400){const d=parseKey(k);const wd=d.getDay();if(wd!==0&&wd!==6&&!holidayName(k))out.push(k);k=shiftKey(k,1);}return out;}
+function absCount(f,t){return absDays(f,t).length;}
+function absReadForm(){const m=$('#modal-root');if(!m||!AE)return;const n=m.querySelector('[data-abs-note]');if(n)AE.note=n.value;const h=m.querySelector('[data-abs-hours]');if(h&&h.value!=='')AE.hours=Math.max(0,Math.min(24,parseFloat(String(h.value).replace(',','.'))||0));}
+document.addEventListener('change',e=>{if(!AE||!e.target.matches)return;if(e.target.matches('[data-abs-from]')&&e.target.value){absReadForm();AE.from=e.target.value;if(AE.to<AE.from)AE.to=AE.from;absRender();}else if(e.target.matches('[data-abs-to]')&&e.target.value){absReadForm();AE.to=e.target.value;absRender();}});
+function absYearSum(y){const c={};(S.absent||[]).forEach(a=>{if(a.d.startsWith(String(y))){c[a.type]=(c[a.type]||0)+(a.half?.5:1);c['_h_'+a.type]=(c['_h_'+a.type]||0)+absH(a);}});return c;}
 
 // ================= Notizen (Zettel) =================
 const NCOL=[['gelb','#fff1a8','#4a4220'],['gruen','#d9f0cf','#26402a'],['rosa','#fbd9e5','#4a2533'],['lila','#e6dcfa','#352a4d'],['blau','#d6e8fa','#223a52'],['pfirsich','#fde0c8','#4d3221'],['grau','#e8e6e1','#343632']];
@@ -1780,7 +1825,7 @@ function monthView(){const tk=todayKey(),now=parseKey(tk);const back=window._mBa
       for(let i=0;i<7;i++){const k=dkey(d),inM=d.getMonth()===ms.getMonth();const hol=holidayName(k);const we=d.getDay()===0||d.getDay()===6;
         if(!inM){h+=`<div class="mcell out"></div>`;}
         else{const it=monthItems(k,G);const all=it.real.length+it.ghost.length;const show=it.real.slice(0,2);const gs=it.ghost.slice(0,Math.max(0,2-show.length));
-          h+=`<div class="mcell ${k===tk?'now':''} ${k<tk?'past':''} ${we?'we':''} ${hol?'hol':''}" data-drop="${k}" data-a="m-day" data-v="${k}"><div class="mnum"><span>${d.getDate()}</span>${hol?`<i title="${esc(hol)}">${esc(hol)}</i>`:''}</div>
+          h+=`<div class="mcell ${k===tk?'now':''} ${k<tk?'past':''} ${we?'we':''} ${hol?'hol':''}" data-drop="${k}" data-a="m-day" data-v="${k}"><div class="mnum"><span>${d.getDate()}</span>${hol?`<i title="${esc(hol)}">${esc(hol)}</i>`:''}</div>${absOn(k)?`<div class="mabs" style="--ac:${absT(absOn(k).type)[3]}">${esc(absName(absOn(k).type))}${absOn(k).half?' ½':''}</div>`:''}
           ${show.map(t=>{const g=goal(t.goalId)||NONE();return `<div class="mit ${t.done?'done':''}" ${t.done||k<tk?'':`draggable="true" data-drag="${t.id}"`} style="--gc:${g.color}" title="${esc(titleText(t))}">${esc(titleText(t))}</div>`;}).join('')}
           ${gs.map(t=>{const g=goal(t.goalId)||NONE();return `<div class="mit ghost" style="--gc:${g.color}" title="${esc(titleText(t))} · ${esc(recLabel(t))}">${esc(titleText(t))}</div>`;}).join('')}
           ${all>show.length+gs.length?`<button class="mmore" data-a="m-day" data-v="${k}">+${all-show.length-gs.length} ${tr('mehr','more')}</button>`:''}</div>`;}
@@ -2844,7 +2889,11 @@ Object.assign(EXTRA_ACTIONS,{
   'ned'(el){nedCmd(el);},
   'ck-toggle'(el){ckToggle(el.dataset.k,+el.dataset.i);},
 });
-Object.assign(EXTRA_ACTIONS,{'rev-mon'(el){revMonOff=Math.min(0,revMonOff+(+el.dataset.d));render();},'m-day'(el){monthDayModal(el.dataset.v);},'m-step'(el){mStep(+el.dataset.v);},'m-more'(){window._mBack=(window._mBack||0)+1;render();},'zen-on'(){zenStart();},'zen-off'(){zenStop();},'zen-notes'(){const b=document.querySelector('#zen [data-ned-body]');if(b)nedCommit(b);zenNotes=!zenNotes;render();if(zenNotes)setTimeout(()=>{const n=document.querySelector('#zen [data-ned-body]');n&&n.focus();},60);},'note-pin-q'(el){const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.pin=!n.pin;if(!n.pin)delete n.pin;save();render();toast(n.pin?tr('Angepinnt','Pinned'):tr('Gelöst','Unpinned'));},'sr-note'(el){closeSearch();setTab('notizen');noteModal(el.dataset.n);},'note-open'(el,e){noteModal(el.dataset.n);},'nf-f'(el){NF.f=el.dataset.v;render();},
+Object.assign(EXTRA_ACTIONS,{'abs-add'(el){absModal(el.dataset.v||todayKey());},'abs-edit'(el){absModal(el.dataset.v,true);},
+  'abs-half'(el){absReadForm();const hv=el.dataset.v==='1';if(hv!==AE.half){AE.half=hv;AE.hours=hv?4:8;}absRender();},'abs-type'(el){absReadForm();AE.type=el.dataset.v;absRender();},
+  'abs-save'(){absReadForm();const a=AE;S.meta.lastAbs=a.type;const days=a.edit?[a.from]:absDays(a.from,a.to);S.absent=(S.absent||[]).filter(x=>!days.includes(x.d));days.forEach(d=>{const o={d,type:a.type,h:a.hours};if(a.half)o.half=1;if(a.note.trim())o.note=a.note.trim().slice(0,120);S.absent.push(o);});S.absent.sort((x,y)=>x.d<y.d?-1:1);save();AE=null;closeModal();render();toast(a.edit?tr('Gespeichert','Saved'):tr(`${days.length} ${days.length===1?'Tag':'Tage'} eingetragen`,`${days.length} day(s) added`));},
+  'abs-del'(el){S.absent=(S.absent||[]).filter(x=>x.d!==el.dataset.v);save();AE=null;closeModal();render();toast(tr('Abwesenheit gelöscht','Absence deleted'));},
+  'rev-mon'(el){revMonOff=Math.min(0,revMonOff+(+el.dataset.d));render();},'m-day'(el){monthDayModal(el.dataset.v);},'m-step'(el){mStep(+el.dataset.v);},'m-more'(){window._mBack=(window._mBack||0)+1;render();},'zen-on'(){zenStart();},'zen-off'(){zenStop();},'zen-notes'(){const b=document.querySelector('#zen [data-ned-body]');if(b)nedCommit(b);zenNotes=!zenNotes;render();if(zenNotes)setTimeout(()=>{const n=document.querySelector('#zen [data-ned-body]');n&&n.focus();},60);},'note-pin-q'(el){const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.pin=!n.pin;if(!n.pin)delete n.pin;save();render();toast(n.pin?tr('Angepinnt','Pinned'):tr('Gelöst','Unpinned'));},'sr-note'(el){closeSearch();setTab('notizen');noteModal(el.dataset.n);},'note-open'(el,e){noteModal(el.dataset.n);},'nf-f'(el){NF.f=el.dataset.v;render();},
   'note-close'(){noteFlush();closeModal();render();},
   'note-col'(el){noteFlush();const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.color=el.dataset.v;S.meta.lastNoteCol=n.color;save();noteModal(n.id);},
   'note-pin'(el){noteFlush();const n=S.notes.find(x=>x.id===el.dataset.n);if(!n)return;n.pin=!n.pin;if(!n.pin)delete n.pin;save();noteModal(n.id);},
