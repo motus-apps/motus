@@ -954,15 +954,16 @@ header{position:relative}
 .fokbtn:hover svg{transform:rotate(90deg)}
 .fokbtn.on{box-shadow:0 0 0 3px #f5c451,0 6px 18px rgba(15,63,48,.3),inset 0 1px 0 rgba(255,255,255,.25)}
 .fokbtn.run .fk-arc{stroke:#f5c451}
-.fokbtn.run::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(245,196,81,.5);animation:fkpulse 4s ease-in-out infinite;pointer-events:none}
+.fokbtn.run::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:3px solid #f5c451;animation:fkpulse 3.2s ease-out infinite;pointer-events:none}
 @keyframes fkspin{to{transform:rotate(360deg)}}
-@keyframes fkpulse{0%{transform:scale(1);opacity:.8}70%{transform:scale(1.22);opacity:0}100%{transform:scale(1.22);opacity:0}}
+@keyframes fkpulse{0%{transform:scale(.96);opacity:1}75%{transform:scale(1.38);opacity:0}100%{transform:scale(1.38);opacity:0}}
 [data-theme=dark] .fokbtn{box-shadow:0 0 0 4px rgba(255,255,255,.07),0 6px 18px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.18)}
 [data-theme=dark] .fokbtn.on{box-shadow:0 0 0 3px #f5c451,0 6px 18px rgba(0,0,0,.4)}
 
 .pres2-st{display:flex;align-items:center;flex-wrap:wrap;gap:0 6px}
 .pres2-date{font-weight:500;text-transform:none;letter-spacing:0;opacity:.7;margin-left:6px;font-size:12.5px}
 .pres2-sub{margin-top:8px}
+.fokbtn.run:not(.on){box-shadow:0 0 0 3px #f5c451,0 6px 18px rgba(15,63,48,.3),inset 0 1px 0 rgba(255,255,255,.25)}
 </style>
 </head>
 <body>
