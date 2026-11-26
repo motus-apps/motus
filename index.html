@@ -1058,6 +1058,15 @@ html{scrollbar-gutter:stable}
 .mday-add select{max-width:none;min-width:0;width:100%}
 .mday-go{border-radius:10px;background:var(--moss,#2f6f45);color:#fff;display:inline-flex;align-items:center;justify-content:center;min-height:42px}
 .mday-go:hover{filter:brightness(1.1)}
+.ablblock{margin:14px 0 4px}
+.ablblock>summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:14px;font-weight:600;padding:8px 4px;user-select:none}
+.ablblock>summary::-webkit-details-marker{display:none}
+.ablblock>summary::after{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);margin-left:2px;transition:transform .15s}
+.ablblock[open]>summary::after{transform:rotate(45deg) translateY(-2px)}
+.ablblock>summary:hover{color:var(--text)}
+.abl-in{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;padding:6px 0 4px;min-height:40px;border-radius:12px}
+.abl-in .abl-hint{grid-column:1/-1;padding:0 4px 2px}
+.abl-in .dropline{grid-column:1/-1}
 </style>
 </head>
 <body>
@@ -1398,7 +1407,7 @@ function viewToday(){
   h+=`<form class="addbar" data-add="${tk}"><input placeholder="${tr('Neue Aufgabe für heute…','New task for today…')}" maxlength="140">${goalSelect('add-goal',pickGoal())}<button class="btn" type="submit">+</button></form>`;
   h+=ongoingBlock();
   const bl=backlog().length;
-  h+=`<div><button class="ablagelink" data-a="goto-ablage">${I.box()} ${tr('Ablage','Backlog')} (${bl}) ${I.chev(1)}</button></div>`;
+  {const bls=backlog().filter(tagOk);h+=`<details class="ablblock" ${S.meta.ablOpen?'open':''} data-abl><summary>${I.box()} ${tr('Ablage','Backlog')} <span class="small">(${bl})</span></summary><div class="abl-in" data-drop="ablage">${bls.length?`<div class="small abl-hint">${tr('Ziehe Aufgaben nach oben in „Heute“ oder nutze das Kalender-Symbol.','Drag tasks up into “Today” or use the calendar icon.')}</div>`+bls.map(t=>weekCard(t,null)).join(''):`<div class="small abl-hint">${tr('Die Ablage ist leer.','The backlog is empty.')}</div>`}</div></details>`;}
   const ds=done.reduce((a,t)=>a+(t.secs||0),0);
   h+=`<h2>${tr('Erledigt heute','Done today')}</h2><div class="card">`;
   if(!done.length)h+=`<div class="small">${tr('Hier sammelt sich alles, was du heute geschafft hast. Der Berg, den du schon erklommen hast.','Everything you finish today collects here. The mountain you have already climbed.')}</div>`;
@@ -1505,7 +1514,7 @@ function completeRecurring(t,dk){const copy=Object.assign({},t,{id:uid(),done:tr
 function ongoingBlock(){const og=ongoingTasks();if(!og.length)return '';
   return `<details class="ogblock" ${S.meta.ogOpen?'open':''} data-og><summary>↻ ${tr('Laufend','Ongoing')} <span class="small">(${og.length})</span></summary><div class="qlist">${og.map(t=>{const g=goal(t.goalId)||NONE(),run=S.running&&S.running.taskId===t.id,ws=weekSecsTask(t);
     return `<div class="lrow ${run?'running':''}" style="border-left-color:${g.color}"><div class="tt" data-a="edit-task" data-t="${t.id}">${refL(t)}<div class="t1">${esc(titleText(t))}</div><div class="meta">${chip(g)}<span>${tr('diese Woche','this week')} ${ws>=60?fmtShort(ws):'–'}</span></div></div><button class="icon ${run?'on':'play'}" data-a="${run?'stop':'play'}" data-t="${t.id}">${run?I.pause():I.play()}</button></div>`;}).join('')}</div></details>`;}
-document.addEventListener('toggle',e=>{if(e.target.matches&&e.target.matches('[data-og]')){S.meta.ogOpen=e.target.open;save();}},true);
+document.addEventListener('toggle',e=>{if(e.target.matches&&e.target.matches('[data-og]')){S.meta.ogOpen=e.target.open;save();}if(e.target.matches&&e.target.matches('[data-abl]')){S.meta.ablOpen=e.target.open;save();}},true);
 
 // ================= Suche =================
 let SQ={q:'',f:'all'};
